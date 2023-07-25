@@ -1,0 +1,33 @@
+spring:
+  data:
+    redis:
+      repositories:
+        enabled: false
+  devtools:
+    livereload:
+      enabled: false
+  flyway:
+    enabled: false
+  jackson:
+    time-zone: Asia/Seoul
+    deserialization:
+      fail-on-unknown-properties: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: com.klipwallet.membership.adaptor.jpa.strategy.GxMySqlPhysicalNamingStrategy
+  profiles:
+    active: local         # default profile
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+    path: /swagger-ui
+
+# noinspection SpringBootApplicationYaml
+application:
+  version: ${_applicationVersion}  # from build.gradle.kts

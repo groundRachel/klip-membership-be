@@ -1,0 +1,28 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+    <springProfile name="!local">
+        <appender name="NEWRELIC" class="com.newrelic.logging.logback.NwRelicAsyncAppender">
+            <appender-ref ref="CONSOLE"/>
+        </appender>
+    </springProfile>
+
+    <springProfile name="dev,qa,stag">
+        <root level="INFO">
+            <appender-ref ref="NEWRELIC"/>
+        </root>
+    </springProfile>
+    <springProfile name="prod,perf">
+        <root level="WARN">
+            <appender-ref ref="NEWRELIC"/>
+        </root>
+    </springProfile>
+</configuration>
