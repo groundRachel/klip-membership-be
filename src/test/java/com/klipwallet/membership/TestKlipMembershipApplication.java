@@ -1,7 +1,7 @@
 package com.klipwallet.membership;
 
 //@TestConfiguration(proxyBeanMethods = false)
-public class TestKmtApplication {
+public class TestKlipMembershipApplication {
 
 //@Bean
 //@ServiceConnection

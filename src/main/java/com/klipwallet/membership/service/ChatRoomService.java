@@ -14,7 +14,7 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
-import com.klipwallet.membership.exception.NeedLinkToKakaoException;
+import com.klipwallet.membership.exception.kakao.KakaoAccountLinkRequiredException;
 import com.klipwallet.membership.repository.ChatRoomRepository;
 
 @Service
@@ -28,7 +28,7 @@ public class ChatRoomService {
     public ChatRoomSummary create(ChatRoomCreate command, AuthenticatedUser user) {
         // FIXME Member 계정에 카카오 연동이 되었는가? AOP로 처리할까?
         if (!user.isLinkedToKakao()) {
-            throw new NeedLinkToKakaoException(user);
+            throw new KakaoAccountLinkRequiredException(user);
         }
         // 카카오 오픈채팅방 생성
         OpenChatRoomId openChatRoomId = kakaoService.createOpenChatRoom(

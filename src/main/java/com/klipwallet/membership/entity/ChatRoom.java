@@ -21,7 +21,7 @@ import org.springframework.lang.Nullable;
 
 import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
 
-import static com.klipwallet.membership.entity.Statusable.toVerifiedCode;
+import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 
 /**
  * 채팅방 Entity
@@ -102,7 +102,7 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
         private final byte code;
 
         Status(int code) {
-            this.code = toVerifiedCode(code);
+            this.code = requireVerifiedCode(code);
         }
 
         @JsonCreator
@@ -140,7 +140,7 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
         private final byte code;
 
         Source(int code) {
-            this.code = toVerifiedCode(code);
+            this.code = requireVerifiedCode(code);
         }
 
         @JsonCreator

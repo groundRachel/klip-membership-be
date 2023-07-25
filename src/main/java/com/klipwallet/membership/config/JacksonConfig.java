@@ -3,7 +3,6 @@ package com.klipwallet.membership.config;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

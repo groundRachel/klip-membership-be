@@ -42,7 +42,7 @@ public interface Statusable {
         return ec.toDisplay().equals(display) || ec.name().equalsIgnoreCase(display);
     }
 
-    static byte toVerifiedCode(int code) {
+    static byte requireVerifiedCode(int code) {
         checkCodeRange(code);
         return (byte) code;
     }

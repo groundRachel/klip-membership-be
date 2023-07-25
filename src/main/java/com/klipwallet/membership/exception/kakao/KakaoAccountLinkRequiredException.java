@@ -1,8 +1,9 @@
-package com.klipwallet.membership.exception;
+package com.klipwallet.membership.exception.kakao;
 
 import lombok.NonNull;
 
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.exception.ForbiddenException;
 
 /**
  * 카카오 연동이 안된 경우 발생하는 예외
@@ -17,8 +18,8 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
  *
  * @see com.klipwallet.membership.exception.ForbiddenException
  */
-public class NeedLinkToKakaoException extends ForbiddenException {
-    public NeedLinkToKakaoException(@NonNull AuthenticatedUser member) {
+public class KakaoAccountLinkRequiredException extends ForbiddenException {
+    public KakaoAccountLinkRequiredException(@NonNull AuthenticatedUser member) {
         super(member);
     }
 }
