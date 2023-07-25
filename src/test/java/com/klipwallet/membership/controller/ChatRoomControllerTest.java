@@ -9,6 +9,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class ChatRoomControllerTest {
     @Test
     void chatRoomList() {
-
+        // TODO @Jordan
     }
 }

@@ -44,7 +44,7 @@ public class JacksonConfig {
         }
 
         @Override
-        public Long deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JacksonException {
+        public Long deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException {
             return Optional.ofNullable(parser.getValueAsString())
                            .map(Long::valueOf)
                            .orElse(null);

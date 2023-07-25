@@ -1,12 +1,12 @@
 package com.klipwallet.membership.entity;
 
-import java.util.Collection;
+import java.util.Set;
 
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.klipwallet.membership.entity.kakao.KakaoId;
 
@@ -23,17 +23,16 @@ import com.klipwallet.membership.entity.kakao.KakaoId;
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class AuthenticatedUser extends org.springframework.security.core.userdetails.User {
-    UserId id;
+    Integer memberId;
     KakaoId kakaoId;
 
     /**
-     * 멤버 생성 시 사용.
+     * 기본 생성자.
      */
-    public AuthenticatedUser(@NonNull UserId id, @Nullable KakaoId kakaoId, String username, String password,
-                             boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
-                             Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-        this.id = id;
+    public AuthenticatedUser(@NonNull Integer memberId, @Nullable KakaoId kakaoId, String username, @NonNull String role) {
+        super(username, "[PASSWORD]", true, true, true, true,
+              Set.of(new SimpleGrantedAuthority("ROLE_" + role)));
+        this.memberId = memberId;
         this.kakaoId = kakaoId;
     }
 

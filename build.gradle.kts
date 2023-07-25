@@ -4,7 +4,7 @@ plugins {
     idea
     checkstyle
     jacoco
-    id("org.springframework.boot") version "3.1.1"
+    id("org.springframework.boot") version "3.1.2"
     id("io.spring.dependency-management") version "1.1.0"
     id("com.google.cloud.tools.jib") version "3.3.2" // jib
 }
@@ -65,7 +65,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     runtimeOnly("com.h2database:h2")
-    runtimeOnly("com.mysql:mysql-connector-j")
+//    runtimeOnly("com.mysql:mysql-connector-j")
     runtimeOnly("io.micrometer:micrometer-registry-new-relic")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

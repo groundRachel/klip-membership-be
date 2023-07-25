@@ -13,7 +13,9 @@ import jakarta.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.lang.Nullable;
 
@@ -26,6 +28,8 @@ import static com.klipwallet.membership.entity.Statusable.toVerifiedCode;
  */
 @Entity
 @Getter
+@EqualsAndHashCode(of = "id", callSuper = false)
+@ToString
 public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -53,13 +57,13 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
      * 채팅방을 생성했다고, 무조건 방장이 되지 않는다. 방장은 {@link ChatRoomMember} 에서 방장 타입으로 조회한다.
      * </p>
      */
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "creatorId"))
-    private UserId creatorId;
-    @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "updaterId"))
-    private UserId updaterId;
+    @Column(updatable = false)
+    private Integer creatorId;
+    @Column(insertable = false)
+    private Integer updaterId;
+    @Column(insertable = false, updatable = false)
     private LocalDateTime createdAt;
+    @Column(insertable = false)
     private LocalDateTime updatedAt;
 
     protected ChatRoom() {
@@ -68,7 +72,7 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
     /**
      * 채팅방 생성을 위한 기본 생성자.
      */
-    public ChatRoom(OpenChatRoomId openChatRoomId, String title, String coverImage, Address contractAddress, UserId creatorId) {
+    public ChatRoom(OpenChatRoomId openChatRoomId, String title, String coverImage, Address contractAddress, Integer creatorId) {
         this.openChatRoomId = openChatRoomId;
         this.title = title;
         this.coverImage = coverImage;

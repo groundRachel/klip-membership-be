@@ -12,7 +12,7 @@ import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
  * GroundX mysql 물리 DB 요소 명칭 전략.
  * <pre>
  *   TableName -> table_name
- *   columnName -> `columnName`
+ *   columnName -> columnName
  * </pre>
  * 위 사항(테이블 명, 칼럼 명 전략) 이외에는 {@link PhysicalNamingStrategyStandardImpl} 전략을 승계한다.
  *
@@ -44,6 +44,6 @@ public class GxMySqlPhysicalNamingStrategy implements PhysicalNamingStrategy, Se
 
     @Override
     public Identifier toPhysicalColumnName(Identifier logicalName, JdbcEnvironment context) {
-        return Identifier.quote(PhysicalNamingStrategyStandardImpl.INSTANCE.toPhysicalColumnName(logicalName, context));
+        return PhysicalNamingStrategyStandardImpl.INSTANCE.toPhysicalColumnName(logicalName, context);
     }
 }

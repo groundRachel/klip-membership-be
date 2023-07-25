@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.ChatRoom.Source;
 import com.klipwallet.membership.entity.ChatRoom.Status;
-import com.klipwallet.membership.entity.UserId;
 
 /**
  * 채팅방 목록 행 DTO
@@ -19,8 +18,8 @@ public record ChatRoomRow(
         @Schema(description = "NFT Contract 주소") Address contractAddress,
         Status status,
         Source source,
-        UserId creatorId,
-        @Schema(nullable = true) UserId updaterId,
+        Integer creatorId,
+        @Schema(nullable = true) Integer updaterId,
         OffsetDateTime createdAt,
         @Schema(nullable = true) OffsetDateTime updatedAt) {
 }

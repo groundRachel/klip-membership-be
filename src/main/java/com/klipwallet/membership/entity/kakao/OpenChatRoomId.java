@@ -13,7 +13,7 @@ import lombok.Value;
 @ToString
 public class OpenChatRoomId {
     @JsonValue
-    @Column(name = "openChatRoomId", unique = true, nullable = false)
+    @Column(name = "openChatRoomId", nullable = false)
     String id;
 
     @SuppressWarnings("ProtectedMemberInFinalClass")

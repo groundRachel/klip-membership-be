@@ -10,8 +10,8 @@ import com.klipwallet.membership.dto.chatroom.ChatRoomAssembler;
 import com.klipwallet.membership.dto.chatroom.ChatRoomCreate;
 import com.klipwallet.membership.dto.chatroom.ChatRoomRow;
 import com.klipwallet.membership.dto.chatroom.ChatRoomSummary;
-import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
 import com.klipwallet.membership.exception.NeedLinkToKakaoException;
@@ -25,16 +25,16 @@ public class ChatRoomService {
     private final ChatRoomAssembler chatRoomAssembler;
 
     @Transactional
-    public ChatRoomSummary create(ChatRoomCreate command, AuthenticatedUser member) {
+    public ChatRoomSummary create(ChatRoomCreate command, AuthenticatedUser user) {
         // FIXME Member 계정에 카카오 연동이 되었는가? AOP로 처리할까?
-        if (!member.isLinkedToKakao()) {
-            throw new NeedLinkToKakaoException(member);
+        if (!user.isLinkedToKakao()) {
+            throw new NeedLinkToKakaoException(user);
         }
         // 카카오 오픈채팅방 생성
         OpenChatRoomId openChatRoomId = kakaoService.createOpenChatRoom(
-                command.title(), command.coverImage(), new OpenChatRoomHost(member.getKakaoId()));
+                command.title(), command.coverImage(), new OpenChatRoomHost(user.getKakaoId()));
         // 채팅방 저장
-        ChatRoom entity = command.toChatRoom(openChatRoomId, member.getId());
+        ChatRoom entity = command.toChatRoom(openChatRoomId, user.getMemberId());
         return chatRoomAssembler.toSummary(chatRoomRepository.save(entity));
     }
 
