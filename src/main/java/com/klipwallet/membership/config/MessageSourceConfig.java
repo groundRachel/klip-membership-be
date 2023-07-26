@@ -3,7 +3,6 @@ package com.klipwallet.membership.config;
 import java.time.Duration;
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.MessageSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,8 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.StringUtils;
 
-@Configuration
-@EnableConfigurationProperties(MessageSourceProperties.class)
+@Configuration(proxyBeanMethods = false)
 public class MessageSourceConfig {
 
     @Bean
@@ -24,7 +22,7 @@ public class MessageSourceConfig {
     }
 
     @Bean
-    MessageSource messageSource(@Autowired MessageSourceProperties properties) {
+    MessageSource messageSource(MessageSourceProperties properties) {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         if (StringUtils.hasText(properties.getBasename())) {
             messageSource.setBasenames(StringUtils.commaDelimitedListToStringArray(StringUtils.trimAllWhitespace(properties.getBasename())));
