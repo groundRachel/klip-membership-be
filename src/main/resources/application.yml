@@ -16,8 +16,6 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
-      naming:
-        physical-strategy: com.klipwallet.membership.adaptor.jpa.strategy.GxMySqlPhysicalNamingStrategy
   messages:
     basename: errors
     fallback-to-system-locale: false
@@ -25,14 +23,12 @@ spring:
   profiles:
     active: local         # default profile
 
-
 springdoc:
   api-docs:
     enabled: false
   swagger-ui:
     enabled: false
     path: /swagger-ui
-
 
 # noinspection SpringBootApplicationYaml
 application:

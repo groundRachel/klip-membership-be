@@ -5,10 +5,10 @@ import java.util.Locale;
 
 import org.springframework.boot.autoconfigure.context.MessageSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.StringUtils;
 
@@ -21,6 +21,7 @@ public class MessageSourceConfig {
         return new MessageSourceProperties();
     }
 
+    @Primary
     @Bean
     MessageSource messageSource(MessageSourceProperties properties) {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();

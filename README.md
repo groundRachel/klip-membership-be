@@ -78,12 +78,13 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 * Spring Boot 3.x
 * Spring Web MVC
 * Spring Security
+  * oauth2-client(google)
 * Spring Data JPA
-    * Hibernate, Flyway
+  * Hibernate, Flyway
 * Spring Cloud
-    * OpenFeign, CircuitBreaker, Vault
-* Spring Cache
-    * Spring Data Redis, Lettuce
+  * OpenFeign, CircuitBreaker, Vault
+* Spring Session, Cache
+  * Spring Data Redis, Lettuce
 
 > [HELP.md](./HELP.md) 참고 요망
 
@@ -102,9 +103,10 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 ### AWS Infra
 
 * EKS: K8S
-    * By Helm Chart
+  * By Helm Chart
 * Aurora MySQL
-* ElastiCache for Redis: Caching
+  * case insensitive identifiers
+* ElastiCache for Redis: Session, Cache
 * S3(ObjectStorage): `media.klipwallet.com`
 * MSK(Kafka): Subscribe KAS Notification
 
@@ -117,7 +119,11 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 
 ## 주요 모델
 
+* `Member`: 파트너(이용자)
+* `MemberApplication`: 파트너 신청(이용자 등록 요청)
+* `Admin`: 관리자(GX담당자)
 * `ChatRoom`: 채팅방
+* `ChatRoomMember`: 채팅방 참여자(방장/부방장 포함?)
 * `KakaoService`: 카카오 연동 서비스
 
 # 협업
@@ -138,6 +144,27 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 코딩 컨벤션 강제화/경고 도구
 
 ### editorconfig 까지 통합함
+
+## DB Naming Convention
+
+* Lower snake case
+
+```sql
+create table chat_room
+(
+    id               bigint auto_increment primary key comment '채팅방 ID',
+    open_link_id     varchar(36) unique not null comment '카카오 오픈링크 ID',
+    title            varchar(30)        not null comment '채팅방 이름',
+    cover_image      varchar(255) comment '채팅방 커버 이미지',
+    contract_address varchar(50)        not null comment 'NFT Contract Address',
+    `status`         tinyint            not null comment '채팅방 상태 1: 활성화, 2:비활성화, 3: 삭제',
+    `source`         tinyint            not null comment '채팅방 소스 0: Klaytn, 1:KlipDrops',
+    creator_id       int                not null comment '생성자 아이디',
+    updater_id       int comment '수정자 아이디',
+    created_at       datetime           not null default current_timestamp,
+    updated_at       datetime           null
+);
+```
 
 ## Sonarqube
 
