@@ -1,7 +1,6 @@
 package com.klipwallet.membership.adaptor.kakao;
 
-import java.util.UUID;
-
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -14,10 +13,15 @@ import com.klipwallet.membership.service.KakaoService;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class KakaoAdaptor implements KakaoService {
+    private final KakaoApiClient apiClient;
+
     @Override
     public OpenChatRoomId createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host) {
-        return new OpenChatRoomId(UUID.randomUUID().toString());
+        //        Res res = apiClient.createOpenChatRoom(dfddffd);
+        //        return new OpenChatRoomId(res.getId());
+        return null;
     }
 
     /**

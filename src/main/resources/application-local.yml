@@ -1,3 +1,12 @@
+application:
+  kakao-api:
+    admin-key: 2e5db1d18c9deb08b6a8011850b40446
+    domain-id: 139
+    user-id-type: user_id
+    openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
+    test-user-id: 2538023320 # Ian
+    test-participant-id: 2439320002 # Winnie
+
 logging:
   level:
     sql: debug
