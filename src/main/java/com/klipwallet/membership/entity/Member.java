@@ -13,6 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -38,14 +39,15 @@ public class Member {
     @Column(unique = true)
     String email;
     @Column(unique = true)
-    String oAuthID;
+    String oAuthId;
 
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
-    private Integer updatedBy;
+    @LastModifiedBy
+    private Integer updatedBy; // TODO KLDV-3069 check if the value is changed
 
     public Member() {
         this.id = null;

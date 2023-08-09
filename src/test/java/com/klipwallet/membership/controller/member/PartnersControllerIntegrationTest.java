@@ -22,7 +22,7 @@ public class PartnersControllerIntegrationTest {
                                "phoneNumber": "010-1234-5678",
                                "businessRegistrationNumber": "000-00-00000",
                                "email": "example@groundx.xyz",
-                               "oAuthID": "292085223830.apps.googleusercontent.com"
+                               "oAuthId": "292085223830.apps.googleusercontent.com"
                              }
                              """;
         mvc.perform(post("/tool/partners/apply")
@@ -30,6 +30,7 @@ public class PartnersControllerIntegrationTest {
                             .content(requestJson))
            .andExpect(status().isCreated())
            .andExpect(jsonPath("$.id").exists())
+           .andExpect(jsonPath("$.name").value("(주) 그라운드엑스"))
            .andExpect(jsonPath("$.createdAt").exists())
            .andExpect(jsonPath("$.updatedAt").exists());
     }
