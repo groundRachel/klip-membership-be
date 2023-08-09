@@ -1,13 +1,15 @@
-package com.klipwallet.membership.adaptor.kakao;
+package com.klipwallet.membership.adaptor.kakao.dto;
 
 import feign.form.FormProperty;
 import lombok.NonNull;
 
-public class UpdateProfileReqDto {
+import static com.klipwallet.membership.adaptor.kakao.KakaoAdaptor.DEFAULT_TARGET_ID_TYPE;
+
+public class UpdateProfileReq {
     @FormProperty("target_id")
     String targetId;
     @FormProperty("target_id_type")
-    String targetIdType;
+    String targetIdType = DEFAULT_TARGET_ID_TYPE;
     @FormProperty("nickname")
     String nickname;
     @FormProperty("profile_image")
@@ -17,10 +19,9 @@ public class UpdateProfileReqDto {
     @FormProperty("link_id")
     Long linkId;
 
-    UpdateProfileReqDto(@NonNull String targetId, @NonNull String targetIdType, @NonNull String nickname,
-                        String profileImage, @NonNull Long domainId, @NonNull Long linkId) {
+    public UpdateProfileReq(@NonNull String targetId, @NonNull String nickname,
+                            String profileImage, @NonNull Long domainId, @NonNull Long linkId) {
         this.targetId = targetId;
-        this.targetIdType = targetIdType;
         this.nickname = nickname;
         this.profileImage = profileImage;
         this.domainId = domainId;

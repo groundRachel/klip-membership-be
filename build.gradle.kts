@@ -57,6 +57,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
     // Newrelic
     implementation("com.newrelic.logging:logback:${property("newrelicLogbackVersion")}")
+    testImplementation("org.projectlombok:lombok:1.18.22")
 //    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
 
     compileOnly("org.projectlombok:lombok")

@@ -2,13 +2,15 @@ package com.klipwallet.membership.adaptor.kakao;
 
 import org.junit.jupiter.api.Test;
 
+import com.klipwallet.membership.adaptor.kakao.dto.UpdateOpenlinkReq;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class UpdateOpenlinkReqDtoTest {
+class UpdateOpenlinkReqTest {
     @Test
     void constructorCheckNull() {
         assertThrows(NullPointerException.class, () -> {
-            new UpdateOpenlinkReqDto(null, null, null, null, null, null, null);
+            new UpdateOpenlinkReq(null, null, null, null, null, null);
         });
     }
 }

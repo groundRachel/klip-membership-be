@@ -1,13 +1,16 @@
-package com.klipwallet.membership.adaptor.kakao;
+package com.klipwallet.membership.adaptor.kakao.dto;
 
 import feign.form.FormProperty;
 import lombok.NonNull;
 
-public class UpdateOpenlinkReqDto {
+import static com.klipwallet.membership.adaptor.kakao.KakaoAdaptor.DEFAULT_TARGET_ID_TYPE;
+
+
+public class UpdateOpenlinkReq {
     @FormProperty("target_id")
     String targetId;
     @FormProperty("target_id_type")
-    String targetIdType;
+    String targetIdType = DEFAULT_TARGET_ID_TYPE;
     @FormProperty("domain_id")
     Long domainId;
     @FormProperty("link_id")
@@ -19,10 +22,9 @@ public class UpdateOpenlinkReqDto {
     @FormProperty("link_description")
     String linkDescription;
 
-    UpdateOpenlinkReqDto(@NonNull String targetId, @NonNull String targetIdType, @NonNull Long domainId,
-                         @NonNull Long linkId, String linkName, String linkImage, String linkDescription) {
+    public UpdateOpenlinkReq(@NonNull String targetId, @NonNull Long domainId,
+                             @NonNull Long linkId, String linkName, String linkImage, String linkDescription) {
         this.targetId = targetId;
-        this.targetIdType = targetIdType;
         this.domainId = domainId;
         this.linkId = linkId;
         this.linkName = linkName;

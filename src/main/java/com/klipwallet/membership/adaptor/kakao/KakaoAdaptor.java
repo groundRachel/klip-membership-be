@@ -9,16 +9,20 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import com.klipwallet.membership.entity.KakaoOpenChatRoomOpened;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 import com.klipwallet.membership.service.KakaoService;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class KakaoAdaptor implements KakaoService {
+    public static final String DEFAULT_TARGET_ID_TYPE = "user_id";
+    public static final boolean DEFAULT_IGNORE_KICK_STATUS = false;
+
     private final KakaoApiClient apiClient;
 
     @Override
-    public OpenChatRoomId createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host) {
+    public OpenChatRoomSummary createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host) {
         //        Res res = apiClient.createOpenChatRoom(dfddffd);
         //        return new OpenChatRoomId(res.getId());
         return null;

@@ -1,13 +1,16 @@
-package com.klipwallet.membership.adaptor.kakao;
+package com.klipwallet.membership.adaptor.kakao.dto;
 
 import feign.form.FormProperty;
 import lombok.NonNull;
 
-public class JoinOpenlinkReqDto {
+import static com.klipwallet.membership.adaptor.kakao.KakaoAdaptor.DEFAULT_IGNORE_KICK_STATUS;
+import static com.klipwallet.membership.adaptor.kakao.KakaoAdaptor.DEFAULT_TARGET_ID_TYPE;
+
+public class JoinOpenlinkReq {
     @FormProperty("target_id")
     String targetId;
     @FormProperty("target_id_type")
-    String targetIdType;
+    String targetIdType = DEFAULT_TARGET_ID_TYPE;
     @FormProperty("nickname")
     String nickname;
     @FormProperty("profile_image")
@@ -17,16 +20,14 @@ public class JoinOpenlinkReqDto {
     @FormProperty("link_id")
     Long linkId;
     @FormProperty("ignore_kick_status")
-    Boolean ignoreKickStatus;
+    boolean ignoreKickStatus = DEFAULT_IGNORE_KICK_STATUS;
 
-    JoinOpenlinkReqDto(@NonNull String targetId, @NonNull String targetIdType, @NonNull String nickname, String profileImage,
-                       @NonNull Long domainId, @NonNull Long linkId) {
+    public JoinOpenlinkReq(@NonNull String targetId, @NonNull String nickname, String profileImage,
+                           @NonNull Long domainId, @NonNull Long linkId) {
         this.targetId = targetId;
-        this.targetIdType = targetIdType;
         this.nickname = nickname;
         this.profileImage = profileImage;
         this.domainId = domainId;
         this.linkId = linkId;
-        this.ignoreKickStatus = false; // 기획상 false로 고정
     }
 }
