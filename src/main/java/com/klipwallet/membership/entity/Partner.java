@@ -26,6 +26,6 @@ public class Partner extends Member {
     }
 
 
-    protected Partner() {
+    public Partner() {
     }
 }
