@@ -23,7 +23,8 @@ public class KakaoAdaptor implements KakaoService {
 
     @Override
     public OpenChatRoomSummary createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host) {
-        //        Res res = apiClient.createOpenChatRoom(dfddffd);
+        //TODO: Ian
+        //         OpenlinkSummaryRes res = apiClient.createOpenlink(new CreateOpenlinkReq());
         //        return new OpenChatRoomId(res.getId());
         return null;
     }
