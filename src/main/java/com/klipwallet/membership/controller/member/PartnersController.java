@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/tool/partners")
 @RequiredArgsConstructor
-public class PartnerController {
+public class PartnersController {
     private final PartnerService partnerService;
 
     @Operation(summary = "파트너 가입 요청", description = "파트너가 구글 인증 후 가입 요청 보냄. GX의 admin이 승인을 해야 가입됨.")

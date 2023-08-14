@@ -7,10 +7,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.lang.NonNull;
 
-import com.klipwallet.membership.entity.Partner;
+import com.klipwallet.membership.entity.AppliedPartner;
 
 @RequiredArgsConstructor
 public class PartnerDto {
@@ -19,8 +18,8 @@ public class PartnerDto {
                         @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber,
                         @NotBlank @Email String email,
                         @NotBlank String oAuthId) {
-        public Partner toPartner() {
-            return new Partner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
+        public AppliedPartner toAppliedPartner() {
+            return new AppliedPartner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
         }
     }
 

@@ -7,29 +7,29 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import com.klipwallet.membership.entity.Partner;
+import com.klipwallet.membership.entity.AppliedPartner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class PartnerRepositoryTest {
+class AppliedAppliedPartnerRepositoryTest {
     @Autowired
-    PartnerRepository partnerRepository;
+    AppliedPartnerRepository appliedPartnerRepository;
 
     @PersistenceContext
     EntityManager em;
 
     @Test
     void insertAndSelect() {
-        Partner entity = new Partner();
-        Partner saved = partnerRepository.save(entity);
-        partnerRepository.flush();
+        AppliedPartner entity = new AppliedPartner();
+        AppliedPartner saved = appliedPartnerRepository.save(entity);
+        appliedPartnerRepository.flush();
 
         em.flush();
         em.clear();
 
-        Partner findUser = partnerRepository.findById(saved.getId())
-                                            .orElse(null);
+        AppliedPartner findUser = appliedPartnerRepository.findById(saved.getId())
+                                                          .orElse(null);
         assertThat(findUser).isNotNull();
         assertThat(saved).isEqualTo(findUser);
     }
