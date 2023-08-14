@@ -36,7 +36,7 @@ jobs:
       with:
         current_branch: ${{ github.ref_name }}
         type: ${{ github.ref_type }}
-        
+
 
   build_image:
     runs-on: ubuntu-22.04
@@ -75,6 +75,15 @@ jobs:
           java-version: 17
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
@@ -128,42 +137,42 @@ jobs:
         path: ./actions
         ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
         ref: ${{ secrets.REF }}
-    - name: image patch
-      id: var
-      uses: "./actions/common/image-patch"
-      with:
-        PAT: ${{ secrets.GH_PAT }}
-        GITHUB_SHA: ${{ github.sha }}
-        PROJECT: "klip"
-        PROJECT_NAME: "membership"
-        ENVIRONMENT: ${{ matrix.environment }}
+  #   - name: image patch
+  #     id: var
+  #     uses: "./actions/common/image-patch"
+  #     with:
+  #       PAT: ${{ secrets.GH_PAT }}
+  #       GITHUB_SHA: ${{ github.sha }}
+  #       PROJECT: "klip"
+  #       PROJECT_NAME: "klip-membership"
+  #       ENVIRONMENT: ${{ matrix.environment }}
 
-  release_pr:
-    runs-on: ubuntu-22.04
-    needs: [ image_patch, resolve_environment ]
-    if: needs.resolve_environment.outputs.deploy_env == 'qa'
-    strategy:
-      matrix:
-        environment: ["${{ needs.resolve_environment.outputs.deploy_env }}"]
-    environment:  ${{ matrix.environment }}
-    steps:
-    - name: checkout the code
-      uses: actions/checkout@v3
-      with:
-        submodules: recursive
-        fetch-depth: 2
-        ssh-key: "${{ secrets.GX_PRIVATE_SSH_KEY }}"
-    - name: fetch actions repo
-      uses: actions/checkout@v3
-      with:
-        repository: "ground-x/gx-gh-actions"
-        path: ./actions
-        ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
-        ref: ${{ secrets.REF }}
-    - name: generate release pr branch to master
-      uses: "./actions/common/deploy/release/pr"
-      with:
-        base: master
-        release: ${{ needs.resolve_environment.outputs.tag }}
-        pat: ${{ secrets.GH_PAT }}
+  # release_pr:
+  #   runs-on: ubuntu-22.04
+  #   needs: [ image_patch, resolve_environment ]
+  #   if: needs.resolve_environment.outputs.deploy_env == 'qa'
+  #   strategy:
+  #     matrix:
+  #       environment: ["${{ needs.resolve_environment.outputs.deploy_env }}"]
+  #   environment:  ${{ matrix.environment }}
+  #   steps:
+  #   - name: checkout the code
+  #     uses: actions/checkout@v3
+  #     with:
+  #       submodules: recursive
+  #       fetch-depth: 2
+  #       ssh-key: "${{ secrets.GX_PRIVATE_SSH_KEY }}"
+  #   - name: fetch actions repo
+  #     uses: actions/checkout@v3
+  #     with:
+  #       repository: "ground-x/gx-gh-actions"
+  #       path: ./actions
+  #       ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
+  #       ref: ${{ secrets.REF }}
+  #   - name: generate release pr branch to master
+  #     uses: "./actions/common/deploy/release/pr"
+  #     with:
+  #       base: master
+  #       release: ${{ needs.resolve_environment.outputs.tag }}
+  #       pat: ${{ secrets.GH_PAT }}
 
