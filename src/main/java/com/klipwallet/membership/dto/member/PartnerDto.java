@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Pattern;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.lang.NonNull;
 
 import com.klipwallet.membership.entity.Partner;
 
@@ -24,8 +25,8 @@ public class PartnerDto {
     }
 
     public record ApplyResult(
-            @NotBlank Integer id,
-            @NotBlank String name,
+            @NonNull Integer id,
+            @NonNull String name,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {}

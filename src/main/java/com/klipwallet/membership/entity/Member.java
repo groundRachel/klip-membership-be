@@ -48,8 +48,4 @@ public class Member {
     private LocalDateTime updatedAt;
     @LastModifiedBy
     private Integer updatedBy; // TODO KLDV-3069 check if the value is changed
-
-    public Member() {
-        this.id = null;
-    }
 }

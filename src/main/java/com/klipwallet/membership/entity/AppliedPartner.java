@@ -9,7 +9,7 @@ import lombok.ToString;
 
 @Entity
 @Getter
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Partner extends Member {
 
