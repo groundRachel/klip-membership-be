@@ -137,6 +137,7 @@ jobs:
         path: ./actions
         ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
         ref: ${{ secrets.REF }}
+  # helm-chart 배포 전까지 주석 처리
   #   - name: image patch
   #     id: var
   #     uses: "./actions/common/image-patch"
