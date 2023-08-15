@@ -79,7 +79,7 @@ public class SecurityConfig {
     }
 }
 
-/**
+/*
  * <pre>
  * Google Login
  * https://accounts.google.com/signin/oauth/consent
