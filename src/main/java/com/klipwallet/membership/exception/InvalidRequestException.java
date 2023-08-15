@@ -1,9 +1,5 @@
 package com.klipwallet.membership.exception;
 
-import lombok.Getter;
-
-import com.klipwallet.membership.entity.AuthenticatedUser;
-
 public class InvalidRequestException extends BaseMessageException {
 
     public InvalidRequestException() {

@@ -86,6 +86,7 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
         super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomId));
     }
 
+    @Getter
     @Schema(name = "ChatRoom.Status", description = "채팅방 상태", example = "activated")
     public enum Status implements Statusable {
         /**
@@ -113,10 +114,6 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
             return Statusable.fromDisplay(Status.class, display);
         }
 
-        public byte getCode() {
-            return this.code;
-        }
-
         @JsonValue
         @Override
         public String toDisplay() {
@@ -124,6 +121,7 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
         }
     }
 
+    @Getter
     @Schema(name = "ChatRoom.Source", description = "채팅방 소스", example = "klipDrops")
     public enum Source implements Statusable {
         /**
@@ -149,10 +147,6 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
         @Nullable
         public static Source fromDisplay(String display) {
             return Statusable.fromDisplay(Source.class, display);
-        }
-
-        public byte getCode() {
-            return this.code;
         }
 
         @JsonValue
