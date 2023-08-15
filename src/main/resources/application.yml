@@ -1,3 +1,7 @@
+# noinspection SpringBootApplicationYaml
+application:
+  version: ${_applicationVersion}  # from build.gradle.kts
+
 spring:
   data:
     redis:
@@ -17,7 +21,7 @@ spring:
     hibernate:
       ddl-auto: validate
   messages:
-    basename: errors
+    basename: classpath:message/errors
     fallback-to-system-locale: false
     use-code-as-default-message: true
   profiles:
@@ -26,10 +30,12 @@ spring:
 springdoc:
   api-docs:
     enabled: false
+  packages-to-scan:
+    - com.klipwallet.membership.controller
+    - com.klipwallet.membership.config
+    - com.klipwallet.membership.dto
+    - com.klipwallet.membership.entity
+  show-actuator: true
   swagger-ui:
     enabled: false
     path: /swagger-ui
-
-# noinspection SpringBootApplicationYaml
-application:
-  version: ${_applicationVersion}  # from build.gradle.kts

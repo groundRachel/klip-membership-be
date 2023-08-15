@@ -34,7 +34,7 @@ repositories {
 
 // Properties
 extra["springCloudVersion"] = "2022.0.3"
-extra["springdocVersion"] = "2.1.0"
+extra["springdocVersion"] = "2.2.0"
 extra["spockVersion"] = "2.3-groovy-4.0"
 extra["newrelicLogbackVersion"] = "2.0"
 

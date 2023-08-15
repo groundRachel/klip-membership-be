@@ -19,6 +19,7 @@ import lombok.ToString;
 import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.lang.Nullable;
 
+import com.klipwallet.membership.adaptor.jpa.ForJpa;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
 
 import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
@@ -66,6 +67,7 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
     @Column(insertable = false)
     private LocalDateTime updatedAt;
 
+    @ForJpa
     protected ChatRoom() {
     }
 

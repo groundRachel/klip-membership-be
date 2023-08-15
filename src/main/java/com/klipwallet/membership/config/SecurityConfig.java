@@ -18,6 +18,15 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 public class SecurityConfig {
+    public static final String OAUTH2_USER = "OAUTH2_USER";
+    public static final String PARTNER = "PARTNER";
+    public static final String ADMIN = "ADMIN";
+    public static final String SUPER_ADMIN = "SUPERADMIN";
+    public static final String ROLE_PREFIX = "ROLE_";
+    public static final String ROLE_ADMIN = ROLE_PREFIX + ADMIN;
+    public static final String ROLE_SUPER_ADMIN = ROLE_PREFIX + SUPER_ADMIN;
+    public static final String ROLE_PARTNER = ROLE_PREFIX + PARTNER;
+
     /**
      * {@code local} 환경에서 {@code /h2-console} 접근을 위한 보안 약화 설정
      */
@@ -44,19 +53,24 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * authorizeHttpRequests 설정 시 주의해야할 사항이 있음.
+     * <p>requestMatchers 순서대로 권한검사를 하니 세사한 권한이 먼저 정의되어야함.</p>
+     */
     @SuppressWarnings("Convert2MethodRef")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
-                    a -> a.requestMatchers(antMatcher("/tool/faq/*"),
-                                           antMatcher("/tool/members/me")).permitAll()
-                          .requestMatchers(antMatcher("/tool/partners/apply")).hasAuthority("OAUTH2_USER")
-                          .requestMatchers(antMatcher("/tool/**")).hasRole("PARTNER")
+                    a -> a.requestMatchers(antMatcher("/tool/v1/faq/*"),
+                                           antMatcher("/tool/v1/members/me")).permitAll()
+                          .requestMatchers(antMatcher("/tool/v1/partners/apply")).hasAuthority(OAUTH2_USER)
+                          .requestMatchers(antMatcher("/tool/**")).hasRole(PARTNER)
                           .requestMatchers(antMatcher("/error")).permitAll()
-                          .requestMatchers(antMatcher("/admin/**")).hasRole("ADMIN")
-                          .requestMatchers(antMatcher("/swagger-ui/**"), antMatcher("/v3/api-docs/**")).permitAll()
-                          .requestMatchers(antMatcher("/oauth")).hasAuthority("OAUTH2_USER")
+                          .requestMatchers(antMatcher("/admin/v1/**")).hasRole(ADMIN)
+                          .requestMatchers(antMatcher("/swagger-ui/**"),
+                                           antMatcher("/v3/api-docs/**")).permitAll()   // for swagger
+                          .requestMatchers(antMatcher("/oauth")).hasAuthority(OAUTH2_USER)
                           .requestMatchers(antMatcher("/user"),
                                            antMatcher("/usera"),
                                            antMatcher("/usero")).permitAll()

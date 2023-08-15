@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import jakarta.annotation.Nonnull;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +15,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor
 @ToString
 public class KlipMembershipOAuth2User implements AuthenticatedUser {
     private final MemberId memberId;
