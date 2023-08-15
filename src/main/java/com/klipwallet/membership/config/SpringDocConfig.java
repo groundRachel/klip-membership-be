@@ -38,20 +38,29 @@ public class SpringDocConfig {
     }
 
     @Bean
-    public GroupedOpenApi manageApi() {
+    public GroupedOpenApi toolApi() {
         return GroupedOpenApi.builder()
-                             .group("1.klip-membership-tool.manage")
-                             .pathsToMatch("/manage/**")
-                             .displayName("1. 파트너서와 관리자를 위한 Tool API")
+                             .group("1. klip-membership-tool.tool")
+                             .pathsToMatch("/tool/**")
+                             .displayName("1. 파트너를 위한 Tool API")
                              .build();
     }
 
     @Bean
-    public GroupedOpenApi internalApi() {
+    public GroupedOpenApi adminApi() {
         return GroupedOpenApi.builder()
-                             .group("2.klip-membership-tool.internal")
-                             .pathsToMatch("/internal/**")
-                             .displayName("2. 사내용 API")
+                             .group("2. klip-membership-tool.admin")
+                             .pathsToMatch("/admin/**")
+                             .displayName("2. 관리자를 위한 Admin API")
+                             .build();
+    }
+
+    @Bean
+    public GroupedOpenApi externalApi() {
+        return GroupedOpenApi.builder()
+                             .group("3. klip-membership-tool.external")
+                             .pathsToMatch("/open/**", "/internal/**")
+                             .displayName("3. 외부 제공 API")
                              .build();
     }
 }

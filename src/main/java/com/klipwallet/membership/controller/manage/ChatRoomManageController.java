@@ -29,9 +29,9 @@ import com.klipwallet.membership.service.ChatRoomService;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Tag(name = "Manage.ChatRoom", description = "Internal 채팅방 API")
+@Tag(name = "Tool.ChatRoom", description = "Tool 채팅방 API")
 @RestController
-@RequestMapping("/manage/chat-rooms")
+@RequestMapping("/tool/v1/chat-rooms")
 @RequiredArgsConstructor
 public class ChatRoomManageController {
     private final ChatRoomService chatRoomService;
