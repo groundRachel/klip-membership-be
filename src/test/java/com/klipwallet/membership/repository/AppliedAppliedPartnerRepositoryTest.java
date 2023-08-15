@@ -10,15 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
-import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.Partner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class MemberRepositoryTest {
+class PartnerRepositoryTest {
     @Autowired
-    MemberRepository memberRepository;
+    PartnerRepository partnerRepository;
 
     @PersistenceContext
     EntityManager em;
@@ -26,15 +26,16 @@ class MemberRepositoryTest {
     @WithAuthenticatedUser(memberId = 2)
     @Test
     void insertAndSelect() {
-        Member entity = new Member();
-        Member saved = memberRepository.save(entity);
-        memberRepository.flush();
+        Partner entity = new Partner();
+        Partner saved = partnerRepository.save(entity);
+        partnerRepository.flush();
 
         em.flush();
         em.clear();
         assertThat(saved.getMemberId()).isNotNull();
 
-        Member findUser = memberRepository.findById(saved.getId()).orElse(null);
+        Partner findUser = partnerRepository.findById(saved.getId())
+                                            .orElse(null);
         assertThat(findUser).isNotNull();
         assertThat(findUser.getMemberId()).isNotNull();
         assertThat(findUser.getCreatedAt()).isBefore(LocalDateTime.now());
