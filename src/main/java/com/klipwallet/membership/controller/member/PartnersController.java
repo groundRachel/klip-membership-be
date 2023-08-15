@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,6 @@ public class PartnersController {
             @ApiResponse(responseCode = "403", description = "구글 연동 안됨",
                          content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    //    @Secured("OAUTH2_USER") // TODO KLDV-3077 check role
     @PostMapping("/apply")
     @ResponseStatus(CREATED)
     public PartnerDto.ApplyResult apply(@Valid @RequestBody PartnerDto.Apply body) {

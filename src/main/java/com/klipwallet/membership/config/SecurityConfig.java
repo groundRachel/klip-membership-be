@@ -49,12 +49,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
-                    a -> a.requestMatchers(antMatcher("/tool/**")).hasRole("PARTNER")
-                          .requestMatchers(antMatcher("/tool/faq/*"), antMatcher("/tool/members/me")).permitAll()
+                    a -> a.requestMatchers(antMatcher("/tool/faq/*"),
+                                           antMatcher("/tool/members/me")).permitAll()
                           .requestMatchers(antMatcher("/tool/partners/apply")).hasAuthority("OAUTH2_USER")
-                          .requestMatchers(antMatcher("/swagger-ui/**"), antMatcher("/v3/api-docs/**")).permitAll()
+                          .requestMatchers(antMatcher("/tool/**")).hasRole("PARTNER")
                           .requestMatchers(antMatcher("/error")).permitAll()
                           .requestMatchers(antMatcher("/admin/**")).hasRole("ADMIN")
+                          .requestMatchers(antMatcher("/swagger-ui/**"), antMatcher("/v3/api-docs/**")).permitAll()
                           .requestMatchers(antMatcher("/oauth")).hasAuthority("OAUTH2_USER")
                           .requestMatchers(antMatcher("/user"),
                                            antMatcher("/usera"),
