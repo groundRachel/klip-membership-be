@@ -1,6 +1,7 @@
 package com.klipwallet.membership.exception;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.util.StringUtils;
 
 /**
@@ -10,27 +11,39 @@ import org.springframework.util.StringUtils;
  * {@code /src/resources/message/errors.xml} 에 메시지 코드가 매칭되어야한다.
  * </p>
  */
+@Getter
+@ToString
 public abstract class BaseMessageException extends BaseException {
-    @Getter
     private final String code;
+    private final Object[] args;
 
     public BaseMessageException(String code) {
         this.code = code;
+        this.args = null;
     }
 
     public BaseMessageException(String code, Throwable cause) {
         super(cause);
         this.code = requireVerifiedCode(code);
+        this.args = null;
     }
 
     public BaseMessageException(String code, String message) {
         super(message);
         this.code = requireVerifiedCode(code);
+        this.args = null;
     }
 
     public BaseMessageException(String code, String message, Throwable cause) {
         super(message, cause);
         this.code = requireVerifiedCode(code);
+        this.args = null;
+    }
+
+    public BaseMessageException(String code, Object[] args) {
+        super(code);
+        this.code = code;
+        this.args = args;
     }
 
     private String requireVerifiedCode(String code) {

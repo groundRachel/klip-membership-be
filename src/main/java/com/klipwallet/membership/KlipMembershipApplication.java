@@ -23,6 +23,9 @@ public class KlipMembershipApplication {
     /**
      * {@link org.springframework.data.annotation.CreatedBy}, {@link org.springframework.data.annotation.LastModifiedBy} 를 위한 Bean
      * {@link KlipMembershipApplication} 에 위치해야함.
+     * <p>
+     * 하지만 해당 컴포넌트를 이용할지 고민이 필요함. 너무 Spring-Data Magic 에 의존하는 것 같아서 제거하는 것이 더 좋지 않을까 싶음.
+     * </p>
      */
     @Bean
     MemberIdAuditorProvider memberIdAuditorProvider() {

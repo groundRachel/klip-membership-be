@@ -1,7 +1,5 @@
 package com.klipwallet.membership.exception;
 
-import com.klipwallet.membership.entity.AuthenticatedUser;
-
 /**
  * <b>리소스 Not Found 예외. {@code error.not-found}</b>
  * <p>
@@ -9,7 +7,16 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
  * </p>
  */
 public class NotFoundException extends BaseMessageException {
-    public NotFoundException(String message) {
-        super(message);
+
+    public NotFoundException() {
+        super("error.not-found");
+    }
+
+    public NotFoundException(String code) {
+        super(code);
+    }
+
+    public NotFoundException(String code, Object... args) {
+        super(code, args);
     }
 }
