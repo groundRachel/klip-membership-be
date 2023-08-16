@@ -1,3 +1,9 @@
+application:
+  kakao-api:
+    admin-key: 2e5db1d18c9deb08b6a8011850b40446
+    domain-id: 139
+    openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
+
 logging:
   level:
     sql: debug
