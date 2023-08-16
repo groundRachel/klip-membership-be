@@ -38,6 +38,23 @@ public class NoticeService {
     }
 
     /**
+     * 공지사항 1건 상세조회
+     *
+     * @param noticeId 조회할 공지사항 ID
+     * @return 공지사항 상세 DTO
+     */
+    @Transactional(readOnly = true)
+    public NoticeDto.Detail getDetail(Integer noticeId) {
+        Notice notice = tryGetNotice(noticeId);
+        return noticeAssembler.toDetail(notice);
+    }
+
+    private Notice tryGetNotice(Integer noticeId) {
+        return noticeRepository.findById(noticeId)
+                               .orElseThrow(() -> new NoticeNotFoundException(noticeId));
+    }
+
+    /**
      * 공지사항 수정
      * <p>
      * 수정 시 메인 노출을 활성화 시킨 설정이 있디면 {@link #subscribeMainNoticeActivated(com.klipwallet.membership.entity.MainNoticeActivated)}를 통해서
@@ -85,9 +102,4 @@ public class NoticeService {
         }
     }
 
-
-    private Notice tryGetNotice(Integer noticeId) {
-        return noticeRepository.findById(noticeId)
-                               .orElseThrow(() -> new NoticeNotFoundException(noticeId));
-    }
 }
