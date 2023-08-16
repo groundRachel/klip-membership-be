@@ -28,7 +28,7 @@ public class ChatRoomAssembler {
     }
 
     public ChatRoomSummary toSummary(ChatRoom entity) {
-        return new ChatRoomSummary(entity.getId(), entity.getOpenChatRoomSummary().getId(), entity.getTitle(), entity.getCreatorId(),
+        return new ChatRoomSummary(entity.getId(), entity.getOpenChatRoomId(), entity.getTitle(), entity.getCreatorId(),
                                    dtAssembler.toOffsetDateTime(entity.getCreatedAt()));
     }
 }
