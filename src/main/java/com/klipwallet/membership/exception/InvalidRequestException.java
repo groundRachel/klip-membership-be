@@ -1,16 +1,8 @@
 package com.klipwallet.membership.exception;
 
-public class InvalidRequestException extends BaseMessageException {
+public class InvalidRequestException extends BaseCodeException {
 
     public InvalidRequestException() {
-        super("error.invalid");
-    }
-
-    public InvalidRequestException(String code) {
-        super(code);
-    }
-
-    public InvalidRequestException(String code, Object... args) {
-        super(code, args);
+        super(ErrorCode.INVALID_REQUEST);
     }
 }

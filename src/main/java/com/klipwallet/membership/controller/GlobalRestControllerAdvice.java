@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.klipwallet.membership.exception.BaseMessageException;
+import com.klipwallet.membership.exception.BaseCodeException;
+import com.klipwallet.membership.exception.ErrorCode;
 import com.klipwallet.membership.exception.NotFoundException;
 
 import static org.springframework.http.HttpStatus.*;
@@ -26,16 +27,18 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 @Slf4j
 public class GlobalRestControllerAdvice {
+    public static final String CODE = "code";
+    public static final String ERR = "err";
     private final MessageSource messageSource;
 
-    @Nonnull
-    public static ProblemDetail toProblemDetail(HttpStatus status, Exception cause, String code, String message) {
+
+    public static ProblemDetail toProblemDetail(HttpStatus status, BaseCodeException cause, String message) {
         ProblemDetail result = ProblemDetail.forStatusAndDetail(status, message);
         String typeName = cause.getClass().getSimpleName();
         result.setType(UriComponentsBuilder.fromHttpUrl("https://membership.klipwallet.com/errors/").path(typeName).build().toUri());
         result.setTitle(typeName);
-        result.setProperty("code", code);
-        result.setProperty("err", message);
+        result.setProperty(CODE, cause.getErrorCode().getCode());
+        result.setProperty(ERR, message);
         return result;
     }
 
@@ -46,9 +49,9 @@ public class GlobalRestControllerAdvice {
         ProblemDetail result = ProblemDetail.forStatusAndDetail(UNAUTHORIZED, error.getDescription());
         result.setType(URI.create(error.getUri()));
         result.setTitle(typeName);
-        result.setProperty("code", 401000);
+        result.setProperty(CODE, ErrorCode.UNAUTHENTICATED);
         result.setProperty("providerCode", error.getErrorCode());
-        result.setProperty("err", error.getDescription());
+        result.setProperty(ERR, error.getDescription());
         return result;
     }
 
@@ -56,15 +59,17 @@ public class GlobalRestControllerAdvice {
     public static ProblemDetail toProblemDetail(@Nonnull Exception cause) {
         String typeName = cause.getClass().getSimpleName();
         ProblemDetail result = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, cause.getMessage());
-        result.setType(UriComponentsBuilder.fromHttpUrl("https://membership.klipwallet.com/errors/50000").build().toUri());
+        result.setType(UriComponentsBuilder.fromHttpUrl("https://membership.klipwallet.com/errors")
+                                           .path(String.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.getCode())).build().toUri());
         result.setTitle(typeName);
-        result.setProperty("code", "500000");
-        result.setProperty("err", cause.getMessage());
+        result.setProperty(CODE, ErrorCode.INTERNAL_SERVER_ERROR);
+        result.setProperty(ERR, cause.getMessage());
         return result;
     }
 
     @Nonnull
-    private String tryGetMessage(@Nonnull BaseMessageException cause, @Nonnull String code) {
+    private String tryGetMessage(@Nonnull BaseCodeException cause) {
+        String code = cause.getErrorCode().toMessageCode();
         try {
             String message = messageSource.getMessage(code, cause.getArgs(), Locale.getDefault());
             if (message.startsWith("error.")) {
@@ -80,8 +85,7 @@ public class GlobalRestControllerAdvice {
     @Nonnull
     @ExceptionHandler(NotFoundException.class)
     public ProblemDetail handleNotFoundException(NotFoundException cause) {
-        String code = cause.getCode();
-        String err = tryGetMessage(cause, code);
-        return toProblemDetail(NOT_FOUND, cause, code, err);
+        String err = tryGetMessage(cause);
+        return toProblemDetail(NOT_FOUND, cause, err);
     }
 }
