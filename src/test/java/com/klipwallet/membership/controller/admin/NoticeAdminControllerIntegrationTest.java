@@ -21,8 +21,7 @@ import com.klipwallet.membership.repository.NoticeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -95,6 +94,37 @@ class NoticeAdminControllerIntegrationTest {
         // TODO @Jordan 적절한 BadRequest 예외 처리(DefaultHandlerExceptionResolver, MethodArgumentNotValidException)
         //           .andExpect(jsonPath("$.code").value(1024))
         //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 공지사항 상세 조회 > 200")
+    @Test
+    void detail(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer noticeId = lastNoticeId;
+        mvc.perform(get("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(noticeId))
+           .andExpect(jsonPath("$.title").value("클립 멤버십 툴이 공식 오픈하였습니다."))
+           .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>"))
+           .andExpect(jsonPath("$.main").value(false))
+           .andExpect(jsonPath("$.createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.creator.id").value(23))
+           .andExpect(jsonPath("$.creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.updater.id").value(23))
+           .andExpect(jsonPath("$.updater.name").isNotEmpty());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 공지사항 상세 조회: 공지사항이 존재하지 않음 > 404")
+    @Test
+    void detailNotExists(@Autowired MockMvc mvc) throws Exception {
+        Integer noticeId = -23;
+        mvc.perform(get("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value("error.notice.not-found.1"))
+           .andExpect(jsonPath("$.err").value("공지사항을 찾을 수 없습니다. ID: %d".formatted(noticeId)));
     }
 
     @WithAdminUser(memberId = 24)
@@ -202,7 +232,7 @@ class NoticeAdminControllerIntegrationTest {
     @WithAuthenticatedUser(authorities = "ROLE_ADMIN")
     @DisplayName("관리자 공지사항 수정: 존재하지 않는 공지사항 수정 시도 > 404")
     @Test
-    void updateNotExistsNotice(@Autowired MockMvc mvc) throws Exception {
+    void updateNotExists(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
         Integer noticeId = -2;
         String body = """
