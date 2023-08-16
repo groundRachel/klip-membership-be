@@ -12,7 +12,7 @@ public record ChatRoomCreate(
         String title,
         String coverImage,
         Address contractAddress) {
-    public ChatRoom toChatRoom(OpenChatRoomSummary openChatRoomId, Integer creatorId) {
+    public ChatRoom toChatRoom(OpenChatRoomId openChatRoomId, Integer creatorId) {
         return new ChatRoom(openChatRoomId, title, coverImage, contractAddress, creatorId);
     }
 }
