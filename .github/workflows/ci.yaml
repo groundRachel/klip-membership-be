@@ -36,7 +36,30 @@ jobs:
       with:
         current_branch: ${{ github.ref_name }}
         type: ${{ github.ref_type }}
-
+  test:
+    runs-on: ubuntu-22.04  
+    needs: [ resolve_environment ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: fetch actions repo
+      uses: actions/checkout@v3
+      with:
+        repository: "ground-x/gx-gh-actions"
+        path: ./actions
+        ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
+        ref: ${{ secrets.REF }}
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu' 
+        java-version: '17'
+    - name: Run Gradle test
+      run: ./gradlew test
+    - name: Upload test report
+      if: always() 
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-report
+        path: ./build/reports/tests/test/index.html
 
   build_image:
     runs-on: ubuntu-22.04

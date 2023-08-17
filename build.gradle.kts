@@ -16,6 +16,19 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
+jib {
+    from {
+        image = "eclipse-temurin:17-jdk-alpine"
+    }
+    to {
+        image = System.getenv("ECR_REGISTRY") + "/" + System.getenv("ECR_REPOSITORY")
+        tags = setOf(System.getenv("IMAGE_TAG") ?: "default_tag")
+    }
+    container {
+        jvmFlags = listOf("-Xms256m", "-Xmx256m")
+    }
+}
+
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
