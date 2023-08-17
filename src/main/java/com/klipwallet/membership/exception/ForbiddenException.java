@@ -10,15 +10,15 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
  * 일반적으로 {@literal http}로 응답시 {@code Status 403}을 반환한다.
  * </p>
  */
-public class ForbiddenException extends BaseMessageException {
+@Getter
+public class ForbiddenException extends BaseCodeException {
     /**
      * 권한이 부족한 User 객체.
      */
-    @Getter
     private final AuthenticatedUser user;
 
     public ForbiddenException(AuthenticatedUser user) {
-        super("error.forbidden");
+        super(ErrorCode.FORBIDDEN);
         this.user = user;
     }
 }

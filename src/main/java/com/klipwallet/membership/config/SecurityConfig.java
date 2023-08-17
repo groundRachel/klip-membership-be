@@ -8,6 +8,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2UserService;
 
@@ -79,9 +81,15 @@ public class SecurityConfig {
             .anonymous(a -> a.disable())
             .httpBasic(h -> h.disable())
             .formLogin(f -> f.disable())
-            .rememberMe(r -> r.disable());
+            .rememberMe(r -> r.disable())
+            .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()));
 
         return http.build();
+    }
+
+    private AccessDeniedHandler accessDeniedHandler() {
+        // TODO @Jordan Impl
+        return new AccessDeniedHandlerImpl();
     }
 
     /**

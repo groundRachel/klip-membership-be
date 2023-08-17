@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,9 +49,21 @@ public class NoticeAdminController {
 
     @Operation(summary = "공지사항 수정")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "작성 성공"),
+            @ApiResponse(responseCode = "200", description = "공지사항 수정 성공"),
+            @ApiResponse(responseCode = "403", description = "공지사항 접근 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 공지사항", content = @Content(schema = @Schema(ref = "Error404")))
+    })
+    @GetMapping("/{noticeId}")
+    public NoticeDto.Detail detail(
+            @Parameter(description = "공지사항 id", required = true, example = "2") @PathVariable Integer noticeId) {
+        return noticeService.getDetail(noticeId);
+    }
+
+    @Operation(summary = "공지사항 수정")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공지사항 수정 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "403", description = "공지사항 작성 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
+            @ApiResponse(responseCode = "403", description = "공지사항 수정 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 공지사항", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PutMapping("/{noticeId}")

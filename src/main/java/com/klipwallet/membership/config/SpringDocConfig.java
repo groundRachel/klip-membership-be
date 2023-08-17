@@ -68,7 +68,7 @@ public class SpringDocConfig {
 
     @SuppressWarnings("rawtypes")
     private Schema problemDetail400Schema() {
-        var pdJson = toJson(toProblemDetail(BAD_REQUEST, new InvalidRequestException(), "400000", "공지사항을 찾을 수 없습니다. ID: 3322"));
+        var pdJson = toJson(toProblemDetail(BAD_REQUEST, new InvalidRequestException(), "공지사항을 찾을 수 없습니다. ID: 3322"));
         return new Schema<>().type("object").example(pdJson);
     }
 
@@ -81,16 +81,18 @@ public class SpringDocConfig {
 
     @SuppressWarnings("rawtypes")
     private Schema problemDetail403Schema() {
-        var pdJson = toJson(toProblemDetail(FORBIDDEN, new ForbiddenException(new KlipMembershipOAuth2User(
-                                                    new MemberId(11), emptyMap(), AuthorityUtils.createAuthorityList(ROLE_PARTNER),
-                                                    "정조던", "jordan.jung@groundx.xyz")),
-                                            "403000", "권한이 부족합니다. ROLE_PARTNER"));
+        var pdJson = toJson(toProblemDetail(FORBIDDEN, new ForbiddenException(oauth2User()), "권한이 부족합니다. ROLE_PARTNER"));
         return new Schema<>().type("object").example(pdJson);
+    }
+
+    private KlipMembershipOAuth2User oauth2User() {
+        return new KlipMembershipOAuth2User(new MemberId(11), emptyMap(), AuthorityUtils.createAuthorityList(ROLE_PARTNER), "정조던",
+                                            "jordan.jung@groundx.xyz");
     }
 
     @SuppressWarnings("rawtypes")
     private Schema problemDetail404Schema() {
-        var pdJson = toJson(toProblemDetail(NOT_FOUND, new NoticeNotFoundException(3322), "404000", "공지사항을 찾을 수 없습니다. ID: 3322"));
+        var pdJson = toJson(toProblemDetail(NOT_FOUND, new NoticeNotFoundException(3322), "공지사항을 찾을 수 없습니다. ID: 3322"));
         return new Schema<>().type("object").example(pdJson);
     }
 

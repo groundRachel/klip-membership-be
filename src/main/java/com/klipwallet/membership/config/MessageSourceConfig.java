@@ -2,6 +2,9 @@ package com.klipwallet.membership.config;
 
 import java.time.Duration;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import org.springframework.boot.autoconfigure.context.MessageSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -12,6 +15,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.util.StringUtils;
+
+import com.klipwallet.membership.exception.BaseException;
+import com.klipwallet.membership.exception.ErrorCode;
+
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * 기본 제공 {@link org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration}에 의존하는 것이 아니라
@@ -29,6 +38,8 @@ import org.springframework.util.StringUtils;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties
 public class MessageSourceConfig {
+    public static final Locale DEFAULT_LOCALE = Locale.KOREAN;
+
     @Bean
     @ConfigurationProperties(prefix = "spring.messages")
     public MessageSourceProperties messageSourceProperties() {
@@ -45,7 +56,7 @@ public class MessageSourceConfig {
         if (properties.getEncoding() != null) {
             messageSource.setDefaultEncoding(properties.getEncoding().name());
         }
-        messageSource.setDefaultLocale(Locale.KOREAN);  // !!
+        messageSource.setDefaultLocale(DEFAULT_LOCALE);  // !!
         messageSource.setFallbackToSystemLocale(properties.isFallbackToSystemLocale());
         Duration cacheDuration = properties.getCacheDuration();
         if (cacheDuration != null) {
@@ -54,5 +65,45 @@ public class MessageSourceConfig {
         messageSource.setAlwaysUseMessageFormat(properties.isAlwaysUseMessageFormat());
         messageSource.setUseCodeAsDefaultMessage(properties.isUseCodeAsDefaultMessage());
         return messageSource;
+    }
+
+    /**
+     * 오류 코드 중복, 오류 메세지 존재 여부 확인
+     */
+    public static class ErrorCodeVerifier {
+        ErrorCodeVerifier(MessageSource messageSource) {
+            ErrorCode[] errorCodes = ErrorCode.values();
+            verifyDuplicatedErrorCode(errorCodes);
+            verifyCodeContainsMessageSource(messageSource, errorCodes);
+        }
+
+        public static void verify(MessageSource messageSource) {
+            new ErrorCodeVerifier(messageSource);
+        }
+
+        private void verifyDuplicatedErrorCode(ErrorCode[] errorCodes) {
+            Map<Integer, Long> codeCountMap = Stream.of(errorCodes)
+                                                    .map(ErrorCode::getCode)
+                                                    .collect(groupingBy(c -> c, counting()));
+            for (Entry<Integer, Long> each : codeCountMap.entrySet()) {
+                if (each.getValue() > 1L) {
+                    throw new BaseException("Duplicated errorCode: %s".formatted(each.getKey()));
+                }
+            }
+        }
+
+        private void verifyCodeContainsMessageSource(MessageSource messageSource, ErrorCode[] errorCodes) {
+            for (ErrorCode errorCode : errorCodes) {
+                String code = errorCode.toMessageCode();
+                String message = messageSource.getMessage(code, null, DEFAULT_LOCALE);
+                if (notExistCode(code, message)) {
+                    throw new BaseException("Not exists code: %s in messageSource".formatted(code));
+                }
+            }
+        }
+
+        private boolean notExistCode(String code, String message) {
+            return code.equals(message);
+        }
     }
 }
