@@ -11,6 +11,7 @@ import lombok.ToString;
  * </p>
  * @see ErrorCode#toMessageCode()
  */
+@SuppressWarnings("unused")
 @Getter
 @ToString
 public abstract class BaseCodeException extends BaseException {

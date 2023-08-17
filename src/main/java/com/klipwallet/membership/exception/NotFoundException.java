@@ -6,8 +6,8 @@ package com.klipwallet.membership.exception;
  * 일반적으로 {@literal http}로 응답시 {@code Status 404}을 반환한다.
  * </p>
  */
+@SuppressWarnings("unused")
 public class NotFoundException extends BaseCodeException {
-
     public NotFoundException() {
         super(ErrorCode.NOT_FOUND);
     }

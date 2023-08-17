@@ -118,7 +118,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     private String tryGetMessage(@Nonnull ErrorCode errorCode, @Nullable Object[] args) {
         String code = errorCode.toMessageCode();
         try {
-            String message = messageSource().getMessage(code, null, LocaleContextHolder.getLocale());
+            String message = messageSource().getMessage(code, args, LocaleContextHolder.getLocale());
             if (message.startsWith("problemDetail.code")) {
                 log.warn("[ProblemDetail] Error code does not exist. {}", code);
             }
