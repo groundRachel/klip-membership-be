@@ -54,10 +54,6 @@ public class PartnerDto {
             String declineReason
     ) {}
 
-    //        public enum AcceptRequestStatus {
-    //            ACCEPT, DECLINE
-    //        }
-
     public record AcceptResult(
             @NonNull String name
     ) {}
