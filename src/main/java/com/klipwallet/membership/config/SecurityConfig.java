@@ -68,8 +68,9 @@ public class SecurityConfig {
                                            antMatcher("/tool/v1/members/me")).permitAll()
                           .requestMatchers(antMatcher("/tool/v1/partners/apply")).hasAuthority(OAUTH2_USER)
                           .requestMatchers(antMatcher("/tool/**")).hasRole(PARTNER)
-                          .requestMatchers(antMatcher("/error")).permitAll()
                           .requestMatchers(antMatcher("/admin/v1/**")).hasRole(ADMIN)
+                          .requestMatchers(antMatcher("/error")).permitAll()
+                          .requestMatchers(antMatcher("/actuator/**")).permitAll()      // actuator
                           .requestMatchers(antMatcher("/swagger-ui/**"),
                                            antMatcher("/v3/api-docs/**")).permitAll()   // for swagger
                           .requestMatchers(antMatcher("/oauth")).hasAuthority(OAUTH2_USER)
