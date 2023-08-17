@@ -2,6 +2,20 @@
 application:
   version: ${_applicationVersion}  # from build.gradle.kts
 
+management:
+  endpoint:
+    health:
+      group:
+        readiness:
+          include: readinessState
+        liveness:
+          include: livenessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
 spring:
   data:
     redis:
@@ -23,7 +37,6 @@ spring:
   messages:
     basename: classpath:message/errors
     fallback-to-system-locale: false
-    use-code-as-default-message: true
   profiles:
     active: local         # default profile
 

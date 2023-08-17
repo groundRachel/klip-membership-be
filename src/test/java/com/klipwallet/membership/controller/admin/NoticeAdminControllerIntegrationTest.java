@@ -71,10 +71,9 @@ class NoticeAdminControllerIntegrationTest {
         mvc.perform(post("/admin/v1/notices")
                             .contentType(APPLICATION_JSON)
                             .content(body))
-           .andExpect(status().isForbidden());
-        // TODO @Jordan 적절한 Security 예외 처리
-        //           .andExpect(jsonPath("$.code").value(1024))
-        //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
+           .andExpect(status().isForbidden())
+           .andExpect(jsonPath("$.code").value(403_000))
+           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
     }
 
     @WithAdminUser
@@ -91,7 +90,7 @@ class NoticeAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isBadRequest());
-        // TODO @Jordan 적절한 BadRequest 예외 처리(DefaultHandlerExceptionResolver, MethodArgumentNotValidException)
+        // TODO @Jordan 적절한 BadRequest 예외 처리(MethodArgumentNotValidException on DefaultHandlerExceptionResolver)
         //           .andExpect(jsonPath("$.code").value(1024))
         //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
     }
@@ -123,8 +122,19 @@ class NoticeAdminControllerIntegrationTest {
         Integer noticeId = -23;
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
            .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value("error.notice.not-found.1"))
+           .andExpect(jsonPath("$.code").value(404_001))
            .andExpect(jsonPath("$.err").value("공지사항을 찾을 수 없습니다. ID: %d".formatted(noticeId)));
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 공지사항 상세 조회: String 형 공지 아이디 > 400")
+    @Test
+    void detailInvalidNoticeId(@Autowired MockMvc mvc) throws Exception {
+        String noticeId = "notice_23";
+        mvc.perform(get("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value(400_000))
+           .andExpect(jsonPath("$.err").value("Failed to convert 'noticeId' with value: '%s'".formatted(noticeId)));
     }
 
     @WithAdminUser(memberId = 24)
@@ -245,7 +255,7 @@ class NoticeAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value("error.notice.not-found.1"))
+           .andExpect(jsonPath("$.code").value(404_001))
            .andExpect(jsonPath("$.err").value("공지사항을 찾을 수 없습니다. ID: %d".formatted(noticeId)));
     }
 }

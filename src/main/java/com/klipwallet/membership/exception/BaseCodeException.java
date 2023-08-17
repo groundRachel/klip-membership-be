@@ -15,34 +15,33 @@ import lombok.ToString;
 @ToString
 public abstract class BaseCodeException extends BaseException {
     private final ErrorCode errorCode;
-    private final Object[] args;
-
+    private final Object[] errorArgs;
     public BaseCodeException(ErrorCode errorCode) {
         this.errorCode = errorCode;
-        this.args = null;
+        this.errorArgs = null;
     }
 
     public BaseCodeException(ErrorCode errorCode, Throwable cause) {
         super(cause);
         this.errorCode = errorCode;
-        this.args = null;
+        this.errorArgs = null;
     }
 
     public BaseCodeException(ErrorCode errorCode, String message) {
         super(message);
         this.errorCode = errorCode;
-        this.args = null;
+        this.errorArgs = null;
     }
 
     public BaseCodeException(ErrorCode errorCode, String message, Throwable cause) {
         super(message, cause);
         this.errorCode = errorCode;
-        this.args = null;
+        this.errorArgs = null;
     }
 
-    public BaseCodeException(ErrorCode errorCode, Object[] args) {
+    public BaseCodeException(ErrorCode errorCode, Object[] errorArgs) {
         super(String.valueOf(errorCode));
         this.errorCode = errorCode;
-        this.args = args;
+        this.errorArgs = errorArgs;
     }
 }

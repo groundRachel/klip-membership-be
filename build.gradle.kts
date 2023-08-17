@@ -57,11 +57,14 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
     // Newrelic
     implementation("com.newrelic.logging:logback:${property("newrelicLogbackVersion")}")
+
+//    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok:1.18.28")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
-//    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
 
-    compileOnly("org.projectlombok:lombok")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")    // Fix https://stackoverflow.com/questions/53326271/spring-nullable-annotation-generates-unknown-enum-constant-warning
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -71,7 +74,6 @@ dependencies {
     runtimeOnly("io.micrometer:micrometer-registry-new-relic")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("com.querydsl:querydsl-apt::jakarta")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")        // For querydsl-apt::jakarta
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")      // For querydsl-apt::jakarta

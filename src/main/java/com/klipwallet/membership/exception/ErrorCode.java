@@ -1,6 +1,11 @@
 package com.klipwallet.membership.exception;
 
+import java.util.stream.Stream;
+
+import jakarta.annotation.Nullable;
+
 import lombok.Getter;
+import org.springframework.http.HttpStatusCode;
 
 /**
  * 오류 코드 모음
@@ -22,11 +27,20 @@ public enum ErrorCode {
         this.code = code;
     }
 
+    @Nullable
+    public static ErrorCode fromStatusCode(HttpStatusCode statusCode) {
+        int candidateCode = statusCode.value() * 1000;
+        return Stream.of(values())
+                     .filter(c -> c.code == candidateCode)
+                     .findFirst()
+                     .orElse(null);
+    }
+
     /**
      * For {@link org.springframework.context.MessageSource}
      */
     public String toMessageCode() {
-        return "error.%s".formatted(code);
+        return "problemDetail.code.%s".formatted(code);
     }
 }
 
