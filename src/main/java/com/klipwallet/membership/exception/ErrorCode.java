@@ -19,7 +19,8 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500_000),
     UNKNOWN(500_999),
 
-    NOTICE_NOT_FOUND(404_001);
+    NOTICE_NOT_FOUND(404_001),
+    FAQ_NOT_FOUND(404_003);
 
     final int code;
 
