@@ -16,6 +16,7 @@ import com.klipwallet.membership.entity.AcceptedPartner;
 import com.klipwallet.membership.entity.AppliedPartner;
 import com.klipwallet.membership.entity.AppliedPartner.Status;
 import com.klipwallet.membership.exception.member.PartnerApplicationAlreadyProcessedException;
+import com.klipwallet.membership.exception.member.PartnerApplicationCannotRollbackToAppliedException;
 import com.klipwallet.membership.exception.member.PartnerNotFoundException;
 import com.klipwallet.membership.repository.AcceptedPartnerRepository;
 import com.klipwallet.membership.repository.AppliedPartnerRepository;
@@ -65,7 +66,7 @@ public class PartnerService {
         }
 
         switch (body.accept()) {
-            case APPLIED -> throw new Exception();
+            case APPLIED -> throw new PartnerApplicationCannotRollbackToAppliedException(appliedPartner);
             case ACCEPTED -> {
                 setAppliedPartnerStatus(appliedPartner, Status.ACCEPTED, "");
                 AcceptedPartner acceptedPartner = appliedPartner.toAcceptedPartner();

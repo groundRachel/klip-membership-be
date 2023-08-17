@@ -42,6 +42,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.klipwallet.membership.exception.BaseCodeException;
 import com.klipwallet.membership.exception.ErrorCode;
+import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.exception.NotFoundException;
 
 import static java.util.Objects.requireNonNullElse;
@@ -140,6 +141,13 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     public ProblemDetail handleNotFoundException(NotFoundException cause) {
         String err = tryGetMessage(cause);
         return toProblemDetail(HttpStatus.NOT_FOUND, cause, err);
+    }
+
+    @Nonnull
+    @ExceptionHandler(InvalidRequestException.class)
+    public ProblemDetail handleNotFoundException(InvalidRequestException cause) {
+        String err = tryGetMessage(cause);
+        return toProblemDetail(HttpStatus.BAD_REQUEST, cause, err);
     }
 
     private MessageSource messageSource() {

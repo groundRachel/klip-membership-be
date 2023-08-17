@@ -21,7 +21,7 @@ import com.klipwallet.membership.repository.AppliedPartnerRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest
 @Testcontainers
 public class PartnerServiceTest {
     @Autowired

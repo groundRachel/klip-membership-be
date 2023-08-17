@@ -21,7 +21,7 @@ import com.klipwallet.membership.service.PartnerService;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Tag(name = "Tool.Partners", description = "파트너 API")
+@Tag(name = "Tool.Partners", description = "파트너 계정 관리 API")
 @RestController
 @RequestMapping("/tool/v1/partners")
 @RequiredArgsConstructor

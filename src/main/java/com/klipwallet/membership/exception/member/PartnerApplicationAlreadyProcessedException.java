@@ -9,7 +9,11 @@ import com.klipwallet.membership.exception.InvalidRequestException;
 
 public class PartnerApplicationAlreadyProcessedException extends InvalidRequestException {
     public PartnerApplicationAlreadyProcessedException(AppliedPartner appliedPartner) {
-        super(ErrorCode.INVALID_REQUEST_ACCEPT_ALREADY_PROCESSED, appliedPartner.getId(), appliedPartner.getStatus(), appliedPartner.getUpdatedBy(),
-              appliedPartner.getUpdatedAt().toString());
+        super(ErrorCode.INVALID_REQUEST_ACCEPT_ALREADY_PROCESSED,
+              appliedPartner.getId(),
+              appliedPartner.getStatus().toDisplay(),
+              appliedPartner.getUpdatedBy(),
+              appliedPartner.getUpdatedAt()
+        );
     }
 }

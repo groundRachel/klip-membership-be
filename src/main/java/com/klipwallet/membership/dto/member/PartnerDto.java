@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 import lombok.RequiredArgsConstructor;
@@ -42,14 +43,14 @@ public class PartnerDto {
     ) {}
 
     public record AcceptedPartnersResult(
-            @NonNull Integer id,
+            @NotNull Integer id,
             @NonNull String name,
             LocalDateTime createdAt
     ) {}
 
     public record AcceptRequest(
-            @NotBlank Integer id,
-            @NotBlank Status accept,
+            @NotNull Integer id,
+            @NotNull Status accept,
             String declineReason
     ) {}
 

@@ -14,7 +14,8 @@
     <entry key="problemDetail.code.404001">공지사항을 찾을 수 없습니다. ID: {0}</entry>
 
     <!-- partners -->
-    <entry key="problemDetail.code.400001">이미 처리되었습니다. ID: {0}, 처리상태: {1}, 처리자: {2}, 처리시각: {3}</entry>
+    <entry key="problemDetail.code.400001">이미 처리된 요청입니다. ID: {0}, 처리상태: {1}, 처리자: {2}, 처리시각: {3}</entry>
+    <entry key="problemDetail.code.400002">처리된 요청은 지원 상태로 돌아갈 수 없습니다. ID: {0}, 처리상태: {1}, 처리자: {2}, 처리시각: {3}</entry>
     <entry key="problemDetail.code.404002">파트너 정보를 조회할 수 없습니다. ID: {0}</entry>
 </properties>
 
