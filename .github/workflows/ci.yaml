@@ -135,7 +135,7 @@ jobs:
           echo "TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY: trivy-scanning
+          ECR_REPOSITORY: "trivy-scanning"
           IMAGE_TAG: ${{ steps.image.outputs.TAG }}
       - name: Apply Trivy (Image Scanning)
         uses: "./actions/security/image-scanning/module/trivy"
@@ -167,16 +167,15 @@ jobs:
         path: ./actions
         ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
         ref: ${{ secrets.REF }}
-  # helm-chart 배포 전까지 주석 처리
-  #   - name: image patch
-  #     id: var
-  #     uses: "./actions/common/image-patch"
-  #     with:
-  #       PAT: ${{ secrets.GH_PAT }}
-  #       GITHUB_SHA: ${{ github.sha }}
-  #       PROJECT: "klip"
-  #       PROJECT_NAME: "klip-membership"
-  #       ENVIRONMENT: ${{ matrix.environment }}
+    - name: image patch
+      id: var
+      uses: "./actions/common/image-patch"
+      with:
+        PAT: ${{ secrets.GH_PAT }}
+        GITHUB_SHA: ${{ github.sha }}
+        PROJECT: "klip"
+        PROJECT_NAME: "klip-membership"
+        ENVIRONMENT: ${{ matrix.environment }}
 
   # release_pr:
   #   runs-on: ubuntu-22.04
