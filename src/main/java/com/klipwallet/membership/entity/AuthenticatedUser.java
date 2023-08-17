@@ -1,45 +1,41 @@
 package com.klipwallet.membership.entity;
 
-import java.util.Set;
+import java.util.Collection;
 
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
-import lombok.Value;
-import org.springframework.lang.Nullable;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
-import com.klipwallet.membership.entity.kakao.KakaoId;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 
 /**
- * Klip Membership 인증된 사용자 ValueObject
+ * Klip Membership 인증된 사용자 인터페이스
  * <p>
  * 서비스 접속 시 Context 용으로 사용된다.
  * </p>
  *
- * @see org.springframework.security.core.userdetails.User
  * @see org.springframework.security.core.annotation.AuthenticationPrincipal
+ * @see com.klipwallet.membership.config.security.KlipMembershipOAuth2User
  */
-@Value
-@EqualsAndHashCode(callSuper = true)
-public class AuthenticatedUser extends org.springframework.security.core.userdetails.User {
-    Integer memberId;
-    KakaoId kakaoId;
+public interface AuthenticatedUser extends OAuth2User {
+    @Nullable
+    MemberId getMemberId();
 
     /**
-     * 기본 생성자.
+     * oauth2: social-id
+     * <p>
+     * 일부 provider에서는 이메일이 반환될 수도 있다. (구글은 번호가 반환됨)
+     * </p>
      */
-    public AuthenticatedUser(@NonNull Integer memberId, @Nullable KakaoId kakaoId, String username, @NonNull String role) {
-        super(username, "[PASSWORD]", true, true, true, true,
-              Set.of(new SimpleGrantedAuthority("ROLE_" + role)));
-        this.memberId = memberId;
-        this.kakaoId = kakaoId;
-    }
+    @Nonnull
+    @Override
+    String getName();
 
     /**
-     * 카카오 계정 연동이 되었는가?
+     * 이메일 반환
      */
-    public boolean isLinkedToKakao() {
-        return kakaoId != null && kakaoId.getId() != null;
-    }
+    String getEmail();
+
+    Collection<? extends GrantedAuthority> getAuthorities();
 }

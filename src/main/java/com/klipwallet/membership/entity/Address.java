@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Value;
 
+import com.klipwallet.membership.adaptor.jpa.ForJpa;
+
 /**
  * 블록 주소 ValueObject
  * <p>
@@ -17,7 +19,9 @@ import lombok.Value;
 public class Address {
     String value;
 
-    public Address() {
+    @SuppressWarnings("ProtectedMemberInFinalClass")
+    @ForJpa
+    protected Address() {
         this(null);
     }
 

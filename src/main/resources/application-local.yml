@@ -1,3 +1,9 @@
+application:
+  kakao-api:
+    admin-key: 2e5db1d18c9deb08b6a8011850b40446
+    domain-id: 139
+    openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
+
 logging:
   level:
     sql: debug
@@ -11,12 +17,12 @@ management:
     metrics:
       export:
         enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
-      - org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration
   cloud:
     vault:
       enabled: false
@@ -27,17 +33,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-#  security:
-#    oauth2:
-#      client:
-#        tool-by-google: # membership-tool 구글 oauth2 인증
-#          client-id: 1
-#          client-secret: 1111111111
-#          scope: profile, email
-#        admin-by-google: # membership-admin 구글 oauth2 인증
-#          client-id: 2
-#          client-secret: 2222222222
-#          scope: profile, email
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            provider: google
+            client-id: 69090294389-2pnugpnhjdm5odpk89kdjc318860pb9b.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile, email
 
 
 springdoc:
@@ -45,6 +49,11 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+    oauth:
+      app-name: ${spring.security.oauth2.client.registration.google.provider}
+      client-id: ${spring.security.oauth2.client.registration.google.client-id}
+      client-secret: ${spring.security.oauth2.client.registration.google.client-secret}
+      realm: ${spring.security.oauth2.client.registration.google.provider}
 
 
 

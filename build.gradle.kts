@@ -34,7 +34,7 @@ repositories {
 
 // Properties
 extra["springCloudVersion"] = "2022.0.3"
-extra["springdocVersion"] = "2.1.0"
+extra["springdocVersion"] = "2.2.0"
 extra["spockVersion"] = "2.3-groovy-4.0"
 extra["newrelicLogbackVersion"] = "2.0"
 
@@ -57,6 +57,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
     // Newrelic
     implementation("com.newrelic.logging:logback:${property("newrelicLogbackVersion")}")
+    testCompileOnly("org.projectlombok:lombok:1.18.28")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
 //    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
 
     compileOnly("org.projectlombok:lombok")

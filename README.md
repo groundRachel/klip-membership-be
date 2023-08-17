@@ -128,51 +128,17 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 
 # 협업
 
-## Coding Convention
+## Coding Convention(설정 필수!)
 
-[Naver Java Convention](https://naver.github.io/hackday-conventions-java/)을 기준으로 한다.
-
-### 예외
-
-- [4.1. 하드탭 사용](https://naver.github.io/hackday-conventions-java/#indentation-tab): 4 spaces 사용
-- [6.1. 최대 줄 너비는 120](https://naver.github.io/hackday-conventions-java/#line-length-120): 150(변경될 수 있음)
-- [7.2. import 선언의 순서와 빈 줄 삽입](https://naver.github.io/hackday-conventions-java/#import-grouping): 자체 기준 설정(IDEA 기본)
-- [8.9. 콜론의 앞 뒤에 공백 삽입](https://naver.github.io/hackday-conventions-java/#space-around-colon): `case GOLD: `로 case는 예외
-
-## Checkstyle
-
-코딩 컨벤션 강제화/경고 도구
-
-### editorconfig 까지 통합함
+https://groundx.atlassian.net/wiki/spaces/KLP/pages/3121086474/BE+Coding+Convention
 
 ## DB Naming Convention
 
-* Lower snake case
+https://groundx.atlassian.net/wiki/spaces/KLP/pages/3121184769/DB+Naming+Convention
 
-```sql
-create table chat_room
-(
-    id               bigint auto_increment primary key comment '채팅방 ID',
-    open_link_id     varchar(36) unique not null comment '카카오 오픈링크 ID',
-    title            varchar(30)        not null comment '채팅방 이름',
-    cover_image      varchar(255) comment '채팅방 커버 이미지',
-    contract_address varchar(50)        not null comment 'NFT Contract Address',
-    `status`         tinyint            not null comment '채팅방 상태 1: 활성화, 2:비활성화, 3: 삭제',
-    `source`         tinyint            not null comment '채팅방 소스 0: Klaytn, 1:KlipDrops',
-    creator_id       int                not null comment '생성자 아이디',
-    updater_id       int comment '수정자 아이디',
-    created_at       datetime           not null default current_timestamp,
-    updated_at       datetime           null
-);
-```
-
-## Sonarqube
+## 정적 분석
 
 소스 코드 정적 분석 도구
 
 - 코드 결함, 자원 누수, 보안 이슈 등 체크
 
-### 참고
-
-- https://naver.github.io/hackday-conventions-java/
-- https://google.github.io/styleguide/javaguide.html
