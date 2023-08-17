@@ -36,7 +36,10 @@ public enum ErrorCode {
     PARTNER_APPLICATION_ALREADY_PROCESSED(409_001),
 
     // Partner_*,
-    PARTNER_NOT_FOUND(404_003);
+    PARTNER_NOT_FOUND(404_003),
+
+    // FAQ_*
+    FAQ_NOT_FOUND(404_005);
 
     final int code;
 
