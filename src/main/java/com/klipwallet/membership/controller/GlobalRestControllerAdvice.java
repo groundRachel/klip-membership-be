@@ -71,7 +71,6 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     public static ProblemDetail toProblemDetail(HttpStatusCode status, Exception cause, ErrorCode errorCode) {
         ProblemDetail result = ProblemDetail.forStatusAndDetail(status, cause.getMessage());
-        String typeName = cause.getClass().getSimpleName();
         result.setType(fromHttpUrl("https://membership.klipwallet.com/errors/").path(errorCode.name()).build().toUri());
         result.setProperty(CODE, errorCode.getCode());
         result.setProperty(ERR, result.getDetail());
@@ -92,8 +91,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     @Nonnull
     public static ProblemDetail toProblemDetail(@Nonnull Exception cause) {
         ProblemDetail result = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, cause.getMessage());
-        result.setType(fromHttpUrl("https://membership.klipwallet.com/errors")
-                               .path(String.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.name())).build().toUri());
+        result.setType(fromHttpUrl("https://membership.klipwallet.com/errors").path(ErrorCode.INTERNAL_SERVER_ERROR.name()).build().toUri());
         result.setProperty(CODE, ErrorCode.INTERNAL_SERVER_ERROR.getCode());
         result.setProperty(ERR, cause.getMessage());
         return result;
