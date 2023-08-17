@@ -1,4 +1,4 @@
-package com.klipwallet.membership.controller.member;
+package com.klipwallet.membership.controller.tool;
 
 import jakarta.validation.Valid;
 
@@ -21,11 +21,11 @@ import com.klipwallet.membership.service.PartnerService;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Tag(name = "Partner", description = "파트너 API")
+@Tag(name = "Tool.Partners", description = "파트너 API")
 @RestController
-@RequestMapping("/tool/partners")
+@RequestMapping("/tool/v1/partners")
 @RequiredArgsConstructor
-public class PartnersController {
+public class PartnersToolController {
     private final PartnerService partnerService;
 
     @Operation(summary = "파트너 가입 요청", description = "파트너가 구글 인증 후 가입 요청 보냄. GX의 admin이 승인을 해야 가입됨.")

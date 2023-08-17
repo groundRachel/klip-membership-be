@@ -1,4 +1,4 @@
-package com.klipwallet.membership.controller.member;
+package com.klipwallet.membership.controller.tool;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,12 +8,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PartnersControllerIntegrationTest {
+public class PartnersToolControllerIntegrationTest {
     @Test
     void apply(@Autowired MockMvc mvc) throws Exception {
         String requestJson = """
@@ -25,7 +26,7 @@ public class PartnersControllerIntegrationTest {
                                "oAuthId": "292085223830.apps.googleusercontent.com"
                              }
                              """;
-        mvc.perform(post("/tool/partners/apply")
+        mvc.perform(post("/tool/v1/partners/apply")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
            .andExpect(status().isCreated())
