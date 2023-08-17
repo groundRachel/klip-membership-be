@@ -1,0 +1,208 @@
+name: klip-membership ci
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+on:
+  push:
+    branches: [dev, master]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [dev, master, 'hotfix/**']
+    tags-ignore:
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+'
+jobs:
+  resolve_environment:
+    runs-on: ubuntu-22.04
+    if: ( github.event_name == 'push' )
+    outputs:
+      project: ${{ steps.envs.outputs.project }}
+      deploy_env: ${{ steps.envs.outputs.deploy_env }}
+      tag: ${{ steps.envs.outputs.tag }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: fetch actions repo
+      uses: actions/checkout@v3
+      with:
+        repository: "ground-x/gx-gh-actions"
+        path: ./actions
+        ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
+        ref: ${{ secrets.REF }}
+    - name: set envs
+      id: envs
+      uses: ./actions/common/libs/envs
+      with:
+        current_branch: ${{ github.ref_name }}
+        type: ${{ github.ref_type }}
+  test:
+    runs-on: ubuntu-22.04  
+    needs: [ resolve_environment ]
+    steps:
+    - uses: actions/checkout@v3
+    - name: fetch actions repo
+      uses: actions/checkout@v3
+      with:
+        repository: "ground-x/gx-gh-actions"
+        path: ./actions
+        ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
+        ref: ${{ secrets.REF }}
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu' 
+        java-version: '17'
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          gradle-${{ runner.os }}-
+    - name: Run Gradle test
+      run: ./gradlew test
+    - name: Upload test report
+      if: always() 
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-report
+        path: ./build/reports/tests/test/index.html
+
+  build_image:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        environment: ["${{ needs.resolve_environment.outputs.deploy_env }}"]
+    environment:  ${{ matrix.environment }}
+    needs: [ resolve_environment ]
+    if: (github.event_name == 'push')
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 2
+          ssh-key: "${{ secrets.GX_PRIVATE_SSH_KEY }}"
+      - name: fetch actions repo
+        uses: actions/checkout@v3
+        with:
+          repository: "ground-x/gx-gh-actions"
+          path: "./actions"
+          ssh-key: "${{ secrets.GX_PRIVATE_SSH_KEY }}"
+          ref: ${{ secrets.REF }}
+      - name: set envs
+        id: envs
+        uses: ./actions/common/libs/envs
+      - name: aws credentials
+        uses: "./actions/common/credentials/aws"
+        with:
+          role-arn: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: ${{ format('{0}-{1}-{2}', needs.resolve_environment.outputs.project, needs.resolve_environment.outputs.deploy_env, github.sha) }}
+      
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu' 
+          java-version: '17'
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build & Push Docker Image using Gradle
+        id: image
+        run: |
+          ./gradlew jib 
+          echo "TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+      - name: trivy-scanning Image Build & Push
+        run: |
+          ./gradlew jib 
+          echo "TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY: "trivy-scanning"
+          IMAGE_TAG: ${{ steps.image.outputs.TAG }}
+      - name: Apply Trivy (Image Scanning)
+        uses: "./actions/security/image-scanning/module/trivy"
+        with:
+          TAG: ${{ steps.image.outputs.TAG }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+
+
+  image_patch:
+    runs-on: ubuntu-22.04
+    outputs:
+      PR_URL: ${{ steps.var.outputs.PR_URL }}
+    strategy:
+      matrix:
+        environment: ["${{ needs.resolve_environment.outputs.deploy_env }}"]
+    environment: ${{ matrix.environment }}
+    needs: [resolve_environment, build_image]
+    steps:
+    - name: patch repo
+      uses: actions/checkout@v3
+      with:
+        repository: "ground-x/helm-charts"
+        ssh-key: "${{ secrets.GX_PRIVATE_SSH_KEY }}"
+        ref: master
+    - name: fetch actions repo
+      uses: actions/checkout@v3
+      with:
+        repository: "ground-x/gx-gh-actions"
+        path: ./actions
+        ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
+        ref: ${{ secrets.REF }}
+    - name: image patch
+      id: var
+      uses: "./actions/common/image-patch"
+      with:
+        PAT: ${{ secrets.GH_PAT }}
+        GITHUB_SHA: ${{ github.sha }}
+        PROJECT: "klip"
+        PROJECT_NAME: "klip-membership"
+        ENVIRONMENT: ${{ matrix.environment }}
+
+  # release_pr:
+  #   runs-on: ubuntu-22.04
+  #   needs: [ image_patch, resolve_environment ]
+  #   if: needs.resolve_environment.outputs.deploy_env == 'qa'
+  #   strategy:
+  #     matrix:
+  #       environment: ["${{ needs.resolve_environment.outputs.deploy_env }}"]
+  #   environment:  ${{ matrix.environment }}
+  #   steps:
+  #   - name: checkout the code
+  #     uses: actions/checkout@v3
+  #     with:
+  #       submodules: recursive
+  #       fetch-depth: 2
+  #       ssh-key: "${{ secrets.GX_PRIVATE_SSH_KEY }}"
+  #   - name: fetch actions repo
+  #     uses: actions/checkout@v3
+  #     with:
+  #       repository: "ground-x/gx-gh-actions"
+  #       path: ./actions
+  #       ssh-key: "${{ secrets.GX_SSH_PRIVATE_KEY }}"
+  #       ref: ${{ secrets.REF }}
+  #   - name: generate release pr branch to master
+  #     uses: "./actions/common/deploy/release/pr"
+  #     with:
+  #       base: master
+  #       release: ${{ needs.resolve_environment.outputs.tag }}
+  #       pat: ${{ secrets.GH_PAT }}
+

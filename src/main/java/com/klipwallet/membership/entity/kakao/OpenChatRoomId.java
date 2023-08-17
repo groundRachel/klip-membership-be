@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.ToString;
 import lombok.Value;
 
+import com.klipwallet.membership.adaptor.jpa.ForJpa;
+
 @Embeddable
 @Value
 @ToString
@@ -17,6 +19,7 @@ public class OpenChatRoomId {
     String id;
 
     @SuppressWarnings("ProtectedMemberInFinalClass")
+    @ForJpa
     protected OpenChatRoomId() {
         this(null);
     }

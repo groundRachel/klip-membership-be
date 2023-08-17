@@ -36,7 +36,6 @@ public class PartnersToolController {
             @ApiResponse(responseCode = "403", description = "구글 연동 안됨",
                          content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    //    @Secured("OAUTH2_USER") // TODO KLDV-3077 check role
     @PostMapping("/apply")
     @ResponseStatus(CREATED)
     public PartnerDto.ApplyResult apply(@Valid @RequestBody PartnerDto.Apply body) {

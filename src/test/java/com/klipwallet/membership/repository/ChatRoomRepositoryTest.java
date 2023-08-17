@@ -1,7 +1,5 @@
 package com.klipwallet.membership.repository;
 
-import java.util.UUID;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -25,7 +23,7 @@ class ChatRoomRepositoryTest {
 
     @Test
     void insertAndSelect() {
-        ChatRoom entity = new ChatRoom(new OpenChatRoomId(UUID.randomUUID().toString()), "title", "http://coverImage",
+        ChatRoom entity = new ChatRoom(new OpenChatRoomId("1"), "title", "http://coverImage",
                                        new Address("0xa005e82487fb629923b9598fffd1c2e9499f0cab"), 1);
 
         ChatRoom saved = chatRoomRepository.save(entity);

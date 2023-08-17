@@ -16,6 +16,19 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
+jib {
+    from {
+        image = "eclipse-temurin:17-jdk-alpine"
+    }
+    to {
+        image = System.getenv("ECR_REGISTRY") + "/" + System.getenv("ECR_REPOSITORY")
+        tags = setOf(System.getenv("IMAGE_TAG") ?: "default_tag")
+    }
+    container {
+        jvmFlags = listOf("-Xms256m", "-Xmx256m")
+    }
+}
+
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
@@ -34,7 +47,7 @@ repositories {
 
 // Properties
 extra["springCloudVersion"] = "2022.0.3"
-extra["springdocVersion"] = "2.1.0"
+extra["springdocVersion"] = "2.2.0"
 extra["spockVersion"] = "2.3-groovy-4.0"
 extra["newrelicLogbackVersion"] = "2.0"
 
@@ -57,9 +70,14 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
     // Newrelic
     implementation("com.newrelic.logging:logback:${property("newrelicLogbackVersion")}")
-//    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
 
+//    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
+    // Lombok
     compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    testCompileOnly("org.projectlombok:lombok:1.18.28")
+    testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")    // Fix https://stackoverflow.com/questions/53326271/spring-nullable-annotation-generates-unknown-enum-constant-warning
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -69,7 +87,6 @@ dependencies {
     runtimeOnly("io.micrometer:micrometer-registry-new-relic")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
-    annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("com.querydsl:querydsl-apt::jakarta")
     annotationProcessor("jakarta.annotation:jakarta.annotation-api")        // For querydsl-apt::jakarta
     annotationProcessor("jakarta.persistence:jakarta.persistence-api")      // For querydsl-apt::jakarta
