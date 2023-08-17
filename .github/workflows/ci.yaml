@@ -114,8 +114,8 @@ jobs:
       - name: Build & Push Docker Image using Gradle
         id: image
         run: |
-          ./gradlew jib --imageName=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          ./gradlew jib --imageName=$ECR_REGISTRY/trivy-scanning:$IMAGE_TAG
+          ./gradlew jib 
+          ./gradlew jib 
           echo "TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
