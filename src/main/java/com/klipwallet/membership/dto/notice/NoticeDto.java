@@ -112,11 +112,28 @@ public class NoticeDto {
             @Schema(description = "생성자")
             MemberSummary creator,
             @Schema(description = "마지막 수정자")
-            MemberSummary updater
-    ) {
+            MemberSummary updater) {
     }
 
     @Schema(description = "공지사항 상태 DTO", accessMode = AccessMode.READ_WRITE)
     public record Status(@NonNull @NotNull @JsonProperty("value") Notice.Status value) {
+    }
+
+    @Schema(description = "공지사항 목록의 Row DTO", accessMode = AccessMode.READ_ONLY)
+    public record Row(
+            @Schema(description = "공지사항 ID", example = "2")
+            Integer id,
+            @Schema(description = "제목", minLength = 1, maxLength = 200, example = "클립 멤버십 툴이 공식 오픈하였습니다.")
+            String title,
+            @Schema(description = "고정 공지 여부", example = "false")
+            boolean primary,
+            @Schema(description = "생성일시", example = "2023-07-24T15:38:24.005795+09:00")
+            OffsetDateTime createdAt,
+            @Schema(description = "생성자")
+            MemberSummary creator,
+            @Schema(description = "마지막 수정일시", example = "2023-07-24T15:38:24.005795+09:00")
+            OffsetDateTime updatedAt,
+            @Schema(description = "마지막 수정자")
+            MemberSummary updater) {
     }
 }

@@ -40,7 +40,6 @@ spring:
             client-secret: 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
             scope: profile, email
 
-
 springdoc:
   api-docs:
     enabled: true

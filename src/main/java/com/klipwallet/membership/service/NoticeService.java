@@ -3,12 +3,15 @@ package com.klipwallet.membership.service;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.klipwallet.membership.dto.notice.NoticeDto;
+import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.dto.notice.NoticeDto.Summary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.Notice;
@@ -16,6 +19,8 @@ import com.klipwallet.membership.entity.NoticeUpdatable;
 import com.klipwallet.membership.entity.PrimaryNoticeChanged;
 import com.klipwallet.membership.exception.NoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
+
+import static com.klipwallet.membership.entity.Notice.Status.LIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -116,5 +121,31 @@ public class NoticeService {
         notice.changeStatus(command.value(), user.getMemberId());
         Notice saved = noticeRepository.save(notice);
         return new NoticeDto.Status(saved.getStatus());
+    }
+
+    /**
+     * 공지사항 상태 별 목록 조회
+     * <p>
+     * DRAFT/INACTIVE : 최종 수정 일시 최신순 상단 정렬<br/>
+     * LIVE: LIVE 전환 일시 최신 순 상단 정렬<br/>
+     * </p>
+     *
+     * @param status 필터할 상태
+     * @return 공지사항 DTO 목록
+     */
+    @Transactional(readOnly = true)
+    public List<Row> getListByStatus(Notice.Status status) {
+        Sort sort = toSort(status);
+        List<Notice> notices = noticeRepository.findAllByStatus(status, sort);
+        return noticeAssembler.toRows(notices);
+    }
+
+    private Sort toSort(Notice.Status status) {
+        if (status == LIVE) {
+            // order by livedAt desc
+            return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
+        }
+        // order by updatedAt desc (안티 패턴화 되는 것 같아서 걱정)
+        return Sort.by(Direction.DESC, "base.updatedAt");
     }
 }

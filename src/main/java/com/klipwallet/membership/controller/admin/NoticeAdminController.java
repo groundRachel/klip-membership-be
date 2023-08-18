@@ -1,5 +1,7 @@
 package com.klipwallet.membership.controller.admin;
 
+import java.util.List;
+
 import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,11 +19,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.notice.NoticeDto;
+import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.service.NoticeService;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -45,6 +50,17 @@ public class NoticeAdminController {
             @Valid @RequestBody NoticeDto.Create command,
             @AuthenticationPrincipal AuthenticatedUser user) {
         return noticeService.create(command, user);
+    }
+
+    @Operation(summary = "공지사항 상태 별 목록 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공지사항 목록 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "Invalid Query(status)", content = @Content(schema = @Schema(ref = "Error400"))),
+    })
+    @GetMapping
+    public List<Row> list(
+            @Parameter(description = "공지 상태 필터", required = true, example = "2") @RequestParam("status") Notice.Status status) {
+        return noticeService.getListByStatus(status);
     }
 
     @Operation(summary = "공지사항 상세 조회")

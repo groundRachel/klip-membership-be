@@ -1,6 +1,7 @@
 package com.klipwallet.membership.entity;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -65,5 +66,22 @@ public class BaseMeta {
 
     public BaseMeta withUpdatedBy(MemberId updater) {
         return new BaseMeta(this.createdAt, this.createdBy, this.updatedAt, updater);
+    }
+
+    /**
+     * 접근자들 조회
+     * <p>
+     * 생성자 + 마지막 수정자
+     * </p>
+     */
+    public Set<MemberId> getAccessorIds() {
+        if (equalCreatorAndUpdater()) {
+            return Set.of(this.getCreatedBy());
+        }
+        return Set.of(this.getCreatedBy(), this.getUpdatedBy());
+    }
+
+    private boolean equalCreatorAndUpdater() {
+        return this.getCreatedBy().equals(this.getUpdatedBy());
     }
 }

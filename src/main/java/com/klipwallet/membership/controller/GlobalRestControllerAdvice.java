@@ -159,7 +159,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
                 return result;
             }
             ErrorCode errorCode = ErrorCode.fromStatusCode(statusCode);
-            problemDetail.setProperty(CODE, errorCode);
+            problemDetail.setProperty(CODE, errorCode.getCode());
             problemDetail.setProperty(ERR, problemDetail.getDetail());
         }
         return result;

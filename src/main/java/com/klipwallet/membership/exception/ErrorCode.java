@@ -2,8 +2,6 @@ package com.klipwallet.membership.exception;
 
 import java.util.stream.Stream;
 
-import jakarta.annotation.Nullable;
-
 import lombok.Getter;
 import org.springframework.http.HttpStatusCode;
 
@@ -35,13 +33,12 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    @Nullable
     public static ErrorCode fromStatusCode(HttpStatusCode statusCode) {
         int candidateCode = statusCode.value() * 1000;
         return Stream.of(values())
                      .filter(c -> c.code == candidateCode)
                      .findFirst()
-                     .orElse(null);
+                     .orElse(ErrorCode.UNKNOWN);
     }
 
     /**
