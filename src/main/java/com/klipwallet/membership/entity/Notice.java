@@ -37,6 +37,7 @@ import static java.lang.Boolean.TRUE;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
 public class Notice extends AbstractAggregateRoot<ChatRoom> {
+    @SuppressWarnings("unused")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

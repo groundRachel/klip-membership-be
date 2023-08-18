@@ -30,6 +30,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     private final String name;
     private final String email;
 
+    @SuppressWarnings("unused")
     static KlipMembershipOAuth2User notMemberOnGoogle(OAuth2User googleUser) {
         return new KlipMembershipOAuth2User(null, googleUser.getAttributes(), googleUser.getAuthorities(), googleUser.getName(),
                                             getGoogleEmail(googleUser.getAttributes()));
