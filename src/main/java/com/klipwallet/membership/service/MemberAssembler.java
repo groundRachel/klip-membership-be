@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.MemberId;
 
+@SuppressWarnings("unused")
 @Component
 public class MemberAssembler {
     public MemberSummary getMemberSummary(MemberId id) {
