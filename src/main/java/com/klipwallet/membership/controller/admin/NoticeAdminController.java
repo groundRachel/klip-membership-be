@@ -47,9 +47,9 @@ public class NoticeAdminController {
         return noticeService.create(command, user);
     }
 
-    @Operation(summary = "공지사항 수정")
+    @Operation(summary = "공지사항 상세 조회")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "공지사항 수정 성공"),
+            @ApiResponse(responseCode = "200", description = "공지사항 조회 성공"),
             @ApiResponse(responseCode = "403", description = "공지사항 접근 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 공지사항", content = @Content(schema = @Schema(ref = "Error404")))
     })

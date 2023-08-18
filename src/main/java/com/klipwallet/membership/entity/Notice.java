@@ -57,20 +57,14 @@ public class Notice extends AbstractAggregateRoot<ChatRoom> {
      * <pre>draft, live, inactive</pre>
      */
     private Status status;
-
     /**
-     * 발행일시
-     * <p>
-     * 최근 발행일시? 최초 발행일시?
-     * </p>
+     * 최근 Live일시
      *
      * @see Status#LIVE
      */
     private LocalDateTime livedAt;
-
     @Embedded
     private BaseMeta base;
-
     @ForJpa
     protected Notice() {
     }
