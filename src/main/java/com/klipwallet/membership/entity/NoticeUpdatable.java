@@ -17,10 +17,10 @@ public interface NoticeUpdatable {
     String getBody();
 
     /**
-     * 메인 공지 여부. 값이 {@code null} 이면 변경하지 않는다.
+     * 고정 공지 여부. 값이 {@code null} 이면 변경하지 않는다.
      */
     @Nullable
-    Boolean isMain();
+    Boolean isPrimary();
 
     /**
      * 수정 관리자 아이디

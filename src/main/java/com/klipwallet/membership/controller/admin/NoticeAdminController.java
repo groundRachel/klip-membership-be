@@ -73,4 +73,19 @@ public class NoticeAdminController {
             @AuthenticationPrincipal AuthenticatedUser user) {
         return noticeService.update(noticeId, command, user);
     }
+
+    @Operation(summary = "공지사항 상태 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "공지사항 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
+            @ApiResponse(responseCode = "403", description = "공지사항 수정 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 공지사항", content = @Content(schema = @Schema(ref = "Error404")))
+    })
+    @PutMapping("/{noticeId}/status")
+    public NoticeDto.Status changeStatus(
+            @Parameter(description = "공지사항 id", required = true, example = "2") @PathVariable Integer noticeId,
+            @Valid @RequestBody NoticeDto.Status command,
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        return noticeService.changeStatus(noticeId, command, user);
+    }
 }

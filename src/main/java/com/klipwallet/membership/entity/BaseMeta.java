@@ -46,11 +46,11 @@ public class BaseMeta {
         this.updatedBy = null;
     }
 
-    public BaseMeta(MemberId createdBy) {
+    public BaseMeta(MemberId creator) {
         this.createdAt = null;
-        this.createdBy = createdBy;
+        this.createdBy = creator;
         this.updatedAt = null;
-        this.updatedBy = createdBy;
+        this.updatedBy = creator;
     }
 
     @ForJpa
@@ -61,5 +61,9 @@ public class BaseMeta {
     @ForJpa
     public BaseMeta withUpdatedAt(LocalDateTime updatedAt) {
         return new BaseMeta(this.createdAt, this.createdBy, updatedAt, this.updatedBy);
+    }
+
+    public BaseMeta withUpdatedBy(MemberId updater) {
+        return new BaseMeta(this.createdAt, this.createdBy, this.updatedAt, updater);
     }
 }

@@ -5,9 +5,11 @@ import java.time.OffsetDateTime;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.NonNull;
@@ -21,7 +23,6 @@ import com.klipwallet.membership.entity.NoticeUpdatable;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 
 public class NoticeDto {
-
     @Schema(description = "공지사항 생성 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record Create(
             @Schema(description = "제목", minLength = 1, maxLength = 200, example = "클립 멤버십 툴이 공식 오픈하였습니다.")
@@ -53,12 +54,12 @@ public class NoticeDto {
             @Schema(description = "본문", example = "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>")
             @NotBlank
             String body,
-            @Schema(description = "메인 공지 여부. null 이면 수정하지 않는다.", requiredMode = NOT_REQUIRED)
-            Boolean main) {
+            @Schema(description = "고정 공지 여부. null 이면 수정하지 않는다.", requiredMode = NOT_REQUIRED)
+            Boolean primary) {
 
         @JsonIgnore
         public NoticeUpdatable toUpdatable(AuthenticatedUser user) {
-            return new Updatable(this.title(), this.body(), this.main(), user.getMemberId());
+            return new Updatable(this.title(), this.body(), this.primary(), user.getMemberId());
         }
     }
 
@@ -80,7 +81,7 @@ public class NoticeDto {
 
         @Nullable
         @Override
-        public Boolean isMain() {
+        public Boolean isPrimary() {
             return this.main();
         }
 
@@ -99,8 +100,11 @@ public class NoticeDto {
             String title,
             @Schema(description = "본문", example = "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>")
             String body,
-            @Schema(description = "메인 공지 여부", example = "false")
-            boolean main,
+            @Schema(description = "고정 공지 여부", example = "false")
+            boolean primary,
+            Notice.Status status,
+            @Schema(description = "최근Live일시", example = "2023-07-24T15:38:24.005795+09:00")
+            OffsetDateTime livedAt,
             @Schema(description = "생성일시", example = "2023-07-24T15:38:24.005795+09:00")
             OffsetDateTime createdAt,
             @Schema(description = "마지막 수정일시", example = "2023-07-24T15:38:24.005795+09:00")
@@ -110,5 +114,9 @@ public class NoticeDto {
             @Schema(description = "마지막 수정자")
             MemberSummary updater
     ) {
+    }
+
+    @Schema(description = "공지사항 상태 DTO", accessMode = AccessMode.READ_WRITE)
+    public record Status(@NonNull @NotNull @JsonProperty("value") Notice.Status value) {
     }
 }

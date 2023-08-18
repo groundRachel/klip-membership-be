@@ -17,9 +17,11 @@ import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
 import com.klipwallet.membership.dto.notice.NoticeDto.Summary;
 import com.klipwallet.membership.entity.Notice;
+import com.klipwallet.membership.entity.Notice.Status;
 import com.klipwallet.membership.repository.NoticeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -72,9 +74,9 @@ class NoticeAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isForbidden());
-           // FIXME @Jordan AccessDeniedException
-//           .andExpect(jsonPath("$.code").value(403_000))
-//           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
+        // FIXME @Jordan AccessDeniedException
+        //           .andExpect(jsonPath("$.code").value(403_000))
+        //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
     }
 
     @WithAdminUser
@@ -107,7 +109,9 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").value(noticeId))
            .andExpect(jsonPath("$.title").value("클립 멤버십 툴이 공식 오픈하였습니다."))
            .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>"))
-           .andExpect(jsonPath("$.main").value(false))
+           .andExpect(jsonPath("$.primary").value(false))
+           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(23))
@@ -157,7 +161,9 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").value(noticeId))
            .andExpect(jsonPath("$.title").value("클립 멤버십 툴 1.1.0이 릴리즈 되었습니다."))
            .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다. KlipDrops에 이이서 KlipPartners 까지 지원합니다.</p>"))
-           .andExpect(jsonPath("$.main").value(false))
+           .andExpect(jsonPath("$.primary").value(false))
+           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(24))
@@ -169,18 +175,18 @@ class NoticeAdminControllerIntegrationTest {
     @WithAdminUser(memberId = 25)
     @DisplayName("관리자 공지사항 수정: 메인 공지 설정 > 200")
     @Test
-    void updateWithActivatedMain(@Autowired MockMvc mvc) throws Exception {
+    void updateWithPrimaryOn(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
         Integer noticeId = lastNoticeId;
-        updateWithActivatedMain(mvc, noticeId);
+        updateWithPrimaryOn(mvc, noticeId);
     }
 
-    private void updateWithActivatedMain(MockMvc mvc, Integer noticeId) throws Exception {
+    private void updateWithPrimaryOn(MockMvc mvc, Integer noticeId) throws Exception {
         String body = """
                       {
                         "title": "클립 멤버십 툴 1.1.0이 릴리즈 되었습니다.",
                         "body": "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다. KlipDrops에 이이서 KlipPartners 까지 지원합니다.</p>",
-                        "main": true
+                        "primary": true
                       }
                       """;
         mvc.perform(put("/admin/v1/notices/{0}", noticeId)
@@ -190,7 +196,9 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").value(noticeId))
            .andExpect(jsonPath("$.title").value("클립 멤버십 툴 1.1.0이 릴리즈 되었습니다."))
            .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다. KlipDrops에 이이서 KlipPartners 까지 지원합니다.</p>"))
-           .andExpect(jsonPath("$.main").value(true))
+           .andExpect(jsonPath("$.primary").value(true))
+           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(25))
@@ -207,16 +215,16 @@ class NoticeAdminControllerIntegrationTest {
         Integer noticeId1 = lastNoticeId;
         create(mvc);
         Integer noticeId2 = lastNoticeId;
-        updateWithActivatedMain(mvc, noticeId1);
-        updateWithActivatedMain(mvc, noticeId2);
+        updateWithPrimaryOn(mvc, noticeId1);
+        updateWithPrimaryOn(mvc, noticeId2);
         // noticeId1.main=false (noticeId2.main=true가 되므로 이전 메인 노출이었던 noticeId1의 main 값은 false가 되어야함)
-        assertMainDeactivated(noticeId1);
+        assertPrimaryOff(noticeId1);
     }
 
-    private void assertMainDeactivated(Integer noticeId1) {
+    private void assertPrimaryOff(Integer noticeId1) {
         Notice notice2 = noticeRepository.findById(noticeId1).orElse(null);
         assertThat(notice2).isNotNull();
-        assertThat(notice2.isMain()).isFalse();
+        assertThat(notice2.isPrimary()).isFalse();
     }
 
     @Disabled("/oauth2/authorization/google 으로 redirect 되고 있어서 수정이 요구됨.")
@@ -258,5 +266,74 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(status().isNotFound())
            .andExpect(jsonPath("$.code").value(404_001))
            .andExpect(jsonPath("$.err").value("공지사항을 찾을 수 없습니다. ID: %d".formatted(noticeId)));
+    }
+
+    @WithAuthenticatedUser(memberId = 27, authorities = "ROLE_ADMIN")
+    @DisplayName("관리자 공지사항 상태 변경: draft -> live > 200")
+    @Test
+    void changeStatusDraftToLive(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer noticeId = lastNoticeId;
+        String body = """
+                      { "value": "live" }
+                      """;
+        mvc.perform(put("/admin/v1/notices/{0}/status", noticeId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.value").value(Status.LIVE.toDisplay()));
+
+        // status = live & livedAt exists & change updatedAt/updatedBy
+        mvc.perform(get("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(noticeId))
+           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.livedAt").isNotEmpty())
+           .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.updater.id").value(27))
+           .andExpect(jsonPath("$.updater.name").isNotEmpty());
+    }
+
+    @WithAuthenticatedUser(memberId = 27, authorities = "ROLE_ADMIN")
+    @DisplayName("관리자 공지사항 상태 변경: draft -> live -> inactive > 200")
+    @Test
+    void changeStatusLiveToInactive(@Autowired MockMvc mvc) throws Exception {
+        changeStatusDraftToLive(mvc);
+        Integer noticeId = lastNoticeId;
+        String body = """
+                      { "value": "inactive" }
+                      """;
+        mvc.perform(put("/admin/v1/notices/{0}/status", noticeId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.value").value(Status.INACTIVE.toDisplay()));
+
+        // status = live & livedAt exists & change updatedAt/updatedBy
+        mvc.perform(get("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(noticeId))
+           .andExpect(jsonPath("$.status").value(Status.INACTIVE.toDisplay()))
+           .andExpect(jsonPath("$.livedAt").isNotEmpty())
+           .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.updater.id").value(27))
+           .andExpect(jsonPath("$.updater.name").isNotEmpty());
+    }
+
+    @WithAuthenticatedUser(authorities = "ROLE_ADMIN")
+    @DisplayName("관리자 공지사항 상태 변경: draft -> something > 400")
+    @Test
+    void changeStatusDraftToSomething(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer noticeId = lastNoticeId;
+        String body = """
+                      { "value": "something" }
+                      """;
+        mvc.perform(put("/admin/v1/notices/{0}/status", noticeId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value(400_000))
+           .andExpect(jsonPath("$.err").value("Failed to read request"));
     }
 }

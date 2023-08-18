@@ -25,7 +25,8 @@ public class NoticeAssembler {
     public Detail toDetail(@NonNull Notice notice) {
         BaseMeta base = notice.getBase();
         Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMap(base.getCreatedBy(), base.getUpdatedBy());
-        return new Detail(notice.getId(), notice.getTitle(), notice.getBody(), notice.isMain(),
+        return new Detail(notice.getId(), notice.getTitle(), notice.getBody(), notice.isPrimary(), notice.getStatus(),
+                          dateTimeAssembler.toOffsetDateTime(notice.getLivedAt()),
                           dateTimeAssembler.toOffsetDateTime(base.getCreatedAt()),
                           dateTimeAssembler.toOffsetDateTime(base.getUpdatedAt()),
                           members.getOrDefault(base.getCreatedBy(), MemberSummary.deactivated(base.getCreatedBy())),
