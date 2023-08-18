@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
 import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.exception.ConflictException;
 import com.klipwallet.membership.exception.ForbiddenException;
 import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.exception.NoticeNotFoundException;
@@ -63,6 +64,7 @@ public class SpringDocConfig {
                                                    .addSchemas("Error401", problemDetail401Schema())
                                                    .addSchemas("Error403", problemDetail403Schema())
                                                    .addSchemas("Error404", problemDetail404Schema())
+                                                   .addSchemas("Error409", problemDetail409Schema())
                                                    .addSchemas("Error500", problemDetail500Schema()));
     }
 
@@ -82,6 +84,11 @@ public class SpringDocConfig {
     @SuppressWarnings("rawtypes")
     private Schema problemDetail403Schema() {
         var pdJson = toJson(toProblemDetail(FORBIDDEN, new ForbiddenException(oauth2User()), "권한이 부족합니다. ROLE_PARTNER"));
+        return new Schema<>().type("object").example(pdJson);
+    }
+
+    private Schema problemDetail409Schema() {
+        var pdJson = toJson(toProblemDetail(CONFLICT, new ConflictException(), "이미 처리된 요청입니다. ID: 3322, 처리상태: approved, 처리자: 8, 처리시각: {3}"));
         return new Schema<>().type("object").example(pdJson);
     }
 

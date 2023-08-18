@@ -1,5 +1,8 @@
 package com.klipwallet.membership.controller.admin;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,30 +20,18 @@ import com.klipwallet.membership.repository.AppliedPartnerRepository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PartnerControllerTest {
+class PartnerApplicationControllerTest {
 
     @Autowired
     AppliedPartnerRepository appliedPartnerRepository;
     @Autowired
     PartnerRepository partnerRepository;
-
-
-    @WithAdminUser
-    @Test
-    void getAppliedPartners(@Autowired MockMvc mvc) {
-        // TODO
-    }
-
-    @WithAdminUser
-    @Test
-    void getApprovedPartners(@Autowired MockMvc mvc) {
-        // TODO
-    }
 
     @WithAdminUser
     @DisplayName("파트너 가입 승인: 존재하지 않는 파트너 ID > 404")
@@ -56,7 +47,7 @@ class PartnerControllerTest {
                             .content(body))
            .andExpect(status().isNotFound())
            .andExpect(jsonPath("$.code").value(404_002))
-           .andExpect(jsonPath("$.err").value("파트너 정보를 조회할 수 없습니다. ID: %d".formatted(999)));
+           .andExpect(jsonPath("$.err").value("파트너 지원 정보를 조회할 수 없습니다. ID: %d".formatted(999)));
     }
 
     @WithAdminUser
@@ -68,7 +59,7 @@ class PartnerControllerTest {
                                                   "192085223831.apps.googleusercontent.com");
         appliedPartnerRepository.save(apply);
 
-        Integer id = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00001").getId();
+        Integer id = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00001").orElseThrow(RuntimeException::new).getId();
 
         String body = """
                       {
@@ -84,8 +75,8 @@ class PartnerControllerTest {
         mvc.perform(post("/admin/v1/partner-applications/approve")
                             .contentType(APPLICATION_JSON)
                             .content(body))
-           .andExpect(status().isBadRequest())
-           .andExpect(jsonPath("$.code").value(400_001));
+           .andExpect(status().isConflict())
+           .andExpect(jsonPath("$.code").value(409_001));
         //           .andExpect(jsonPath("$.err").value("이미 처리된 요청입니다. ID: %d, 처리상태: accepted,".formatted(id)));
     }
 
@@ -98,7 +89,7 @@ class PartnerControllerTest {
                                                   "292085223831.apps.googleusercontent.com");
         appliedPartnerRepository.save(apply);
 
-        Integer id = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00002").getId();
+        Integer id = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00002").orElseThrow(RuntimeException::new).getId();
 
         // when, then
         String body = """
@@ -109,17 +100,16 @@ class PartnerControllerTest {
         mvc.perform(post("/admin/v1/partner-applications/approve")
                             .contentType(APPLICATION_JSON)
                             .content(body))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("(주) 그라운드엑스"));
+           .andExpect(status().isOk());
 
-        AppliedPartner appliedPartner = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00002");
+        AppliedPartner appliedPartner = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00002").orElseThrow(RuntimeException::new);
         assertThat(appliedPartner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(appliedPartner.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(appliedPartner.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
         assertThat(appliedPartner.getOAuthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(appliedPartner.getStatus()).isEqualTo(Status.APPROVED);
 
-        Partner partner = partnerRepository.findByBusinessRegistrationNumber("100-00-00002");
+        Partner partner = partnerRepository.findByBusinessRegistrationNumber("100-00-00002").orElseThrow(RuntimeException::new);
         assertThat(partner).isNotNull();
         assertThat(partner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partner.getPhoneNumber()).isEqualTo("010-1234-5678");
@@ -136,7 +126,7 @@ class PartnerControllerTest {
                                                   "392085223831.apps.googleusercontent.com");
         appliedPartnerRepository.save(apply);
 
-        Integer id = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00003").getId();
+        Integer id = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00003").orElseThrow(RuntimeException::new).getId();
 
         // when, then
         String body = """
@@ -148,10 +138,10 @@ class PartnerControllerTest {
         mvc.perform(post("/admin/v1/partner-applications/reject")
                             .contentType(APPLICATION_JSON)
                             .content(body))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.name").value("(주) 그라운드엑스"));
+           .andExpect(status().isOk());
 
-        AppliedPartner appliedPartner = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00003");
+        AppliedPartner appliedPartner = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00003").orElseThrow(RuntimeException::new);
+        ;
         assertThat(appliedPartner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(appliedPartner.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(appliedPartner.getEmail()).isEqualTo("exampl-admin-controller3@groundx.xyz");
@@ -159,7 +149,7 @@ class PartnerControllerTest {
         assertThat(appliedPartner.getStatus()).isEqualTo(Status.REJECTED);
         assertThat(appliedPartner.getRejectReason()).isEqualTo("정상적이지 않은 사업자번호입니다.");
 
-        Partner partner = partnerRepository.findByBusinessRegistrationNumber("100-00-00003");
-        assertThat(partner).isNull();
+        partnerRepository.findByBusinessRegistrationNumber("100-00-00003")
+                         .ifPresent(p -> {throw new RuntimeException();});
     }
 }

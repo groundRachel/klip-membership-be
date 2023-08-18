@@ -1,12 +1,12 @@
 package com.klipwallet.membership.exception.member;
 
 import com.klipwallet.membership.entity.AppliedPartner;
+import com.klipwallet.membership.exception.ConflictException;
 import com.klipwallet.membership.exception.ErrorCode;
-import com.klipwallet.membership.exception.InvalidRequestException;
 
-public class PartnerApplicationAlreadyProcessedException extends InvalidRequestException {
+public class PartnerApplicationAlreadyProcessedException extends ConflictException {
     public PartnerApplicationAlreadyProcessedException(AppliedPartner appliedPartner) {
-        super(ErrorCode.INVALID_REQUEST_APPROVE_ALREADY_PROCESSED,
+        super(ErrorCode.PARTNER_APPLICATION_ALREADY_PROCESSED,
               appliedPartner.getId(),
               appliedPartner.getStatus().toDisplay(),
               appliedPartner.getUpdatedBy(),

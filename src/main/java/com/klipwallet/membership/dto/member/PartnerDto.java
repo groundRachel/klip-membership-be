@@ -13,17 +13,18 @@ import org.springframework.lang.NonNull;
 
 import com.klipwallet.membership.entity.AppliedPartner;
 import com.klipwallet.membership.entity.AppliedPartner.Status;
+import com.klipwallet.membership.entity.MemberId;
 
 @RequiredArgsConstructor
 public class PartnerDto {
     @Schema(description = "[TOOL] 파트너 신청 DTO", accessMode = AccessMode.WRITE_ONLY)
-    public record Apply(@NotBlank String name,
-                        // TODO add validation; requirement from design team
-                        @NotBlank @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$") String phoneNumber,
-                        // TODO add validation; requirement from design team
-                        @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber,
-                        @NotBlank @Email String email,
-                        @NotBlank String oAuthId) {
+    public record Application(@NotBlank String name,
+                              // TODO add validation; requirement from design team
+                              @NotBlank @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$") String phoneNumber,
+                              // TODO add validation; requirement from design team
+                              @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber,
+                              @NotBlank @Email String email,
+                              @NotBlank String oAuthId) {
         public AppliedPartner toAppliedPartner() {
             return new AppliedPartner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
         }
@@ -31,7 +32,7 @@ public class PartnerDto {
 
     @Schema(description = "[TOOL] 파트너 신청 후 응답 DTO", accessMode = AccessMode.READ_ONLY)
     public record ApplyResult(
-            @NonNull Integer id,
+            @NonNull MemberId id,
             @NonNull String name,
             OffsetDateTime createdAt,
             OffsetDateTime updatedAt
@@ -39,7 +40,7 @@ public class PartnerDto {
 
     @Schema(description = "[ADMIN] 파트너 신청 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record AppliedPartnerDto(
-            @NonNull Integer id,
+            @NonNull MemberId id,
             @NonNull String name,
             OffsetDateTime createdAt,
             Status status,
@@ -48,30 +49,19 @@ public class PartnerDto {
 
     @Schema(description = "[ADMIN] 가입한 파트너 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record AcceptedPartnerDto(
-            @NonNull Integer id,
+            @NonNull MemberId id,
             @NonNull String name,
             OffsetDateTime createdAt
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 승인 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record ApproveRequest(
-            @NonNull Integer id
+            @NonNull MemberId id
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record RejectRequest(
-            @NonNull Integer id,
+            @NonNull MemberId id,
             String rejectReason
     ) {}
-
-    @Schema(description = "[ADMIN] 파트너 신청 승인 응답 DTO", accessMode = AccessMode.READ_ONLY)
-    public record ApproveResult(
-            @NonNull String name
-    ) {}
-
-    @Schema(description = "[ADMIN] 파트너 신청 거절 응답 DTO", accessMode = AccessMode.READ_ONLY)
-    public record RejectResult(
-            @NonNull String name
-    ) {}
-
 }

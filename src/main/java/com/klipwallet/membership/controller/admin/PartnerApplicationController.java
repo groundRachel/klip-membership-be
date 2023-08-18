@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.member.PartnerDto.AppliedPartnerDto;
 import com.klipwallet.membership.dto.member.PartnerDto.ApproveRequest;
-import com.klipwallet.membership.dto.member.PartnerDto.ApproveResult;
 import com.klipwallet.membership.dto.member.PartnerDto.RejectRequest;
-import com.klipwallet.membership.dto.member.PartnerDto.RejectResult;
 import com.klipwallet.membership.service.PartnerService;
 
 @Tag(name = "Admin.Partner-Application", description = "Admin의 파트너 가입 요청 관리 API")
@@ -49,8 +47,8 @@ public class PartnerApplicationController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PostMapping("/approve")
-    public ApproveResult approvePartner(@RequestBody @Valid ApproveRequest body) throws Exception {
-        return partnerService.approvePartner(body);
+    public void approvePartner(@RequestBody @Valid ApproveRequest body) throws Exception {
+        partnerService.approve(body);
     }
 
     @Operation(summary = "요청한 파트너 거절")
@@ -61,7 +59,7 @@ public class PartnerApplicationController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PostMapping("/reject")
-    public RejectResult rejectPartner(@RequestBody @Valid RejectRequest body) throws Exception {
-        return partnerService.rejectPartner(body);
+    public void rejectPartner(@RequestBody @Valid RejectRequest body) throws Exception {
+        partnerService.reject(body);
     }
 }

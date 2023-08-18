@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -17,13 +16,14 @@ import org.springframework.lang.Nullable;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class AppliedPartner extends Member {
+    // TODO @winnie-byun Do not extend member
+    // TODO @winnie-byun https://groundx.atlassian.net/browse/KLDV-3069?focusedCommentId=195198
 
     private String name;
     private String phoneNumber;
     private String businessRegistrationNumber;
-    @Setter
+
     private Status status;
-    @Setter
     private String rejectReason;
 
     public AppliedPartner(String name, String phoneNumber, String businessRegistrationNumber, String email, @NonNull String oAuthId) {
@@ -67,7 +67,12 @@ public class AppliedPartner extends Member {
         }
     }
 
-    public Partner toApprovedPartner() {
-        return new Partner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
+    public void setApprovedStatus() {
+        this.status = Status.APPROVED;
+    }
+
+    public void setRejectStatus(String rejectReason) {
+        this.status = Status.REJECTED;
+        this.rejectReason = rejectReason;
     }
 }

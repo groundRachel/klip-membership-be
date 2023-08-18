@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +35,7 @@ public class PartnersToolController {
     })
     @PostMapping("/apply")
     @ResponseStatus(CREATED)
-    public PartnerDto.ApplyResult apply(@Valid @RequestBody PartnerDto.Apply body) {
+    public PartnerDto.ApplyResult apply(@Valid @RequestBody PartnerDto.Application body) {
         return partnerService.apply(body);
     }
 }
