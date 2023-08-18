@@ -111,6 +111,7 @@ public class Notice extends AbstractAggregateRoot<ChatRoom> {
         this.title = command.getTitle();
         this.body = command.getBody();
         changePrimary(command.isPrimary());
+        updatedBy(command.getUpdater());
     }
 
     private void changePrimary(Boolean isPrimary) {
