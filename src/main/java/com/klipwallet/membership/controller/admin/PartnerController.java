@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.klipwallet.membership.dto.member.PartnerDto.*;
+import com.klipwallet.membership.dto.member.PartnerDto;
 import com.klipwallet.membership.service.PartnerService;
 
 @Tag(name = "Admin.Partners", description = "Admin의 파트너 관리 API")
@@ -29,7 +29,7 @@ public class PartnerController {
             @ApiResponse(responseCode = "403", description = "파트너 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @GetMapping
-    public List<AcceptedPartnerDto> getPartners() {
+    public List<PartnerDto.AcceptedPartnerDto> getPartners() {
         return partnerService.getApprovedPartners();
     }
 }

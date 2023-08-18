@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.klipwallet.membership.dto.member.PartnerDto.AppliedPartnerDto;
-import com.klipwallet.membership.dto.member.PartnerDto.ApproveRequest;
-import com.klipwallet.membership.dto.member.PartnerDto.RejectRequest;
+import com.klipwallet.membership.dto.member.PartnerApplicationDto.AppliedPartnerDto;
+import com.klipwallet.membership.dto.member.PartnerApplicationDto.ApproveRequest;
+import com.klipwallet.membership.dto.member.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.service.PartnerService;
 
 @Tag(name = "Admin.Partner-Application", description = "Admin의 파트너 가입 요청 관리 API")

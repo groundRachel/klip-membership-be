@@ -9,21 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.klipwallet.membership.dto.member.PartnerDto.Application;
-import com.klipwallet.membership.dto.member.PartnerDto.ApproveRequest;
 import com.klipwallet.membership.dto.member.PartnerDto.AcceptedPartnerDto;
-import com.klipwallet.membership.dto.member.PartnerDto.AppliedPartnerDto;
-import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.dto.member.PartnerApplicationDto.AppliedPartnerDto;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.AppliedPartner;
-import com.klipwallet.membership.entity.AppliedPartner.Status;
-import com.klipwallet.membership.exception.member.PartnerApplicationAlreadyProcessedException;
-import com.klipwallet.membership.exception.member.PartnerNotFoundException;
 import com.klipwallet.membership.repository.PartnerRepository;
 import com.klipwallet.membership.repository.AppliedPartnerRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 
 @SpringBootTest
 @Testcontainers

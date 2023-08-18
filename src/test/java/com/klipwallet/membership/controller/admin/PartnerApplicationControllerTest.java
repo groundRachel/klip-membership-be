@@ -3,6 +3,7 @@ package com.klipwallet.membership.controller.admin;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,12 @@ class PartnerApplicationControllerTest {
     AppliedPartnerRepository appliedPartnerRepository;
     @Autowired
     PartnerRepository partnerRepository;
+
+    @AfterEach
+    void afterEach() {
+        appliedPartnerRepository.deleteAll();
+        partnerRepository.deleteAll();
+    }
 
     @WithAdminUser
     @DisplayName("파트너 가입 승인: 존재하지 않는 파트너 ID > 404")

@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.klipwallet.membership.dto.member.PartnerApplicationDto;
 import com.klipwallet.membership.dto.member.PartnerDto;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.AppliedPartner;
@@ -27,14 +28,14 @@ public class PartnerService {
     private final PartnerAssembler partnerAssembler;
 
     @Transactional
-    public PartnerDto.ApplyResult apply(PartnerDto.Application body) {
+    public PartnerApplicationDto.ApplyResult apply(PartnerApplicationDto.Application body) {
         AppliedPartner entity = body.toAppliedPartner();
         AppliedPartner appliedPartner = appliedPartnerRepository.save(entity);
         return partnerAssembler.toApplyResult(appliedPartner);
     }
 
     @Transactional(readOnly = true)
-    public List<PartnerDto.AppliedPartnerDto> getAppliedPartners() {
+    public List<PartnerApplicationDto.AppliedPartnerDto> getAppliedPartners() {
         // TODO KLDV-3066 Pagination
         // TODO KLDV-3068 get and check partner business number from drops
         // TODO consider adding a cache; some results are from drops
@@ -50,7 +51,7 @@ public class PartnerService {
     }
 
     @Transactional
-    public void approve(PartnerDto.ApproveRequest body) {
+    public void approve(PartnerApplicationDto.ApproveRequest body) {
         AppliedPartner appliedPartner = appliedPartnerRepository.findById(body.id().value())
                                                                 .orElseThrow(() -> new PartnerApplicationNotFoundException(body.id()));
 
@@ -69,7 +70,7 @@ public class PartnerService {
     }
 
     @Transactional
-    public void reject(PartnerDto.RejectRequest body) {
+    public void reject(PartnerApplicationDto.RejectRequest body) {
         AppliedPartner appliedPartner = appliedPartnerRepository.findById(body.id().value())
                                                                 .orElseThrow(() -> new PartnerApplicationNotFoundException(body.id()));
         if (appliedPartner.getStatus() != APPLIED) {
