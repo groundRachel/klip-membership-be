@@ -11,6 +11,10 @@ management:
         liveness:
           include: livenessState
   health:
+    redis:
+      enabled: false
+    refresh:
+      enabled: false
     livenessstate:
       enabled: true
     readinessstate:
@@ -39,6 +43,9 @@ spring:
     fallback-to-system-locale: false
   profiles:
     active: local         # default profile
+  mvc:
+    problemdetails:
+      enabled: true
 
 springdoc:
   api-docs:

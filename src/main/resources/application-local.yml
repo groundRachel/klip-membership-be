@@ -10,9 +10,6 @@ logging:
     org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor: debug
 
 management:
-  health:
-    redis:
-      enabled: false
   newrelic:
     metrics:
       export:
@@ -54,6 +51,5 @@ springdoc:
       client-id: ${spring.security.oauth2.client.registration.google.client-id}
       client-secret: ${spring.security.oauth2.client.registration.google.client-secret}
       realm: ${spring.security.oauth2.client.registration.google.provider}
-
 
 
