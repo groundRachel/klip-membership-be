@@ -14,9 +14,11 @@
     <!-- notice -->
     <entry key="problemDetail.code.404001">공지사항을 찾을 수 없습니다. ID: {0}</entry>
 
-    <!-- partners -->
+    <!-- partner application -->
     <entry key="problemDetail.code.404002">파트너 지원 정보를 조회할 수 없습니다. ID: {0}</entry>
-    <entry key="problemDetail.code.404003">파트너 정보를 조회할 수 없습니다. ID: {0}</entry>
     <entry key="problemDetail.code.409001">이미 처리된 파트너 가입 요청입니다. ID: {0}, 처리상태: {1}, 처리자: {2}, 처리시각: {3}</entry>
+
+    <!-- partner -->
+    <entry key="problemDetail.code.404003">파트너 정보를 조회할 수 없습니다. ID: {0}</entry>
 </properties>
 

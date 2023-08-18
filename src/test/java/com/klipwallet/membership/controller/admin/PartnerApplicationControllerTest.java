@@ -18,6 +18,8 @@ import com.klipwallet.membership.entity.AppliedPartner.Status;
 import com.klipwallet.membership.repository.PartnerRepository;
 import com.klipwallet.membership.repository.AppliedPartnerRepository;
 
+import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_ALREADY_PROCESSED;
+import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,7 +55,7 @@ class PartnerApplicationControllerTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value(404_002))
+           .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_NOT_FOUND.getCode()))
            .andExpect(jsonPath("$.err").value("파트너 지원 정보를 조회할 수 없습니다. ID: %d".formatted(999)));
     }
 
@@ -83,7 +85,7 @@ class PartnerApplicationControllerTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isConflict())
-           .andExpect(jsonPath("$.code").value(409_001));
+           .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_ALREADY_PROCESSED.getCode()));
         //           .andExpect(jsonPath("$.err").value("이미 처리된 요청입니다. ID: %d, 처리상태: accepted,".formatted(id)));
     }
 
@@ -148,7 +150,6 @@ class PartnerApplicationControllerTest {
            .andExpect(status().isOk());
 
         AppliedPartner appliedPartner = appliedPartnerRepository.findByBusinessRegistrationNumber("100-00-00003").orElseThrow(RuntimeException::new);
-        ;
         assertThat(appliedPartner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(appliedPartner.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(appliedPartner.getEmail()).isEqualTo("exampl-admin-controller3@groundx.xyz");
