@@ -1,8 +1,6 @@
 package com.klipwallet.membership.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -11,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 @Entity
@@ -21,14 +20,13 @@ public class AppliedPartner extends Member {
 
     private String name;
     private String phoneNumber;
-    @Column(unique = true)
     private String businessRegistrationNumber;
     @Setter
     private Status status;
     @Setter
-    private String declineReason;
+    private String rejectReason;
 
-    public AppliedPartner(String name, String phoneNumber, String businessRegistrationNumber, String email, @NotBlank String oAuthId) {
+    public AppliedPartner(String name, String phoneNumber, String businessRegistrationNumber, String email, @NonNull String oAuthId) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
@@ -40,11 +38,11 @@ public class AppliedPartner extends Member {
     public AppliedPartner() {
     }
 
-    @Schema(name = "AppliedPartner.Status", description = "파트너 가입 요청 상태", example = "accepted")
+    @Schema(name = "AppliedPartner.Status", description = "파트너 가입 요청 상태", example = "approved")
     public enum Status implements Statusable {
         APPLIED(1),
-        ACCEPTED(2),
-        DECLINED(3);
+        APPROVED(2),
+        REJECTED(3);
 
         private final byte code;
 
@@ -69,7 +67,7 @@ public class AppliedPartner extends Member {
         }
     }
 
-    public AcceptedPartner toAcceptedPartner() {
-        return new AcceptedPartner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
+    public Partner toApprovedPartner() {
+        return new Partner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
     }
 }

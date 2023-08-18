@@ -31,10 +31,8 @@ public class PartnersToolController {
     @Operation(summary = "파트너 가입 요청", description = "파트너가 구글 인증 후 가입 요청 보냄. GX의 admin이 승인을 해야 가입됨.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "요청 성공"),
-            @ApiResponse(responseCode = "400", description = "Invalid request body",
-                         content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "구글 연동 안됨",
-                         content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
+            @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
+            @ApiResponse(responseCode = "403", description = "파트너 가입 요청 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @PostMapping("/apply")
     @ResponseStatus(CREATED)

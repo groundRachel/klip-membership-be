@@ -145,7 +145,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Nonnull
     @ExceptionHandler(InvalidRequestException.class)
-    public ProblemDetail handleNotFoundException(InvalidRequestException cause) {
+    public ProblemDetail handleInvalidRequestException(InvalidRequestException cause) {
         String err = tryGetMessage(cause);
         return toProblemDetail(HttpStatus.BAD_REQUEST, cause, err);
     }

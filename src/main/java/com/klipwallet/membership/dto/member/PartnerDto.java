@@ -1,12 +1,13 @@
 package com.klipwallet.membership.dto.member;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
@@ -15,6 +16,7 @@ import com.klipwallet.membership.entity.AppliedPartner.Status;
 
 @RequiredArgsConstructor
 public class PartnerDto {
+    @Schema(description = "[TOOL] 파트너 신청 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record Apply(@NotBlank String name,
                         // TODO add validation; requirement from design team
                         @NotBlank @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$") String phoneNumber,
@@ -27,34 +29,49 @@ public class PartnerDto {
         }
     }
 
+    @Schema(description = "[TOOL] 파트너 신청 후 응답 DTO", accessMode = AccessMode.READ_ONLY)
     public record ApplyResult(
             @NonNull Integer id,
             @NonNull String name,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
+            OffsetDateTime createdAt,
+            OffsetDateTime updatedAt
     ) {}
 
-    public record AppliedPartnersResult(
+    @Schema(description = "[ADMIN] 파트너 신청 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    public record AppliedPartnerDto(
             @NonNull Integer id,
             @NonNull String name,
-            LocalDateTime createdAt,
+            OffsetDateTime createdAt,
             Status status,
-            String declineReason
+            String rejectReason
     ) {}
 
-    public record AcceptedPartnersResult(
-            @NotNull Integer id,
+    @Schema(description = "[ADMIN] 가입한 파트너 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    public record AcceptedPartnerDto(
+            @NonNull Integer id,
             @NonNull String name,
-            LocalDateTime createdAt
+            OffsetDateTime createdAt
     ) {}
 
-    public record AcceptRequest(
-            @NotNull Integer id,
-            @NotNull Status accept,
-            String declineReason
+    @Schema(description = "[ADMIN] 파트너 신청 승인 DTO", accessMode = AccessMode.WRITE_ONLY)
+    public record ApproveRequest(
+            @NonNull Integer id
     ) {}
 
-    public record AcceptResult(
+    @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)
+    public record RejectRequest(
+            @NonNull Integer id,
+            String rejectReason
+    ) {}
+
+    @Schema(description = "[ADMIN] 파트너 신청 승인 응답 DTO", accessMode = AccessMode.READ_ONLY)
+    public record ApproveResult(
             @NonNull String name
     ) {}
+
+    @Schema(description = "[ADMIN] 파트너 신청 거절 응답 DTO", accessMode = AccessMode.READ_ONLY)
+    public record RejectResult(
+            @NonNull String name
+    ) {}
+
 }

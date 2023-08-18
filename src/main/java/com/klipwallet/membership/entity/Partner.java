@@ -6,19 +6,17 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import com.klipwallet.membership.entity.AppliedPartner.Status;
-
 @Entity
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class AcceptedPartner extends Member {
+public class Partner extends Member {
 
     private String name;
     private String phoneNumber;
     private String businessRegistrationNumber;
 
-    public AcceptedPartner(String name, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
+    public Partner(String name, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
@@ -26,7 +24,7 @@ public class AcceptedPartner extends Member {
         this.oAuthId = oAuthId;
     }
 
-    public AcceptedPartner() {
-        
+    public Partner() {
+
     }
 }
