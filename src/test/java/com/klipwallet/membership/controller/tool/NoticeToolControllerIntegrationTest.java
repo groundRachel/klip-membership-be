@@ -7,11 +7,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Notice;
@@ -51,8 +55,7 @@ class NoticeToolControllerIntegrationTest {
     void list(@Autowired MockMvc mvc) throws Exception {
         createSampleNotices();
 
-        mvc.perform(get("/tool/v1/notices")
-                            .param("status", Status.LIVE.toDisplay()))
+        mvc.perform(get("/tool/v1/notices"))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(4L))
            .andExpect(jsonPath("$[0].id").isNotEmpty())
@@ -95,5 +98,71 @@ class NoticeToolControllerIntegrationTest {
 
         noticeRepository.saveAll(results);
         noticeRepository.flush();
+    }
+
+    @WithAdminUser
+    @DisplayName("Tool 공지사항 목록 조회: 파트너 권한이 없으면(관리자일지라도) > 403")
+    @Test
+    void listOnAdmin(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/tool/v1/notices"))
+           .andExpect(status().isForbidden());
+        // FIXME @Jordan AccessDeniedException
+        //           .andExpect(jsonPath("$.code").value(403_000))
+        //           .andExpect(jsonPath("$.err").value("Forbidden"));
+    }
+
+    @WithPartnerUser
+    @DisplayName("Tool 공지사항 상세 조회 > 200")
+    @Test
+    void detail(@Autowired MockMvc mvc) throws Exception {
+        // given
+        Notice notice = createSampleNotice("[안내] app2app 클립 호출 가이드 변경 안내", Status.LIVE);
+        Integer noticeId = notice.getId();
+        // when
+        mvc.perform(get("/tool/v1/notices/{0}", noticeId))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(noticeId))
+           .andExpect(jsonPath("$.title").value("[안내] app2app 클립 호출 가이드 변경 안내"))
+           .andExpect(jsonPath("$.body").value(notice.getBody()))
+           .andExpect(jsonPath("$.primary").value(false))
+           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.livedAt").isNotEmpty())
+           .andExpect(jsonPath("$.createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.creator.id").value(notice.getCreatorId().value()))
+           .andExpect(jsonPath("$.creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.updater.id").value(notice.getUpdaterId().value()))
+           .andExpect(jsonPath("$.updater.name").isNotEmpty());
+    }
+
+    private Notice createSampleNotice(String title, Status status) {
+        Notice notice = new Notice(title, "<p>blah, blah</p>", new MemberId(1));
+        notice.changeStatus(status, new MemberId(2));
+        return noticeRepository.save(notice);
+    }
+
+    @WithPartnerUser
+    @DisplayName("Tool 공지사항 상세 조회: 공지사항이 존재하지 않으면 > 404")
+    @Test
+    void detailNotExists(@Autowired MockMvc mvc) throws Exception {
+        Integer noticeId = Integer.MAX_VALUE;
+        mvc.perform(get("/tool/v1/notices/{0}", noticeId))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_001))
+           .andExpect(jsonPath("$.err").value("공지사항을 찾을 수 없습니다. ID: %s".formatted(noticeId)));
+    }
+
+    @WithPartnerUser
+    @DisplayName("Tool 공지사항 상세 조회: 공지사항이 존재하지만 LIVE가 아니면 > 404")
+    @ParameterizedTest
+    @EnumSource(value = Notice.Status.class, names = "LIVE", mode = Mode.EXCLUDE)
+    void detailInactivated(Status status, @Autowired MockMvc mvc) throws Exception {
+        Notice notice = createSampleNotice("[안내] app2app 클립 호출 가이드 변경 안내", status);
+        Integer noticeId = notice.getId();
+
+        mvc.perform(get("/tool/v1/notices/{0}", noticeId))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_001))
+           .andExpect(jsonPath("$.err").value("공지사항을 찾을 수 없습니다. ID: %s".formatted(noticeId)));
     }
 }

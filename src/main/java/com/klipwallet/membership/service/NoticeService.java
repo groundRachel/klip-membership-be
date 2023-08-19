@@ -42,7 +42,7 @@ public class NoticeService {
     }
 
     /**
-     * 공지사항 1건 상세조회
+     * 공지사항 1건 상세 조회
      *
      * @param noticeId 조회할 공지사항 ID
      * @return 공지사항 상세 DTO
@@ -55,6 +55,25 @@ public class NoticeService {
 
     private Notice tryGetNotice(Integer noticeId) {
         return noticeRepository.findById(noticeId)
+                               .orElseThrow(() -> new NoticeNotFoundException(noticeId));
+    }
+
+    /**
+     * Live 공지사항 1건 상세 조회
+     *
+     * @param noticeId 조회할 공지사항 ID
+     * @return 공지사항 상세 DTO
+     * @throws com.klipwallet.membership.exception.NoticeNotFoundException LIVE 상태가 아니거나, 존재하지 않는 경우 발생
+     */
+    @Transactional(readOnly = true)
+    public NoticeDto.Detail getLivedDetail(Integer noticeId) {
+        Notice notice = tryGetLivedNotice(noticeId);
+        return noticeAssembler.toDetail(notice);
+    }
+
+    private Notice tryGetLivedNotice(Integer noticeId) {
+        return noticeRepository.findById(noticeId)
+                               .filter(Notice::isLive)
                                .orElseThrow(() -> new NoticeNotFoundException(noticeId));
     }
 

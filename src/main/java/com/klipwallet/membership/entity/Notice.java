@@ -131,6 +131,10 @@ public class Notice extends BaseEntity<Notice> {
         return noticeId.equals(this.id);
     }
 
+    public boolean isLive() {
+        return status == Status.LIVE;
+    }
+
     @Getter
     @Schema(name = "Notice.Status", description = "공지사항 상태", example = "live")
     public enum Status implements Statusable {
