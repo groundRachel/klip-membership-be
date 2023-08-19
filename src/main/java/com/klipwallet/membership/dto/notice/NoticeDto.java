@@ -127,6 +127,8 @@ public class NoticeDto {
             String title,
             @Schema(description = "고정 공지 여부", example = "false")
             boolean primary,
+            @Schema(description = "Live일시", example = "2023-07-24T15:38:24.005795+09:00")
+            OffsetDateTime livedAt,
             @Schema(description = "생성일시", example = "2023-07-24T15:38:24.005795+09:00")
             OffsetDateTime createdAt,
             @Schema(description = "생성자")
