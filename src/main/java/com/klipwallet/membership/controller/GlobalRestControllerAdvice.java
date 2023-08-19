@@ -40,7 +40,9 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.klipwallet.membership.exception.BaseCodeException;
+import com.klipwallet.membership.exception.ConflictException;
 import com.klipwallet.membership.exception.ErrorCode;
+import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.exception.NotFoundException;
 
 import static java.util.Objects.requireNonNullElse;
@@ -122,6 +124,13 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @Nonnull
+    @ExceptionHandler(InvalidRequestException.class)
+    public ProblemDetail handleInvalidRequestException(InvalidRequestException cause) {
+        String err = tryGetMessage(cause);
+        return toProblemDetail(HttpStatus.BAD_REQUEST, cause, err);
+    }
+
+    @Nonnull
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDeniedException(AccessDeniedException cause) {
         return toProblemDetail(HttpStatus.FORBIDDEN, cause, ErrorCode.FORBIDDEN);
@@ -132,6 +141,13 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     public ProblemDetail handleNotFoundException(NotFoundException cause) {
         String err = tryGetMessage(cause);
         return toProblemDetail(HttpStatus.NOT_FOUND, cause, err);
+    }
+
+    @Nonnull
+    @ExceptionHandler(ConflictException.class)
+    public ProblemDetail handleConflictException(ConflictException cause) {
+        String err = tryGetMessage(cause);
+        return toProblemDetail(HttpStatus.CONFLICT, cause, err);
     }
 
     private MessageSource messageSource() {

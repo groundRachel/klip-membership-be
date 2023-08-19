@@ -1,7 +1,6 @@
 package com.klipwallet.membership.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotBlank;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,7 +16,7 @@ public class Partner extends Member {
     private String phoneNumber;
     private String businessRegistrationNumber;
 
-    public Partner(String name, String phoneNumber, String businessRegistrationNumber, String email, @NotBlank String oAuthId) {
+    public Partner(String name, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
@@ -25,7 +24,7 @@ public class Partner extends Member {
         this.oAuthId = oAuthId;
     }
 
-
     public Partner() {
+
     }
 }

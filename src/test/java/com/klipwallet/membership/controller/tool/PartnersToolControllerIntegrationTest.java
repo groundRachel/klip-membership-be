@@ -1,4 +1,4 @@
-package com.klipwallet.membership.controller.member;
+package com.klipwallet.membership.controller.tool;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -12,13 +12,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Disabled("Test가 깨져서 우선 비활성화 처리함") // FIXME @Winnie
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PartnersControllerIntegrationTest {
+public class PartnersToolControllerIntegrationTest {
     @WithAuthenticatedUser(authorities = "OAUTH2_USER")
     @DisplayName("파트너 가입 요청 성공")
     @Test
@@ -32,7 +33,7 @@ public class PartnersControllerIntegrationTest {
                                "oAuthId": "292085223830.apps.googleusercontent.com"
                              }
                              """;
-        mvc.perform(post("/tool/partners/apply")
+        mvc.perform(post("/tool/v1/partners/apply")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
            .andExpect(status().isCreated())

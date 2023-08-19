@@ -1,33 +1,20 @@
 package com.klipwallet.membership.dto.member;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.lang.NonNull;
 
-import com.klipwallet.membership.entity.Partner;
+import com.klipwallet.membership.entity.MemberId;
 
 @RequiredArgsConstructor
 public class PartnerDto {
-    public record Apply(@NotBlank String name,
-                        @NotBlank @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$") String phoneNumber,
-                        @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber,
-                        @NotBlank @Email String email,
-                        @NotBlank String oAuthId) {
-        public Partner toPartner() {
-            return new Partner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
-        }
-    }
-
-    public record ApplyResult(
-            @NonNull Integer id,
+    @Schema(description = "[ADMIN] 가입한 파트너 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    public record AcceptedPartnerDto(
+            @NonNull MemberId id,
             @NonNull String name,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
+            OffsetDateTime createdAt
     ) {}
 }

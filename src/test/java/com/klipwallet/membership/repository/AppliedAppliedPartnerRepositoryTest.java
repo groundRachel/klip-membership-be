@@ -12,15 +12,15 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
-import com.klipwallet.membership.entity.Partner;
+import com.klipwallet.membership.entity.AppliedPartner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled("Test가 깨져서 우선 비활성화 처리함.") // FIXME @Jordan
 @DataJpaTest
-class PartnerRepositoryTest {
+class AppliedAppliedPartnerRepositoryTest {
     @Autowired
-    PartnerRepository partnerRepository;
+    AppliedPartnerRepository appliedPartnerRepository;
 
     @PersistenceContext
     EntityManager em;
@@ -28,16 +28,16 @@ class PartnerRepositoryTest {
     @WithAuthenticatedUser(memberId = 2)
     @Test
     void insertAndSelect() {
-        Partner entity = new Partner();
-        Partner saved = partnerRepository.save(entity);
-        partnerRepository.flush();
+        AppliedPartner entity = new AppliedPartner();
+        AppliedPartner saved = appliedPartnerRepository.save(entity);
+        appliedPartnerRepository.flush();
 
         em.flush();
         em.clear();
         assertThat(saved.getMemberId()).isNotNull();
 
-        Partner findUser = partnerRepository.findById(saved.getId())
-                                            .orElse(null);
+        AppliedPartner findUser = appliedPartnerRepository.findById(saved.getId())
+                                                          .orElse(null);
         assertThat(findUser).isNotNull();
         assertThat(findUser.getMemberId()).isNotNull();
         assertThat(findUser.getCreatedAt()).isBefore(LocalDateTime.now());
