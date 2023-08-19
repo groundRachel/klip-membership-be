@@ -87,7 +87,7 @@ public class NoticeDto {
 
         @Nonnull
         @Override
-        public MemberId getUpdater() {
+        public MemberId getUpdaterId() {
             return this.updatedBy();
         }
     }
