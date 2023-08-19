@@ -3,9 +3,7 @@ package com.klipwallet.membership.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,8 +16,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
@@ -31,12 +27,11 @@ import static java.lang.Boolean.TRUE;
  */
 @SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-public class Notice extends AbstractAggregateRoot<ChatRoom> {
+public class Notice extends BaseEntity<Notice> {
     @SuppressWarnings("unused")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,29 +54,24 @@ public class Notice extends AbstractAggregateRoot<ChatRoom> {
      */
     private Status status;
     /**
-     * 최근 Live일시
+     * 최근 {@literal Live}일시
      *
      * @see Status#LIVE
      */
     private LocalDateTime livedAt;
-    @Embedded
-    private BaseMeta base;
+
     @ForJpa
     protected Notice() {
     }
 
     /**
      * 기본 생성자.
-     *
-     * @param title     제목
-     * @param body      본문
-     * @param createdBy 생성자
      */
-    public Notice(String title, String body, MemberId createdBy) {
+    public Notice(String title, String body, MemberId creatorId) {
         this.title = title;
         this.body = body;
         this.status = Status.DRAFT;
-        this.base = new BaseMeta(createdBy);
+        this.createBy(creatorId);
     }
 
     /**
@@ -106,11 +96,11 @@ public class Notice extends AbstractAggregateRoot<ChatRoom> {
         this.title = command.getTitle();
         this.body = command.getBody();
         changePrimary(command.isPrimary());
-        updatedBy(command.getUpdater());
+        updateBy(command.getUpdaterId());
     }
 
     private void changePrimary(Boolean isPrimary) {
-        if (isPrimary == null) {
+        if (isPrimary == null) {        // 멱등성
             return;
         }
         if (TRUE.equals(isPrimary)) {    // 메인 공지 여부인 경우
@@ -121,19 +111,15 @@ public class Notice extends AbstractAggregateRoot<ChatRoom> {
     }
 
     public void changeStatus(@NonNull Status status, MemberId updater) {
-        if (this.status == status) {
+        if (this.status == status) {        // 멱등성
             return;
         }
-        updatedBy(updater);
+        updateBy(updater);
         if (status == Status.LIVE) {
             live();
         } else {
             this.status = status;
         }
-    }
-
-    private void updatedBy(MemberId updater) {
-        this.base = this.base.withUpdatedBy(updater);
     }
 
     private void live() {

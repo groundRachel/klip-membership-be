@@ -4,7 +4,6 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
@@ -145,7 +144,7 @@ public class NoticeService {
             // order by livedAt desc
             return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
         }
-        // order by updatedAt desc (안티 패턴화 되는 것 같아서 걱정)
-        return Sort.by(Direction.DESC, "base.updatedAt");
+        // order by updatedAt desc
+        return Sort.sort(Notice.class).by(Notice::getUpdatedAt).descending();
     }
 }

@@ -23,7 +23,11 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
  *     <li>updatedBy: 마지막 수정자 아이디</li>
  *   </ul>
  * </p>
+ *
+ * @deprecated 이제 모든 Entity는 기본 모델을 합성 기반 {@link com.klipwallet.membership.entity.BaseMeta} 에서
+ * 상속 기반 {@link com.klipwallet.membership.entity.BaseEntity} 로 변경한다.
  */
+@Deprecated(since = "0.2.0")
 @Embeddable
 @Value
 @AllArgsConstructor

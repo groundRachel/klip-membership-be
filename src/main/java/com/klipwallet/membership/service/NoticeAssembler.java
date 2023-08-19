@@ -16,7 +16,6 @@ import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
 import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.dto.notice.NoticeDto.Detail;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;
-import com.klipwallet.membership.entity.BaseMeta;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Notice;
 
@@ -30,14 +29,13 @@ public class NoticeAssembler {
 
     @Nonnull
     public Detail toDetail(@NonNull Notice notice) {
-        BaseMeta base = notice.getBase();
-        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMap(base.getAccessorIds());
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMap(notice.getAccessorIds());
         return new Detail(notice.getId(), notice.getTitle(), notice.getBody(), notice.isPrimary(), notice.getStatus(),
                           dtAssembler.toOffsetDateTime(notice.getLivedAt()),
-                          dtAssembler.toOffsetDateTime(base.getCreatedAt()),
-                          dtAssembler.toOffsetDateTime(base.getUpdatedAt()),
-                          members.getOrDefault(base.getCreatedBy(), MemberSummary.deactivated(base.getCreatedBy())),
-                          members.getOrDefault(base.getUpdatedBy(), MemberSummary.deactivated(base.getUpdatedBy())));
+                          dtAssembler.toOffsetDateTime(notice.getCreatedAt()),
+                          dtAssembler.toOffsetDateTime(notice.getUpdatedAt()),
+                          members.getOrDefault(notice.getCreatorId(), MemberSummary.deactivated(notice.getCreatorId())),
+                          members.getOrDefault(notice.getUpdaterId(), MemberSummary.deactivated(notice.getUpdaterId())));
     }
 
     public List<Row> toRows(List<Notice> notices) {
@@ -54,20 +52,18 @@ public class NoticeAssembler {
 
     private Set<MemberId> toAccessorIds(Collection<Notice> notices) {
         return notices.stream()
-                      .map(Notice::getBase)
-                      .map(BaseMeta::getAccessorIds)
+                      .map(Notice::getAccessorIds)
                       .flatMap(Set::stream)
                       .collect(toUnmodifiableSet());
     }
 
     private Row toRow(Notice entity, Map<MemberId, MemberSummary> members) {
-        BaseMeta base = entity.getBase();
-        MemberId creator = base.getCreatedBy();
-        MemberId updater = base.getUpdatedBy();
+        MemberId creatorId = entity.getCreatorId();
+        MemberId updaterId = entity.getUpdaterId();
         return new Row(entity.getId(), entity.getTitle(), entity.isPrimary(),
-                       dtAssembler.toOffsetDateTime(base.getCreatedAt()),
-                       members.getOrDefault(creator, MemberSummary.deactivated(creator)),
-                       dtAssembler.toOffsetDateTime(base.getUpdatedAt()),
-                       members.getOrDefault(updater, MemberSummary.deactivated(updater)));
+                       dtAssembler.toOffsetDateTime(entity.getCreatedAt()),
+                       members.getOrDefault(creatorId, MemberSummary.deactivated(creatorId)),
+                       dtAssembler.toOffsetDateTime(entity.getUpdatedAt()),
+                       members.getOrDefault(updaterId, MemberSummary.deactivated(updaterId)));
     }
 }
