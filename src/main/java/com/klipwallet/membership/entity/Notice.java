@@ -127,10 +127,6 @@ public class Notice extends BaseEntity<Notice> {
         this.livedAt = LocalDateTime.now();
     }
 
-    public boolean equalId(@NonNull Integer noticeId) {
-        return noticeId.equals(this.id);
-    }
-
     public boolean isLive() {
         return status == Status.LIVE;
     }
