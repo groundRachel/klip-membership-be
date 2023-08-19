@@ -2,13 +2,19 @@ package com.klipwallet.membership.exception;
 
 import java.util.stream.Stream;
 
-import jakarta.annotation.Nullable;
-
 import lombok.Getter;
 import org.springframework.http.HttpStatusCode;
 
 /**
- * 오류 코드 모음
+ * 오류 코드
+ * <p>
+ * 오류 코드 Enum 상수 추가 시 오류 코드에 해당하는 메시지 정보를 {@code /src/main/resources/message/error.xml} 에 같이 추가해야함.
+ * 예를 들어서 {@code PARTNER_NOT_FOUND(404_002),} Enum 상수를 추가한다면, {@code error.xml}에 아래 같이 추가해아함.
+ * <pre>
+ * <entry key="problemDetail.code.404002">파트너를 찾을 수 없습니다. ID: {0}</entry>
+ * </pre>
+ * key 적용 시 {@code problemDetail.code.} prefix를 붙여야함.
+ * </p>
  */
 @Getter
 public enum ErrorCode {
@@ -27,13 +33,12 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    @Nullable
     public static ErrorCode fromStatusCode(HttpStatusCode statusCode) {
         int candidateCode = statusCode.value() * 1000;
         return Stream.of(values())
                      .filter(c -> c.code == candidateCode)
                      .findFirst()
-                     .orElse(null);
+                     .orElse(ErrorCode.UNKNOWN);
     }
 
     /**

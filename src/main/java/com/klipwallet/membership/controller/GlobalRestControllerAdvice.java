@@ -38,7 +38,6 @@ import org.springframework.web.context.request.async.AsyncRequestTimeoutExceptio
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.klipwallet.membership.exception.BaseCodeException;
 import com.klipwallet.membership.exception.ErrorCode;
@@ -46,6 +45,7 @@ import com.klipwallet.membership.exception.NotFoundException;
 
 import static java.util.Objects.requireNonNullElse;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.web.util.UriComponentsBuilder.fromHttpUrl;
 
 @SuppressWarnings("NullableProblems")
 @RestControllerAdvice
@@ -62,19 +62,16 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     public static ProblemDetail toProblemDetail(HttpStatusCode status, BaseCodeException cause, String message) {
         ProblemDetail result = ProblemDetail.forStatusAndDetail(status, message);
-        String typeName = cause.getClass().getSimpleName();
-        result.setType(UriComponentsBuilder.fromHttpUrl("https://membership.klipwallet.com/errors/").path(typeName).build().toUri());
-        result.setTitle(typeName);
-        result.setProperty(CODE, cause.getErrorCode().getCode());
+        ErrorCode errorCode = cause.getErrorCode();
+        result.setType(fromHttpUrl("https://membership.klipwallet.com/errors/").path(errorCode.name()).build().toUri());
+        result.setProperty(CODE, errorCode.getCode());
         result.setProperty(ERR, message);
         return result;
     }
 
     public static ProblemDetail toProblemDetail(HttpStatusCode status, Exception cause, ErrorCode errorCode) {
         ProblemDetail result = ProblemDetail.forStatusAndDetail(status, cause.getMessage());
-        String typeName = cause.getClass().getSimpleName();
-        result.setType(UriComponentsBuilder.fromHttpUrl("https://membership.klipwallet.com/errors/").path(typeName).build().toUri());
-        result.setTitle(typeName);
+        result.setType(fromHttpUrl("https://membership.klipwallet.com/errors/").path(errorCode.name()).build().toUri());
         result.setProperty(CODE, errorCode.getCode());
         result.setProperty(ERR, result.getDetail());
         return result;
@@ -83,10 +80,8 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     @Nonnull
     public static ProblemDetail toProblemDetail(@Nonnull OAuth2AuthenticationException cause) {
         OAuth2Error error = cause.getError();
-        String typeName = cause.getClass().getSimpleName();
         ProblemDetail result = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, error.getDescription());
         result.setType(URI.create(error.getUri()));
-        result.setTitle(typeName);
         result.setProperty(CODE, ErrorCode.UNAUTHENTICATED.getCode());
         result.setProperty("providerCode", error.getErrorCode());
         result.setProperty(ERR, error.getDescription());
@@ -95,11 +90,8 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @Nonnull
     public static ProblemDetail toProblemDetail(@Nonnull Exception cause) {
-        String typeName = cause.getClass().getSimpleName();
         ProblemDetail result = ProblemDetail.forStatusAndDetail(INTERNAL_SERVER_ERROR, cause.getMessage());
-        result.setType(UriComponentsBuilder.fromHttpUrl("https://membership.klipwallet.com/errors")
-                                           .path(String.valueOf(ErrorCode.INTERNAL_SERVER_ERROR.getCode())).build().toUri());
-        result.setTitle(typeName);
+        result.setType(fromHttpUrl("https://membership.klipwallet.com/errors").path(ErrorCode.INTERNAL_SERVER_ERROR.name()).build().toUri());
         result.setProperty(CODE, ErrorCode.INTERNAL_SERVER_ERROR.getCode());
         result.setProperty(ERR, cause.getMessage());
         return result;
@@ -167,7 +159,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
                 return result;
             }
             ErrorCode errorCode = ErrorCode.fromStatusCode(statusCode);
-            problemDetail.setProperty(CODE, errorCode);
+            problemDetail.setProperty(CODE, errorCode.getCode());
             problemDetail.setProperty(ERR, problemDetail.getDetail());
         }
         return result;

@@ -1,5 +1,7 @@
 package com.klipwallet.membership.config.security;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -15,15 +17,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 
+@SuppressWarnings("ClassCanBeRecord")
 @RequiredArgsConstructor
 @ToString
-public class KlipMembershipOAuth2User implements AuthenticatedUser {
+public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable {
+    @Serial
+    private static final long serialVersionUID = 9102776982135701748L;
+
     private final MemberId memberId;
     private final Map<String, Object> attributes;
     private final Collection<? extends GrantedAuthority> authorities;
     private final String name;
     private final String email;
 
+    @SuppressWarnings("unused")
     static KlipMembershipOAuth2User notMemberOnGoogle(OAuth2User googleUser) {
         return new KlipMembershipOAuth2User(null, googleUser.getAttributes(), googleUser.getAuthorities(), googleUser.getName(),
                                             getGoogleEmail(googleUser.getAttributes()));

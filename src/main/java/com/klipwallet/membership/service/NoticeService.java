@@ -3,19 +3,24 @@ package com.klipwallet.membership.service;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.klipwallet.membership.dto.notice.NoticeDto;
+import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.dto.notice.NoticeDto.Summary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
-import com.klipwallet.membership.entity.MainNoticeActivated;
 import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.entity.NoticeUpdatable;
+import com.klipwallet.membership.entity.PrimaryNoticeChanged;
 import com.klipwallet.membership.exception.NoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
+
+import static com.klipwallet.membership.entity.Notice.Status.LIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +62,7 @@ public class NoticeService {
     /**
      * 공지사항 수정
      * <p>
-     * 수정 시 메인 노출을 활성화 시킨 설정이 있디면 {@link #subscribeMainNoticeActivated(com.klipwallet.membership.entity.MainNoticeActivated)}를 통해서
+     * 수정 시 메인 노출을 활성화 시킨 설정이 있디면 {@link #subscribePrimaryNoticeChanged(com.klipwallet.membership.entity.PrimaryNoticeChanged)}를 통해서
      * 해당 공지사항 이외에 다른 공지사항의 메인 노출을 비활성화 시킵니다.
      * </p>
      *
@@ -78,28 +83,69 @@ public class NoticeService {
     }
 
     /**
-     * 공지사항 메인 노출 활성화 시 후처리를 위한 이벤트 구독
+     * 고정 공지가 변경될 시 후처리를 위한 이벤트 구독
      *
      * <p>
-     * 기존에 메인으로 선정된 공지사항을 메인 비노출로 처리.
-     * 기존 트랜잭션에 포함시키기 위해서 {@code BEFORE_COMMIT}으로 처리
+     * 기존 고정 공지는 끄기. 최신 고정 공지는 이벤트 발행 전 설정되어 있음.
+     * 한 트랜잭션으로 처리하기 위해서 {@code BEFORE_COMMIT}으로 처리
      * </p>
      *
-     * @param event 공지사항 메인 노출 활성화 이벤트
-     * @see com.klipwallet.membership.entity.MainNoticeActivated
+     * @param event 고정 공지 변경됨 DomainEvent
+     * @see com.klipwallet.membership.entity.PrimaryNoticeChanged
      * @see #update(Integer, com.klipwallet.membership.dto.notice.NoticeDto.Update, com.klipwallet.membership.entity.AuthenticatedUser)
      */
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void subscribeMainNoticeActivated(MainNoticeActivated event) {
-        Integer mainNoticeId = event.getNoticeId();
-        List<Notice> mainNotices = noticeRepository.findAllByMain(true);
+    public void subscribePrimaryNoticeChanged(PrimaryNoticeChanged event) {
+        Integer primaryNoticeId = event.getPrimaryNoticeId();
+        List<Notice> mainNotices = noticeRepository.findAllByPrimary(true);
         for (Notice notice : mainNotices) {
-            if (notice.equalId(mainNoticeId)) { // 현재 활성화된 메인 공지는 제외!
+            if (notice.equalId(primaryNoticeId)) { // 현재 고정 공지는 제외!
                 continue;
             }
-            notice.deactivateMain();
+            notice.primaryOff();
             noticeRepository.save(notice);
         }
     }
 
+    /**
+     * 공지사항 상태 변경
+     *
+     * @param noticeId 공지사항 아이디
+     * @param command  상태 변경 DTO
+     * @param user     요청자
+     * @return 변경된 상태 DTO
+     */
+    @Transactional
+    public NoticeDto.Status changeStatus(Integer noticeId, NoticeDto.Status command, AuthenticatedUser user) {
+        Notice notice = tryGetNotice(noticeId);
+        notice.changeStatus(command.value(), user.getMemberId());
+        Notice saved = noticeRepository.save(notice);
+        return new NoticeDto.Status(saved.getStatus());
+    }
+
+    /**
+     * 공지사항 상태 별 목록 조회
+     * <p>
+     * DRAFT/INACTIVE : 최종 수정 일시 최신순 상단 정렬<br/>
+     * LIVE: LIVE 전환 일시 최신 순 상단 정렬<br/>
+     * </p>
+     *
+     * @param status 필터할 상태
+     * @return 공지사항 DTO 목록
+     */
+    @Transactional(readOnly = true)
+    public List<Row> getListByStatus(Notice.Status status) {
+        Sort sort = toSort(status);
+        List<Notice> notices = noticeRepository.findAllByStatus(status, sort);
+        return noticeAssembler.toRows(notices);
+    }
+
+    private Sort toSort(Notice.Status status) {
+        if (status == LIVE) {
+            // order by livedAt desc
+            return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
+        }
+        // order by updatedAt desc (안티 패턴화 되는 것 같아서 걱정)
+        return Sort.by(Direction.DESC, "base.updatedAt");
+    }
 }
