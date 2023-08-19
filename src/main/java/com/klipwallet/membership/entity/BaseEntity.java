@@ -49,7 +49,7 @@ public abstract class BaseEntity<E extends BaseEntity<E>> extends CreateBaseEnti
     /**
      * 생성자 설정
      * <p>
-     * Entity를 생성할 때 생성한다. 중요한 것은 이 떄 {@link #updaterId}도 설정 된다.
+     * <b>{@code Entity}를 생성할 때 설정 해야 한다.</b> 중요한 것은 이 떄 {@link #updaterId}도 설정 된다.
      * 그래서 따로 {@link #updateBy(MemberId)}를 호출할 필요 없다.
      * </p>
      *
@@ -64,7 +64,7 @@ public abstract class BaseEntity<E extends BaseEntity<E>> extends CreateBaseEnti
     /**
      * 최근 수정자 설정
      * <p>
-     * Entity를 변경할 때 대부분 같이 설정해준다.
+     * <b>{@code Entity}를 변경할 때 설정 해야 한다.</b>
      * </p>
      *
      * @param updaterId 수정자 아이디
@@ -81,6 +81,7 @@ public abstract class BaseEntity<E extends BaseEntity<E>> extends CreateBaseEnti
      * </p>
      *
      * @return 생성자, 최근 수정자 아이디 Set
+     * @see com.klipwallet.membership.service.MemberAssembler
      */
     public Set<MemberId> getAccessorIds() {
         if (equalCreatorAndUpdater()) {
