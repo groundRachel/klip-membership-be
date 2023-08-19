@@ -3,6 +3,7 @@ package com.klipwallet.membership.controller.tool;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,8 +54,9 @@ class NoticeToolControllerIntegrationTest {
     @DisplayName("Tool 공지사항 목록 조회 > 200")
     @Test
     void list(@Autowired MockMvc mvc) throws Exception {
+        // given
         createSampleNotices();
-
+        // when/then
         mvc.perform(get("/tool/v1/notices"))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(4L))
@@ -116,9 +118,9 @@ class NoticeToolControllerIntegrationTest {
     @Test
     void detail(@Autowired MockMvc mvc) throws Exception {
         // given
-        Notice notice = createSampleNotice("[안내] app2app 클립 호출 가이드 변경 안내", Status.LIVE);
+        Notice notice = createNotice("[안내] app2app 클립 호출 가이드 변경 안내", Status.LIVE);
         Integer noticeId = notice.getId();
-        // when
+        // when/then
         mvc.perform(get("/tool/v1/notices/{0}", noticeId))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.id").value(noticeId))
@@ -135,8 +137,17 @@ class NoticeToolControllerIntegrationTest {
            .andExpect(jsonPath("$.updater.name").isNotEmpty());
     }
 
-    private Notice createSampleNotice(String title, Status status) {
+
+    private Notice createNotice(String title, Status status) throws IllegalAccessException {
+        return createNotice(title, status, false);
+    }
+
+    @SuppressWarnings("ConstantValue")
+    private Notice createNotice(String title, Status status, boolean isPrimary) throws IllegalAccessException {
         Notice notice = new Notice(title, "<p>blah, blah</p>", new MemberId(1));
+        if (isPrimary) {
+            FieldUtils.writeField(notice, "primary", isPrimary, true);
+        }
         notice.changeStatus(status, new MemberId(2));
         return noticeRepository.save(notice);
     }
@@ -145,7 +156,9 @@ class NoticeToolControllerIntegrationTest {
     @DisplayName("Tool 공지사항 상세 조회: 공지사항이 존재하지 않으면 > 404")
     @Test
     void detailNotExists(@Autowired MockMvc mvc) throws Exception {
+        // given
         Integer noticeId = Integer.MAX_VALUE;
+        // when/then
         mvc.perform(get("/tool/v1/notices/{0}", noticeId))
            .andExpect(status().isNotFound())
            .andExpect(jsonPath("$.code").value(404_001))
@@ -157,12 +170,66 @@ class NoticeToolControllerIntegrationTest {
     @ParameterizedTest
     @EnumSource(value = Notice.Status.class, names = "LIVE", mode = Mode.EXCLUDE)
     void detailInactivated(Status status, @Autowired MockMvc mvc) throws Exception {
-        Notice notice = createSampleNotice("[안내] app2app 클립 호출 가이드 변경 안내", status);
+        // given
+        Notice notice = createNotice("[안내] App2App 멀티체인 확장 안내 - 폴리곤", status);
         Integer noticeId = notice.getId();
-
+        // when/then
         mvc.perform(get("/tool/v1/notices/{0}", noticeId))
            .andExpect(status().isNotFound())
            .andExpect(jsonPath("$.code").value(404_001))
            .andExpect(jsonPath("$.err").value("공지사항을 찾을 수 없습니다. ID: %s".formatted(noticeId)));
+    }
+
+    @WithPartnerUser
+    @DisplayName("Tool 고정 공지 조회 > 200")
+    @Test
+    void primary(@Autowired MockMvc mvc) throws Exception {
+        // given
+        Notice notice = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", Status.LIVE, true);
+        Integer primaryNoticeId = notice.getId();
+        // when/then
+        mvc.perform(get("/tool/v1/notices/primary"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(primaryNoticeId))
+           .andExpect(jsonPath("$.title").value("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내"));
+    }
+
+    @SuppressWarnings("unused")
+    @WithPartnerUser
+    @DisplayName("Tool 고정 공지 조회: 고정 공지가 2개인 경우 > 최근 Live 된 것 노출")
+    @Test
+    void primary2(@Autowired MockMvc mvc) throws Exception {
+        // given
+        Notice notice1 = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", Status.LIVE, true);
+        Notice notice2 = createNotice("[안내] app2app 클립 호출 가이드 변경 안내", Status.LIVE, true);   // 최신 live
+        // when/then
+        mvc.perform(get("/tool/v1/notices/primary"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(notice2.getId()))
+           .andExpect(jsonPath("$.title").value("[안내] app2app 클립 호출 가이드 변경 안내"));
+    }
+
+    @WithPartnerUser
+    @DisplayName("Tool 고정 공지 조회: 없음 > 404")
+    @Test
+    void primaryNotFound(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/tool/v1/notices/primary"))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_004))
+           .andExpect(jsonPath("$.err").value("고정 공지를 찾을 수 없습니다."));
+    }
+
+    @WithPartnerUser
+    @DisplayName("Tool 고정 공지 조회: 고정 공지는 있으나 Live 상태 아님. > 404")
+    @ParameterizedTest
+    @EnumSource(value = Notice.Status.class, names = "LIVE", mode = Mode.EXCLUDE)
+    void primaryNotLive(Status status, @Autowired MockMvc mvc) throws Exception {
+        // given
+        createNotice("[안내] App2App 멀티체인 확장 안내 - 폴리곤", status, true);
+        // when/then
+        mvc.perform(get("/tool/v1/notices/primary"))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_004))
+           .andExpect(jsonPath("$.err").value("고정 공지를 찾을 수 없습니다."));
     }
 }

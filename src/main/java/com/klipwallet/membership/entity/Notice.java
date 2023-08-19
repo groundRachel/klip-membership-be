@@ -82,7 +82,7 @@ public class Notice extends BaseEntity<Notice> {
             return;
         }
         this.primary = true;
-        this.registerEvent(new PrimaryNoticeChanged(this.getId()));
+        this.registerEvent(new PrimaryNoticeChanged());
     }
 
     /**

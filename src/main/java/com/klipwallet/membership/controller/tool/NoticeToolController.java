@@ -44,4 +44,14 @@ public class NoticeToolController {
             @Parameter(description = "공지사항 id", required = true, example = "2") @PathVariable Integer noticeId) {
         return noticeService.getLivedDetail(noticeId);
     }
+
+    @Operation(summary = "Tool 고정 공지 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "고정 공지 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 고정 공지", content = @Content(schema = @Schema(ref = "Error404")))
+    })
+    @GetMapping("/primary")
+    public NoticeDto.Summary primary() {
+        return noticeService.getPrimaryNotice();
+    }
 }

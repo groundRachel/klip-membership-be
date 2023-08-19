@@ -15,5 +15,4 @@ import lombok.Value;
 @EqualsAndHashCode(callSuper = false)
 @Value
 public class PrimaryNoticeChanged extends DomainEvent {
-    Integer primaryNoticeId;
 }

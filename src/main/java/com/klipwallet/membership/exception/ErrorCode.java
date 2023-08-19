@@ -29,15 +29,14 @@ public enum ErrorCode {
 
     // NOTICE_*
     NOTICE_NOT_FOUND(404_001),
-
+    PRIMARY_NOTICE_NOT_FOUND(404_004),
 
     // Partner_APPLICATION_*
     PARTNER_APPLICATION_NOT_FOUND(404_002),
     PARTNER_APPLICATION_ALREADY_PROCESSED(409_001),
 
-    // Partner_*
-    PARTNER_NOT_FOUND(404_003),
-    ;
+    // Partner_*,
+    PARTNER_NOT_FOUND(404_003);
 
     final int code;
 

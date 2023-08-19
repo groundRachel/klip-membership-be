@@ -17,6 +17,7 @@ import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.entity.NoticeUpdatable;
 import com.klipwallet.membership.entity.PrimaryNoticeChanged;
 import com.klipwallet.membership.exception.NoticeNotFoundException;
+import com.klipwallet.membership.exception.PrimaryNoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
 
 import static com.klipwallet.membership.entity.Notice.Status.LIVE;
@@ -78,6 +79,24 @@ public class NoticeService {
     }
 
     /**
+     * 고정 공지 조회(1건)
+     *
+     * @return 고정 공지 요약 DTO
+     * @throws com.klipwallet.membership.exception.NoticeNotFoundException 고정 공지가 존재하지 않는 경우
+     */
+    @Transactional(readOnly = true)
+    public Summary getPrimaryNotice() {
+        return noticeRepository.findTopByPrimaryAndStatus(true, LIVE, sortLivedAtDesc())
+                               .map(Summary::new)
+                               .orElseThrow(PrimaryNoticeNotFoundException::new);
+    }
+
+    // order by livedAt desc (from Notice)
+    private Sort sortLivedAtDesc() {
+        return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
+    }
+
+    /**
      * 공지사항 수정
      * <p>
      * 수정 시 메인 노출을 활성화 시킨 설정이 있디면 {@link #subscribePrimaryNoticeChanged(com.klipwallet.membership.entity.PrimaryNoticeChanged)}를 통해서
@@ -101,10 +120,10 @@ public class NoticeService {
     }
 
     /**
-     * 고정 공지가 변경될 시 후처리를 위한 이벤트 구독
+     * 고정 공지가 변경될 시 처리를 위한 이벤트 구독.
      *
      * <p>
-     * 기존 고정 공지는 끄기. 최신 고정 공지는 이벤트 발행 전 설정되어 있음.
+     * 기존 고정 공지는 꺼야함.
      * 한 트랜잭션으로 처리하기 위해서 {@code BEFORE_COMMIT}으로 처리
      * </p>
      *
@@ -113,13 +132,9 @@ public class NoticeService {
      * @see #update(Integer, com.klipwallet.membership.dto.notice.NoticeDto.Update, com.klipwallet.membership.entity.AuthenticatedUser)
      */
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void subscribePrimaryNoticeChanged(PrimaryNoticeChanged event) {
-        Integer primaryNoticeId = event.getPrimaryNoticeId();
+    public void subscribePrimaryNoticeChanged(@SuppressWarnings("unused") PrimaryNoticeChanged event) {
         List<Notice> mainNotices = noticeRepository.findAllByPrimary(true);
         for (Notice notice : mainNotices) {
-            if (notice.equalId(primaryNoticeId)) { // 현재 고정 공지는 제외!
-                continue;
-            }
             notice.primaryOff();
             noticeRepository.save(notice);
         }
@@ -161,7 +176,7 @@ public class NoticeService {
     private Sort toSort(Notice.Status status) {
         if (status == LIVE) {
             // order by livedAt desc
-            return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
+            return sortLivedAtDesc();
         }
         // order by updatedAt desc
         return Sort.sort(Notice.class).by(Notice::getUpdatedAt).descending();
