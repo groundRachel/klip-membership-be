@@ -133,8 +133,12 @@ public class NoticeService {
      */
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void subscribePrimaryNoticeChanged(@SuppressWarnings("unused") PrimaryNoticeChanged event) {
+        Integer primaryNoticeId = event.getPrimaryNoticeId();
         List<Notice> mainNotices = noticeRepository.findAllByPrimary(true);
         for (Notice notice : mainNotices) {
+            if (notice.equalId(primaryNoticeId)) {
+                continue;
+            }
             notice.primaryOff();
             noticeRepository.save(notice);
         }

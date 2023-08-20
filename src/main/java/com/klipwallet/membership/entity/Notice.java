@@ -1,6 +1,7 @@
 package com.klipwallet.membership.entity;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -82,7 +83,7 @@ public class Notice extends BaseEntity<Notice> {
             return;
         }
         this.primary = true;
-        this.registerEvent(new PrimaryNoticeChanged());
+        this.registerEvent(new PrimaryNoticeChanged(this.getId()));
     }
 
     /**
@@ -129,6 +130,10 @@ public class Notice extends BaseEntity<Notice> {
 
     public boolean isLive() {
         return status == Status.LIVE;
+    }
+
+    public boolean equalId(Integer otherNoticeId) {
+        return Objects.equals(this.getId(), otherNoticeId);
     }
 
     @Getter

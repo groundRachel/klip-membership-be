@@ -1,6 +1,7 @@
 package com.klipwallet.membership.entity;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.Value;
 
 /**
@@ -15,4 +16,6 @@ import lombok.Value;
 @EqualsAndHashCode(callSuper = false)
 @Value
 public class PrimaryNoticeChanged extends DomainEvent {
+    @NonNull
+    Integer primaryNoticeId;
 }
