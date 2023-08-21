@@ -7,79 +7,84 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.klipwallet.membership.dto.member.PartnerApplicationDto;
-import com.klipwallet.membership.dto.member.PartnerDto;
+import com.klipwallet.membership.dto.partner.PartnerAssembler;
+import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
+import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationAssembler;
+import com.klipwallet.membership.dto.partner.PartnerDto;
 import com.klipwallet.membership.entity.Partner;
-import com.klipwallet.membership.entity.AppliedPartner;
+import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.exception.member.PartnerApplicationAlreadyProcessedException;
 import com.klipwallet.membership.exception.member.PartnerApplicationNotFoundException;
 import com.klipwallet.membership.repository.PartnerRepository;
-import com.klipwallet.membership.repository.AppliedPartnerRepository;
+import com.klipwallet.membership.repository.PartnerApplicationRepository;
 
-import static com.klipwallet.membership.entity.AppliedPartner.Status.*;
+import static com.klipwallet.membership.entity.PartnerApplication.Status.*;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class PartnerService {
-    private final AppliedPartnerRepository appliedPartnerRepository;
+    private final PartnerApplicationRepository partnerApplicationRepository;
     private final PartnerRepository partnerRepository;
 
+    private final PartnerApplicationAssembler partnerApplicationAssembler;
     private final PartnerAssembler partnerAssembler;
 
     @Transactional
     public PartnerApplicationDto.ApplyResult apply(PartnerApplicationDto.Application body) {
-        AppliedPartner entity = body.toAppliedPartner();
-        AppliedPartner appliedPartner = appliedPartnerRepository.save(entity);
-        return partnerAssembler.toApplyResult(appliedPartner);
+        PartnerApplication entity = body.toPartnerApplication();
+        PartnerApplication partnerApplication = partnerApplicationRepository.save(entity);
+        return partnerApplicationAssembler.toApplyResult(partnerApplication);
     }
 
     @Transactional(readOnly = true)
-    public List<PartnerApplicationDto.AppliedPartnerDto> getAppliedPartners() {
+    public List<PartnerApplicationDto.PartnerApplicationRow> getPartnerApplications() {
         // TODO KLDV-3066 Pagination
         // TODO KLDV-3068 get and check partner business number from drops
         // TODO consider adding a cache; some results are from drops
-        List<AppliedPartner> appliedPartners = appliedPartnerRepository.findAll();
-        return partnerAssembler.toAppliedPartnerDto(appliedPartners);
+        List<PartnerApplication> partnerApplications = partnerApplicationRepository.findAll();
+        return partnerApplicationAssembler.toPartnerApplicationRow(partnerApplications);
     }
 
     @Transactional(readOnly = true)
-    public List<PartnerDto.AcceptedPartnerDto> getApprovedPartners() {
+    public List<PartnerDto.ApprovedPartnerDto> getPartners() {
         // TODO KLDV-3070 Pagination
         List<Partner> partners = partnerRepository.findAll();
         return partnerAssembler.toPartnerDto(partners);
     }
 
     @Transactional
-    public void approve(PartnerApplicationDto.ApproveRequest body) {
-        AppliedPartner appliedPartner = appliedPartnerRepository.findById(body.id().value())
-                                                                .orElseThrow(() -> new PartnerApplicationNotFoundException(body.id()));
+    public void approve(Integer applicationId) {
+        PartnerApplication partnerApplication = partnerApplicationRepository.findById(applicationId)
+                                                                            .orElseThrow(
+                                                                                    () -> new PartnerApplicationNotFoundException(applicationId));
 
-        if (appliedPartner.getStatus() != APPLIED) {
+        if (partnerApplication.getStatus() != APPLIED) {
             // TODO Winnie https://github.com/ground-x/klip-membership-be/pull/9#discussion_r1297000998
-            throw new PartnerApplicationAlreadyProcessedException(appliedPartner);
+            throw new PartnerApplicationAlreadyProcessedException(partnerApplication);
         }
 
-        appliedPartner.setApprovedStatus();
-        appliedPartnerRepository.save(appliedPartner);
+        partnerApplication.approve();
+        partnerApplicationRepository.save(partnerApplication);
 
-        Partner partner = partnerAssembler.toPartner(appliedPartner);
+        Partner partner = partnerAssembler.toPartner(partnerApplication);
         partnerRepository.save(partner);
 
         // TODO KLDV-3069 send result by email
     }
 
     @Transactional
-    public void reject(PartnerApplicationDto.RejectRequest body) {
-        AppliedPartner appliedPartner = appliedPartnerRepository.findById(body.id().value())
-                                                                .orElseThrow(() -> new PartnerApplicationNotFoundException(body.id()));
-        if (appliedPartner.getStatus() != APPLIED) {
+    public void reject(Integer applicationId, PartnerApplicationDto.RejectRequest body) {
+        PartnerApplication partnerApplication = partnerApplicationRepository.findById(applicationId)
+                                                                            .orElseThrow(
+                                                                                    () -> new PartnerApplicationNotFoundException(applicationId));
+        if (partnerApplication.getStatus() != APPLIED) {
             // TODO Winnie https://github.com/ground-x/klip-membership-be/pull/9#discussion_r1297000998
-            throw new PartnerApplicationAlreadyProcessedException(appliedPartner);
+            throw new PartnerApplicationAlreadyProcessedException(partnerApplication);
         }
 
-        appliedPartner.setRejectStatus(body.rejectReason());
-        appliedPartnerRepository.save(appliedPartner);
+        partnerApplication.reject(body.rejectReason());
+        partnerApplicationRepository.save(partnerApplication);
 
         // TODO KLDV-3069 send result by email
     }

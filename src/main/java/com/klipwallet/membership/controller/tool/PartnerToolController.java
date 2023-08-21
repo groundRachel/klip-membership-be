@@ -15,16 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.klipwallet.membership.dto.member.PartnerApplicationDto;
+import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
 import com.klipwallet.membership.service.PartnerService;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Tag(name = "Tool.Partners", description = "파트너 계정 관리 API")
+@Tag(name = "Tool.PartnerApplication", description = "파트너 계정 관리 API")
 @RestController
-@RequestMapping("/tool/v1/partners")
+@RequestMapping("/tool/v1/partner-applications")
 @RequiredArgsConstructor
-public class PartnersToolController {
+public class PartnerToolController {
     private final PartnerService partnerService;
 
     @Operation(summary = "파트너 가입 요청", description = "파트너가 구글 인증 후 가입 요청 보냄. GX의 admin이 승인을 해야 가입됨.")

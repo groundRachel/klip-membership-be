@@ -15,7 +15,7 @@ import org.springframework.lang.Nullable;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class AppliedPartner extends Member {
+public class PartnerApplication extends Member {
     // TODO @winnie-byun Do not extend member
     // TODO @winnie-byun https://groundx.atlassian.net/browse/KLDV-3069?focusedCommentId=195198
 
@@ -26,7 +26,7 @@ public class AppliedPartner extends Member {
     private Status status;
     private String rejectReason;
 
-    public AppliedPartner(String name, String phoneNumber, String businessRegistrationNumber, String email, @NonNull String oAuthId) {
+    public PartnerApplication(String name, String phoneNumber, String businessRegistrationNumber, String email, @NonNull String oAuthId) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
@@ -35,10 +35,10 @@ public class AppliedPartner extends Member {
         this.oAuthId = oAuthId;
     }
 
-    public AppliedPartner() {
+    public PartnerApplication() {
     }
 
-    @Schema(name = "AppliedPartner.Status", description = "파트너 가입 요청 상태", example = "approved")
+    @Schema(name = "PartnerApplication.Status", description = "파트너 가입 요청 상태", example = "approved")
     public enum Status implements Statusable {
         APPLIED(1),
         APPROVED(2),
@@ -67,11 +67,11 @@ public class AppliedPartner extends Member {
         }
     }
 
-    public void setApprovedStatus() {
+    public void approve() {
         this.status = Status.APPROVED;
     }
 
-    public void setRejectStatus(String rejectReason) {
+    public void reject(String rejectReason) {
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
     }

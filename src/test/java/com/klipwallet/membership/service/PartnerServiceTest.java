@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.klipwallet.membership.dto.member.PartnerDto.AcceptedPartnerDto;
-import com.klipwallet.membership.dto.member.PartnerApplicationDto.AppliedPartnerDto;
+import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
+import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.entity.Partner;
-import com.klipwallet.membership.entity.AppliedPartner;
+import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.repository.PartnerRepository;
-import com.klipwallet.membership.repository.AppliedPartnerRepository;
+import com.klipwallet.membership.repository.PartnerApplicationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,38 +24,38 @@ public class PartnerServiceTest {
     @Autowired
     PartnerService service;
     @Autowired
-    AppliedPartnerRepository appliedPartnerRepository;
+    PartnerApplicationRepository partnerApplicationRepository;
     @Autowired
     PartnerRepository partnerRepository;
 
     @AfterEach
     void afterEach() {
-        appliedPartnerRepository.deleteAll();
+        partnerApplicationRepository.deleteAll();
         partnerRepository.deleteAll();
     }
 
     @Test
-    void getAppliedPartners() {
+    void getPartnerApplications() {
         // given
         List<String> names = Arrays.asList("(주) 그라운드엑스", "회사이름 (주)", "Winnie Corp.");
 
-        AppliedPartner apply1 = new AppliedPartner(names.get(0), "010-1234-5678", "000-00-00001", "example1@groundx.xyz",
-                                                   "192085223830.apps.googleusercontent.com");
-        appliedPartnerRepository.save(apply1);
+        PartnerApplication apply1 = new PartnerApplication(names.get(0), "010-1234-5678", "000-00-00001", "example1@groundx.xyz",
+                                                           "192085223830.apps.googleusercontent.com");
+        partnerApplicationRepository.save(apply1);
 
-        AppliedPartner apply2 = new AppliedPartner(names.get(1), "010-1234-5678", "000-00-00002", "example2@groundx.xyz",
-                                                   "292085223830.apps.googleusercontent.com");
-        appliedPartnerRepository.save(apply2);
-        AppliedPartner apply3 = new AppliedPartner(names.get(2), "010-1234-5678", "000-00-00003", "example3@groundx.xyz",
-                                                   "392085223830.apps.googleusercontent.com");
-        appliedPartnerRepository.save(apply3);
+        PartnerApplication apply2 = new PartnerApplication(names.get(1), "010-1234-5678", "000-00-00002", "example2@groundx.xyz",
+                                                           "292085223830.apps.googleusercontent.com");
+        partnerApplicationRepository.save(apply2);
+        PartnerApplication apply3 = new PartnerApplication(names.get(2), "010-1234-5678", "000-00-00003", "example3@groundx.xyz",
+                                                           "392085223830.apps.googleusercontent.com");
+        partnerApplicationRepository.save(apply3);
 
         // when
-        List<AppliedPartnerDto> partners = service.getAppliedPartners();
+        List<PartnerApplicationRow> partners = service.getPartnerApplications();
 
         // then
         for (int i = 0; i < partners.size(); i++) {
-            AppliedPartnerDto p = partners.get(i);
+            PartnerApplicationRow p = partners.get(i);
             assertThat(p.name()).isEqualTo(names.get(i));
         }
     }
@@ -77,11 +77,11 @@ public class PartnerServiceTest {
         partnerRepository.save(approved3);
 
         // when
-        List<AcceptedPartnerDto> partners = service.getApprovedPartners();
+        List<ApprovedPartnerDto> partners = service.getPartners();
 
         // then
         for (int i = 0; i < partners.size(); i++) {
-            AcceptedPartnerDto p = partners.get(i);
+            ApprovedPartnerDto p = partners.get(i);
             assertThat(p.name()).isEqualTo(names.get(i));
         }
     }

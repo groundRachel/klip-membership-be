@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.member;
+package com.klipwallet.membership.dto.partner;
 
 import java.time.OffsetDateTime;
 
@@ -12,7 +12,7 @@ import com.klipwallet.membership.entity.MemberId;
 @RequiredArgsConstructor
 public class PartnerDto {
     @Schema(description = "[ADMIN] 가입한 파트너 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
-    public record AcceptedPartnerDto(
+    public record ApprovedPartnerDto(
             @NonNull MemberId id,
             @NonNull String name,
             OffsetDateTime createdAt

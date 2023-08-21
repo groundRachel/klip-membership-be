@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.member;
+package com.klipwallet.membership.dto.partnerapplication;
 
 import java.time.OffsetDateTime;
 
@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
-import com.klipwallet.membership.entity.AppliedPartner;
-import com.klipwallet.membership.entity.AppliedPartner.Status;
+import com.klipwallet.membership.entity.PartnerApplication;
+import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.MemberId;
 
 @RequiredArgsConstructor
@@ -25,8 +25,8 @@ public class PartnerApplicationDto {
                               @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber,
                               @NotBlank @Email String email,
                               @NotBlank String oAuthId) {
-        public AppliedPartner toAppliedPartner() {
-            return new AppliedPartner(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
+        public PartnerApplication toPartnerApplication() {
+            return new PartnerApplication(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
         }
     }
 
@@ -39,7 +39,7 @@ public class PartnerApplicationDto {
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
-    public record AppliedPartnerDto(
+    public record PartnerApplicationRow(
             @NonNull MemberId id,
             @NonNull String name,
             OffsetDateTime createdAt,
@@ -47,14 +47,8 @@ public class PartnerApplicationDto {
             String rejectReason
     ) {}
 
-    @Schema(description = "[ADMIN] 파트너 신청 승인 DTO", accessMode = AccessMode.WRITE_ONLY)
-    public record ApproveRequest(
-            @NonNull MemberId id
-    ) {}
-
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record RejectRequest(
-            @NonNull MemberId id,
             String rejectReason
     ) {}
 }
