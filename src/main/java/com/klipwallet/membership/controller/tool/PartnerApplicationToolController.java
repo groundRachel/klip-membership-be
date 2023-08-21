@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
-import com.klipwallet.membership.service.PartnerService;
+import com.klipwallet.membership.service.PartnerApplicationService;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -24,8 +24,8 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/tool/v1/partner-applications")
 @RequiredArgsConstructor
-public class PartnerToolController {
-    private final PartnerService partnerService;
+public class PartnerApplicationToolController {
+    private final PartnerApplicationService partnerApplicationService;
 
     @Operation(summary = "파트너 가입 요청", description = "파트너가 구글 인증 후 가입 요청 보냄. GX의 admin이 승인을 해야 가입됨.")
     @ApiResponses({
@@ -36,6 +36,6 @@ public class PartnerToolController {
     @PostMapping("/apply")
     @ResponseStatus(CREATED)
     public PartnerApplicationDto.ApplyResult apply(@Valid @RequestBody PartnerApplicationDto.Application body) {
-        return partnerService.apply(body);
+        return partnerApplicationService.apply(body);
     }
 }

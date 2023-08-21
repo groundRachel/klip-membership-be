@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Disabled("Test가 깨져서 우선 비활성화 처리함") // FIXME @Winnie
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PartnerToolControllerIntegrationTest {
+public class PartnerApplicationToolControllerIntegrationTest {
     @WithAuthenticatedUser(authorities = "OAUTH2_USER")
     @DisplayName("파트너 가입 요청 성공")
     @Test

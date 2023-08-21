@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
-import com.klipwallet.membership.service.PartnerService;
+import com.klipwallet.membership.service.PartnerApplicationService;
 
 @Tag(name = "Admin.PartnerApplication", description = "Admin의 파트너 가입 요청 관리 API")
 @RestController
 @RequestMapping("/admin/v1/partner-applications")
 @RequiredArgsConstructor
 public class PartnerApplicationAdminController {
-    private final PartnerService partnerService;
+    private final PartnerApplicationService partnerApplicationService;
 
     @Operation(summary = "가입 요청한 파트너 목록 조회")
     @ApiResponses({
@@ -37,7 +37,7 @@ public class PartnerApplicationAdminController {
     })
     @GetMapping
     public List<PartnerApplicationRow> getPartnerApplications() {
-        return partnerService.getPartnerApplications();
+        return partnerApplicationService.getPartnerApplications();
     }
 
     @Operation(summary = "요청한 파트너 승인")
@@ -49,7 +49,7 @@ public class PartnerApplicationAdminController {
     })
     @PostMapping("/{applicationId}/approve")
     public void approvePartner(@Parameter(description = "승인 할 파트너 요청 Id", required = true, example = "3") @PathVariable Integer applicationId) {
-        partnerService.approve(applicationId);
+        partnerApplicationService.approve(applicationId);
     }
 
     @Operation(summary = "요청한 파트너 거절")
@@ -62,6 +62,6 @@ public class PartnerApplicationAdminController {
     @PostMapping("/{applicationId}/reject")
     public void rejectPartner(@Parameter(description = "거절 할 파트너 요청 Id", required = true, example = "3") @PathVariable Integer applicationId,
                               @RequestBody @Valid RejectRequest body) {
-        partnerService.reject(applicationId, body);
+        partnerApplicationService.reject(applicationId, body);
     }
 }
