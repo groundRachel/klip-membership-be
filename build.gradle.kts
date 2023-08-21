@@ -18,16 +18,24 @@ java {
 
 jib {
     from {
-        image = "eclipse-temurin:17-jdk-alpine"
+        image = "amazoncorretto:17.0.0-alpine"
     }
     to {
         image = System.getenv("ECR_REGISTRY") + "/" + System.getenv("ECR_REPOSITORY")
         tags = setOf(System.getenv("IMAGE_TAG") ?: "default_tag")
     }
     container {
-        jvmFlags = listOf("-Xms256m", "-Xmx256m")
+        val env = System.getenv("ENV") ?: "dev" 
+        val jvmOptions = "-Dspring.active.profiles=" + env
+
+        jvmFlags = listOf(
+            System.getenv("JVM_XMS") ?: "-Xms256m", 
+            System.getenv("JVM_XMX") ?: "-Xmx256m",
+            jvmOptions
+        )
     }
 }
+
 
 configurations {
     compileOnly {
