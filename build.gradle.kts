@@ -18,14 +18,14 @@ java {
 
 jib {
     from {
-        image = "amazoncorretto:17.0.0-alpine"
+        image = "amazoncorretto:17-alpine-jdk"
     }
     to {
         image = System.getenv("ECR_REGISTRY") + "/" + System.getenv("ECR_REPOSITORY")
         tags = setOf(System.getenv("IMAGE_TAG") ?: "default_tag")
     }
     container {
-        val env = System.getenv("ENV") ?: "dev" 
+        val env = System.getenv("ENV") 
         val jvmOptions = "-Dspring.active.profiles=" + env
 
         jvmFlags = listOf(
@@ -35,7 +35,6 @@ jib {
         )
     }
 }
-
 
 configurations {
     compileOnly {
