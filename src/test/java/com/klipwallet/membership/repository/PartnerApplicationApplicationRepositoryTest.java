@@ -34,16 +34,16 @@ class PartnerApplicationApplicationRepositoryTest {
 
         em.flush();
         em.clear();
-        assertThat(saved.getMemberId()).isNotNull();
+        assertThat(saved.getId()).isNotNull();
 
         PartnerApplication findUser = partnerApplicationRepository.findById(saved.getId())
                                                                   .orElse(null);
         assertThat(findUser).isNotNull();
-        assertThat(findUser.getMemberId()).isNotNull();
+        assertThat(findUser.getId()).isNotNull();
         assertThat(findUser.getCreatedAt()).isBefore(LocalDateTime.now());
-        assertThat(findUser.getCreatedBy()).isEqualTo(new MemberId(2));
+        assertThat(findUser.getCreatorId()).isEqualTo(new MemberId(2));
         assertThat(findUser.getUpdatedAt()).isBefore(LocalDateTime.now());
-        assertThat(findUser.getUpdatedBy()).isEqualTo(new MemberId(2));
+        assertThat(findUser.getUpdaterId()).isEqualTo(new MemberId(2));
         assertThat(saved).isEqualTo(findUser);
     }
 }

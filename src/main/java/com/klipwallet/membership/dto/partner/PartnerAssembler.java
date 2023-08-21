@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 
@@ -18,9 +19,10 @@ public class PartnerAssembler {
     private final DateTimeAssembler dateTimeAssembler;
 
     @NonNull
-    public Partner toPartner(@NonNull PartnerApplication partnerApplication) {
-        return new Partner(partnerApplication.getName(), partnerApplication.getPhoneNumber(), partnerApplication.getBusinessRegistrationNumber(),
-                           partnerApplication.getEmail(), partnerApplication.getOAuthId());
+    public Partner toPartner(@NonNull PartnerApplication partnerApplication, MemberId creator) {
+        return new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
+                           partnerApplication.getBusinessRegistrationNumber(),
+                           partnerApplication.getEmail(), partnerApplication.getOAuthId(), creator);
     }
 
     @NonNull

@@ -16,12 +16,13 @@ public class Partner extends Member {
     private String phoneNumber;
     private String businessRegistrationNumber;
 
-    public Partner(String name, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
+    public Partner(String name, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId, MemberId creator) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
         this.email = email;
         this.oAuthId = oAuthId;
+        createBy(creator);
     }
 
     public Partner() {

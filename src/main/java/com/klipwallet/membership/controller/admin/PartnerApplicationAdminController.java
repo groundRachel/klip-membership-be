@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
+import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
 @Tag(name = "Admin.PartnerApplication", description = "Admin의 파트너 가입 요청 관리 API")
@@ -48,8 +50,10 @@ public class PartnerApplicationAdminController {
             @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PostMapping("/{applicationId}/approve")
-    public void approvePartner(@Parameter(description = "승인 할 파트너 요청 Id", required = true, example = "3") @PathVariable Integer applicationId) {
-        partnerApplicationService.approve(applicationId);
+    public void approvePartner(
+            @Parameter(description = "승인 할 파트너 요청 Id", required = true, example = "3") @PathVariable Integer applicationId,
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        partnerApplicationService.approve(applicationId, user);
     }
 
     @Operation(summary = "요청한 파트너 거절")
@@ -61,7 +65,8 @@ public class PartnerApplicationAdminController {
     })
     @PostMapping("/{applicationId}/reject")
     public void rejectPartner(@Parameter(description = "거절 할 파트너 요청 Id", required = true, example = "3") @PathVariable Integer applicationId,
-                              @RequestBody @Valid RejectRequest body) {
-        partnerApplicationService.reject(applicationId, body);
+                              @RequestBody @Valid RejectRequest body,
+                              @AuthenticationPrincipal AuthenticatedUser user) {
+        partnerApplicationService.reject(applicationId, body, user);
     }
 }

@@ -1,6 +1,10 @@
 package com.klipwallet.membership.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -15,27 +19,50 @@ import org.springframework.lang.Nullable;
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class PartnerApplication extends Member {
-    // TODO @winnie-byun Do not extend member
+public class PartnerApplication extends BaseEntity<PartnerApplication> {
     // TODO @winnie-byun https://groundx.atlassian.net/browse/KLDV-3069?focusedCommentId=195198
 
-    private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    @Column(nullable = false)
+    private String businessName;
+    @Column(nullable = false)
     private String phoneNumber;
+    // NOTE : 사업자번호, 이메일은 not unique
+    // 이유: admin이 요청 거절 시, DB에 데이터는 남아 있으며 email에 대해 중복 지원 가능
+    @Column(nullable = false)
     private String businessRegistrationNumber;
+
+    @Column(nullable = false)
+    String email;
+    @Column(nullable = false)
+    String oAuthId;
 
     private Status status;
     private String rejectReason;
 
-    public PartnerApplication(String name, String phoneNumber, String businessRegistrationNumber, String email, @NonNull String oAuthId) {
-        this.name = name;
+
+    public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, @NonNull String oAuthId,
+                              MemberId creatorId) {
+        this.businessName = businessName;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
         this.status = Status.APPLIED;
         this.email = email;
         this.oAuthId = oAuthId;
+        createBy(creatorId);
     }
 
     public PartnerApplication() {
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Schema(name = "PartnerApplication.Status", description = "파트너 가입 요청 상태", example = "approved")
@@ -67,12 +94,16 @@ public class PartnerApplication extends Member {
         }
     }
 
-    public void approve() {
+    public PartnerApplication approve(MemberId updater) {
         this.status = Status.APPROVED;
+        updateBy(updater);
+        return this;
     }
 
-    public void reject(String rejectReason) {
+    public PartnerApplication reject(String rejectReason, MemberId updater) {
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
+        updateBy(updater);
+        return this;
     }
 }
