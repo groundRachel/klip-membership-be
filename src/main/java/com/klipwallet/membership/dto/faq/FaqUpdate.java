@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 
 import com.klipwallet.membership.entity.AuthenticatedUser;
-import com.klipwallet.membership.entity.Faq.Status;
 
 @Schema(description = "FAQ 수정 DTO", accessMode = AccessMode.WRITE_ONLY)
 public record FaqUpdate(
@@ -16,12 +15,10 @@ public record FaqUpdate(
         String title,
         @Schema(description = "본문", example = "<p>GX 파트너는 누구나 가입할 수 있습니다.</p>")
         @NotBlank
-        String body,
-        @Schema(description = "FAQ 상태")
-        Status status) {
+        String body) {
 
     @com.fasterxml.jackson.annotation.JsonIgnore
     public com.klipwallet.membership.entity.FaqUpdatable toUpdatable(AuthenticatedUser user) {
-        return new FaqUpdatable(this.title(), this.body(), this.status(), user.getMemberId());
+        return new FaqUpdatable(this.title(), this.body(), user.getMemberId());
     }
 }

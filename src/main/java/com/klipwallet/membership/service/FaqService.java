@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.klipwallet.membership.dto.faq.FaqAssembler;
 import com.klipwallet.membership.dto.faq.FaqCreate;
 import com.klipwallet.membership.dto.faq.FaqDetail;
+import com.klipwallet.membership.dto.faq.FaqStatus;
 import com.klipwallet.membership.dto.faq.FaqSummary;
 import com.klipwallet.membership.dto.faq.FaqUpdate;
 import com.klipwallet.membership.entity.AuthenticatedUser;
@@ -27,7 +28,7 @@ public class FaqService {
      *
      * @param command 생성할 FAQ 내용
      * @param user    생성자
-     * @return 생성된 공지사항 요약
+     * @return 생성된 FAQ 요약
      */
     @Transactional
     public FaqSummary create(FaqCreate command, AuthenticatedUser user) {
@@ -53,6 +54,22 @@ public class FaqService {
         Faq saved = faqRepository.save(faq);
 
         return faqAssembler.toDetail(saved);
+    }
+
+    /**
+     * FAQ 상태 변경
+     *
+     * @param faqId 수정할 FAQ ID
+     * @param command  상태 변경 DTO
+     * @param user     수정자
+     * @return 변경된 상태 DTO
+     */
+    @Transactional
+    public FaqStatus changeStatus(Integer faqId, FaqStatus command, AuthenticatedUser user) {
+        Faq faq = tryGetNotice(faqId);
+        faq.changeStatus(command.status(), user.getMemberId());
+        Faq saved = faqRepository.save(faq);
+        return new FaqStatus(saved.getStatus());
     }
 
     private Faq tryGetNotice(Integer faqId) {

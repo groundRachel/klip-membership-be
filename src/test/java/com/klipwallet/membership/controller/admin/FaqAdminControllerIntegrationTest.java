@@ -106,8 +106,7 @@ class FaqAdminControllerIntegrationTest {
         String body = """
                       {
                         "title": "멤버십 툴은 어떻게 사용하나요?",
-                        "body": "<p>아래 링크를 통해 확인하실 수 있습니다.</p>",
-                        "status": "active"
+                        "body": "<p>아래 링크를 통해 확인하실 수 있습니다.</p>"
                       }
                       """;
         mvc.perform(put("/admin/v1/faqs/{0}", faqId)
@@ -117,7 +116,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").value(faqId))
            .andExpect(jsonPath("$.title").value("멤버십 툴은 어떻게 사용하나요?"))
            .andExpect(jsonPath("$.body").value("<p>아래 링크를 통해 확인하실 수 있습니다.</p>"))
-           .andExpect(jsonPath("$.status").value(Status.ACTIVE.toDisplay()))
+           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(24))
@@ -135,8 +134,7 @@ class FaqAdminControllerIntegrationTest {
         String body = """
                       {
                         "title": "멤버십 툴은 어떻게 사용하나요?",
-                        "body": "",
-                        "status": ""
+                        "body": ""
                       }
                       """;
         mvc.perform(put("/admin/v1/faqs/{0}", faqId)
@@ -146,6 +144,24 @@ class FaqAdminControllerIntegrationTest {
         // TODO @Jordan 적절한 BadRequest 예외 처리(DefaultHandlerExceptionResolver, MethodArgumentNotValidException)
         //           .andExpect(jsonPath("$.code").value(1024))
         //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
+    }
+
+    @WithAdminUser(memberId = 24)
+    @DisplayName("관리자 FAQ 상태 변경 > 200")
+    @Test
+    void changeStatus(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer faqId = lastNoticeId;
+        String body = """
+                      {
+                        "status": "live"
+                      }
+                      """;
+        mvc.perform(put("/admin/v1/faqs/{0}/status", faqId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()));
     }
 
     @Disabled("/oauth2/authorization/google 으로 redirect 되고 있어서 수정이 요구됨.")

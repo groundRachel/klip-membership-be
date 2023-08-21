@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
 import com.klipwallet.membership.dto.member.MemberSummary;
-import com.klipwallet.membership.entity.BaseMeta;
 import com.klipwallet.membership.entity.Faq;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.service.MemberAssembler;
@@ -22,12 +21,12 @@ public class FaqAssembler {
     private final MemberAssembler memberAssembler;
     @Nonnull
     public FaqDetail toDetail(@NonNull Faq faq) {
-        BaseMeta base = faq.getBase();
-        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMap(base.getCreatedBy(), base.getUpdatedBy());
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMap(faq.getAccessorIds());
         return new FaqDetail(faq.getId(), faq.getTitle(), faq.getBody(), faq.getStatus(),
-                             dateTimeAssembler.toOffsetDateTime(base.getCreatedAt()),
-                             dateTimeAssembler.toOffsetDateTime(base.getUpdatedAt()),
-                             members.getOrDefault(base.getCreatedBy(), MemberSummary.deactivated(base.getCreatedBy())),
-                             members.getOrDefault(base.getUpdatedBy(), MemberSummary.deactivated(base.getUpdatedBy())));
+                             dateTimeAssembler.toOffsetDateTime(faq.getLivedAt()),
+                             dateTimeAssembler.toOffsetDateTime(faq.getCreatedAt()),
+                             dateTimeAssembler.toOffsetDateTime(faq.getUpdatedAt()),
+                             members.getOrDefault(faq.getCreatorId(), MemberSummary.deactivated(faq.getCreatorId())),
+                             members.getOrDefault(faq.getUpdaterId(), MemberSummary.deactivated(faq.getUpdaterId())));
     }
 }

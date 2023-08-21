@@ -18,6 +18,8 @@ public record FaqDetail(
         String body,
         @Schema(description = "상태", example = "live")
         Status status,
+        @Schema(description = "최근Live일시", example = "2023-07-24T15:38:24.005795+09:00")
+        OffsetDateTime livedAt,
         @Schema(description = "생성일시", example = "2023-07-24T15:38:24.005795+09:00")
         OffsetDateTime createdAt,
         @Schema(description = "마지막 수정일시", example = "2023-07-24T15:38:24.005795+09:00")

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.faq.FaqCreate;
 import com.klipwallet.membership.dto.faq.FaqDetail;
+import com.klipwallet.membership.dto.faq.FaqStatus;
 import com.klipwallet.membership.dto.faq.FaqSummary;
 import com.klipwallet.membership.dto.faq.FaqUpdate;
 import com.klipwallet.membership.entity.AuthenticatedUser;
@@ -62,5 +63,20 @@ public class FaqAdminController {
             @Valid @RequestBody FaqUpdate command,
             @AuthenticationPrincipal AuthenticatedUser user) {
         return faqService.update(faqId, command, user);
+    }
+
+    @Operation(summary = "FAQ 샹태 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "FAQ 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
+            @ApiResponse(responseCode = "403", description = "FAQ 수정 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 FAQ", content = @Content(schema = @Schema(ref = "Error404")))
+    })
+    @PutMapping("/{faqId}/status")
+    public FaqStatus changeStatus(
+            @Parameter(description = "faq id", required = true, example = "2") @PathVariable Integer faqId,
+            @Valid @RequestBody FaqStatus command,
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        return faqService.changeStatus(faqId, command, user);
     }
 }
