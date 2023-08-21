@@ -40,9 +40,12 @@ public class NoticeDto {
     }
 
     @Schema(description = "공지사항 요약 DTO", accessMode = AccessMode.READ_ONLY)
-    public record Summary(@NonNull @Schema(description = "공지사항 ID", example = "2") Integer id) {
-        public Summary(Notice saved) {
-            this(saved.getId());
+    public record Summary(
+            @NonNull @Schema(description = "공지사항 ID", example = "2") Integer id,
+            @NonNull @Schema(description = "제목", minLength = 1, maxLength = 200, example = "클립 멤버십 툴이 공식 오픈하였습니다.")
+            String title) {
+        public Summary(Notice entity) {
+            this(entity.getId(), entity.getTitle());
         }
     }
 
@@ -127,6 +130,8 @@ public class NoticeDto {
             String title,
             @Schema(description = "고정 공지 여부", example = "false")
             boolean primary,
+            @Schema(description = "Live일시", example = "2023-07-24T15:38:24.005795+09:00")
+            OffsetDateTime livedAt,
             @Schema(description = "생성일시", example = "2023-07-24T15:38:24.005795+09:00")
             OffsetDateTime createdAt,
             @Schema(description = "생성자")

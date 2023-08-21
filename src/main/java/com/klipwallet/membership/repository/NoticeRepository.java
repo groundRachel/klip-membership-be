@@ -1,6 +1,7 @@
 package com.klipwallet.membership.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,10 +14,12 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     /**
      * 고정 공지 여부로 목록 조회
      *
-     * @param isPrimary 고정 공지 여부
+     * @param isPrimary if true: 고정 공지, false: 일반 공지
      * @return 고정 공지 목록
      */
     List<Notice> findAllByPrimary(boolean isPrimary);
+
+    Optional<Notice> findTopByPrimaryAndStatus(boolean isPrimary, Status status, Sort sort);
 
     /**
      * 상태 검색한 정렬된 공지 목록 조회

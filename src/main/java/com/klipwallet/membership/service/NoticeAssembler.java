@@ -61,6 +61,7 @@ public class NoticeAssembler {
         MemberId creatorId = entity.getCreatorId();
         MemberId updaterId = entity.getUpdaterId();
         return new Row(entity.getId(), entity.getTitle(), entity.isPrimary(),
+                       dtAssembler.toOffsetDateTime(entity.getLivedAt()),
                        dtAssembler.toOffsetDateTime(entity.getCreatedAt()),
                        members.getOrDefault(creatorId, MemberSummary.deactivated(creatorId)),
                        dtAssembler.toOffsetDateTime(entity.getUpdatedAt()),

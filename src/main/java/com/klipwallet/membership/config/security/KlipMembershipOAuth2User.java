@@ -39,7 +39,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     // FIXME @Jordan Add Partner arg. Processing ADMIN, SUPER_ADMIN
     static KlipMembershipOAuth2User memberOnGoogle(OAuth2User googleUser) {
         return new KlipMembershipOAuth2User(new MemberId(2), googleUser.getAttributes(),
-                                            AuthorityUtils.createAuthorityList("ROLE_PARTNER"),
+                                            AuthorityUtils.createAuthorityList("ROLE_PARTNER", "ROLE_ADMIN"),
                                             googleUser.getName(),
                                             getGoogleEmail(googleUser.getAttributes()));
     }

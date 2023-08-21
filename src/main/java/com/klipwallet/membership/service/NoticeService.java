@@ -17,6 +17,7 @@ import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.entity.NoticeUpdatable;
 import com.klipwallet.membership.entity.PrimaryNoticeChanged;
 import com.klipwallet.membership.exception.NoticeNotFoundException;
+import com.klipwallet.membership.exception.PrimaryNoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
 
 import static com.klipwallet.membership.entity.Notice.Status.LIVE;
@@ -42,7 +43,7 @@ public class NoticeService {
     }
 
     /**
-     * 공지사항 1건 상세조회
+     * 공지사항 1건 상세 조회
      *
      * @param noticeId 조회할 공지사항 ID
      * @return 공지사항 상세 DTO
@@ -56,6 +57,43 @@ public class NoticeService {
     private Notice tryGetNotice(Integer noticeId) {
         return noticeRepository.findById(noticeId)
                                .orElseThrow(() -> new NoticeNotFoundException(noticeId));
+    }
+
+    /**
+     * Live 공지사항 1건 상세 조회
+     *
+     * @param noticeId 조회할 공지사항 ID
+     * @return 공지사항 상세 DTO
+     * @throws com.klipwallet.membership.exception.NoticeNotFoundException LIVE 상태가 아니거나, 존재하지 않는 경우 발생
+     */
+    @Transactional(readOnly = true)
+    public NoticeDto.Detail getLivedDetail(Integer noticeId) {
+        Notice notice = tryGetLivedNotice(noticeId);
+        return noticeAssembler.toDetail(notice);
+    }
+
+    private Notice tryGetLivedNotice(Integer noticeId) {
+        return noticeRepository.findById(noticeId)
+                               .filter(Notice::isLive)
+                               .orElseThrow(() -> new NoticeNotFoundException(noticeId));
+    }
+
+    /**
+     * 고정 공지 조회(1건)
+     *
+     * @return 고정 공지 요약 DTO
+     * @throws com.klipwallet.membership.exception.NoticeNotFoundException 고정 공지가 존재하지 않는 경우
+     */
+    @Transactional(readOnly = true)
+    public Summary getPrimaryNotice() {
+        return noticeRepository.findTopByPrimaryAndStatus(true, LIVE, sortLivedAtDesc())
+                               .map(Summary::new)
+                               .orElseThrow(PrimaryNoticeNotFoundException::new);
+    }
+
+    // order by livedAt desc (from Notice)
+    private Sort sortLivedAtDesc() {
+        return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
     }
 
     /**
@@ -82,10 +120,10 @@ public class NoticeService {
     }
 
     /**
-     * 고정 공지가 변경될 시 후처리를 위한 이벤트 구독
+     * 고정 공지가 변경될 시 처리를 위한 이벤트 구독.
      *
      * <p>
-     * 기존 고정 공지는 끄기. 최신 고정 공지는 이벤트 발행 전 설정되어 있음.
+     * 기존 고정 공지는 꺼야함.
      * 한 트랜잭션으로 처리하기 위해서 {@code BEFORE_COMMIT}으로 처리
      * </p>
      *
@@ -94,11 +132,11 @@ public class NoticeService {
      * @see #update(Integer, com.klipwallet.membership.dto.notice.NoticeDto.Update, com.klipwallet.membership.entity.AuthenticatedUser)
      */
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void subscribePrimaryNoticeChanged(PrimaryNoticeChanged event) {
+    public void subscribePrimaryNoticeChanged(@SuppressWarnings("unused") PrimaryNoticeChanged event) {
         Integer primaryNoticeId = event.getPrimaryNoticeId();
         List<Notice> mainNotices = noticeRepository.findAllByPrimary(true);
         for (Notice notice : mainNotices) {
-            if (notice.equalId(primaryNoticeId)) { // 현재 고정 공지는 제외!
+            if (notice.equalId(primaryNoticeId)) {
                 continue;
             }
             notice.primaryOff();
@@ -142,7 +180,7 @@ public class NoticeService {
     private Sort toSort(Notice.Status status) {
         if (status == LIVE) {
             // order by livedAt desc
-            return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
+            return sortLivedAtDesc();
         }
         // order by updatedAt desc
         return Sort.sort(Notice.class).by(Notice::getUpdatedAt).descending();
