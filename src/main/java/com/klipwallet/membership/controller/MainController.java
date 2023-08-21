@@ -25,7 +25,7 @@ public class MainController {
     @GetMapping({"", "/"})
     public MainMeta root() {
         if (mainMeta == null) {
-            return newMainMeta();
+            this.mainMeta = newMainMeta();
         }
         return mainMeta;
     }
