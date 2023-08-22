@@ -43,6 +43,7 @@ public class PartnerApplicationServiceTest {
         PartnerApplication apply3 = new PartnerApplication(names.get(2), "010-1234-5678", "000-00-00003", "example3@groundx.xyz",
                                                            "392085223830.apps.googleusercontent.com");
         partnerApplicationRepository.save(apply3);
+        partnerApplicationRepository.flush();
 
         // when
         List<PartnerApplicationRow> partners = service.getPartnerApplications();

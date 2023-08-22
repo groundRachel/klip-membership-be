@@ -10,10 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.entity.Partner;
-import com.klipwallet.membership.entity.PartnerApplication;
-import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +43,7 @@ public class PartnerServiceTest {
         Partner approved3 = new Partner(names.get(2), "010-1234-5678", "000-00-00003", "example3@groundx.xyz",
                                         "392085223830.apps.googleusercontent.com");
         partnerRepository.save(approved3);
+        partnerRepository.flush();
 
         // when
         List<ApprovedPartnerDto> partners = service.getPartners();

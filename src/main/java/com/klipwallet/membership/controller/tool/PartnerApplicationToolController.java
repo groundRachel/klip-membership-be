@@ -33,7 +33,7 @@ public class PartnerApplicationToolController {
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
             @ApiResponse(responseCode = "403", description = "파트너 가입 요청 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
-    @PostMapping("/apply")
+    @PostMapping
     @ResponseStatus(CREATED)
     public PartnerApplicationDto.ApplyResult apply(@Valid @RequestBody PartnerApplicationDto.Application body) {
         return partnerApplicationService.apply(body);

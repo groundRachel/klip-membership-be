@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +32,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
                                "oAuthId": "292085223830.apps.googleusercontent.com"
                              }
                              """;
-        mvc.perform(post("/tool/v1/partners/apply")
+        mvc.perform(post("/tool/v1/partner-applications")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
            .andExpect(status().isCreated())
@@ -56,7 +55,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
                                "oAuthId": "292085223830.apps.googleusercontent.com"
                              }
                              """;
-        mvc.perform(post("/tool/partners/apply")
+        mvc.perform(post("/tool/v1/partner-applications")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(requestJson))
            .andExpect(status().isForbidden());
