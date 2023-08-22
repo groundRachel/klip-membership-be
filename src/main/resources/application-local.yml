@@ -25,6 +25,12 @@ management:
         include: '*'
 
 spring:
+  data:
+    web:
+      pageable:
+        page-parameter: page
+        one-indexed-parameters: true
+        max-page-size: 1000
   cloud:
     openfeign:
       client:

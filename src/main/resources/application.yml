@@ -59,6 +59,11 @@ spring:
     redis:
       repositories:
         enabled: false
+    web:
+      pageable:
+        page-parameter: page
+        one-indexed-parameters: true
+        max-page-size: 1000
   devtools:
     livereload:
       enabled: false

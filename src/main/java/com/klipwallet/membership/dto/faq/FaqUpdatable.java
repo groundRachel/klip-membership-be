@@ -7,7 +7,7 @@ import com.klipwallet.membership.entity.MemberId;
 
 public record FaqUpdatable(String title,
                            String body,
-                           MemberId updatedBy) implements com.klipwallet.membership.entity.FaqUpdatable {
+                           MemberId updaterId) implements com.klipwallet.membership.entity.FaqUpdatable {
     @Nonnull
     @Override
     public String getTitle() {
@@ -22,7 +22,7 @@ public record FaqUpdatable(String title,
 
     @Nonnull
     @Override
-    public MemberId getUpdater() {
-        return this.updatedBy();
+    public MemberId getUpdaterId() {
+        return this.updaterId();
     }
 }
