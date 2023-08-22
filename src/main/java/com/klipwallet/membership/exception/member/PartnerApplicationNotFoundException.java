@@ -7,7 +7,7 @@ import com.klipwallet.membership.exception.ErrorCode;
 import com.klipwallet.membership.exception.NotFoundException;
 
 public class PartnerApplicationNotFoundException extends NotFoundException {
-    public PartnerApplicationNotFoundException(@NonNull Integer partnerId) {
-        super(ErrorCode.PARTNER_APPLICATION_NOT_FOUND, partnerId);
+    public PartnerApplicationNotFoundException(@NonNull Integer partnerApplicationId) {
+        super(ErrorCode.PARTNER_APPLICATION_NOT_FOUND, partnerApplicationId);
     }
 }
