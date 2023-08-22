@@ -92,12 +92,12 @@ public class PartnerApplicationService {
         partnerApplication.approve(user.getMemberId());
         partnerApplicationRepository.save(partnerApplication);
 
-        Partner partner = partnerAssembler.toPartner(partnerApplication, user.getMemberId());
-        partnerRepository.save(partner);
+        partnerRepository.save(new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
+                                           partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
+                                           partnerApplication.getOAuthId(), user.getMemberId()));
 
         // TODO KLDV-3069 send result by email
     }
-
 
     @Transactional
     public void reject(Integer applicationId, RejectRequest body, AuthenticatedUser user) {

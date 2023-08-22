@@ -48,7 +48,7 @@ public class PartnerApplication {
     private LocalDateTime createdAt;
     private LocalDateTime processedAt;
     private MemberId processorId;
-    
+
     public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
         this.businessName = businessName;
         this.phoneNumber = phoneNumber;
@@ -102,10 +102,9 @@ public class PartnerApplication {
         return this;
     }
 
-    public PartnerApplication reject(String rejectReason, MemberId processor) {
+    public void reject(String rejectReason, MemberId processor) {
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
         processedBy(processor);
-        return this;
     }
 }
