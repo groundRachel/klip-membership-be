@@ -23,8 +23,13 @@ spring:
   cloud:
     vault:
       enabled: false
+      host: vault.dev.klaytn.com
+      port: 443
+      token: ${VAULT_TOKEN}
+#  config:
+#    import: vault://klip/klip-membership
   datasource:
-    url: jdbc:h2:mem:local;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
+    url: jdbc:h2:mem:local;MODE=MYSQL;DATABASE_TO_LOWER=TRUE; # Vault
   flyway:
     enabled: false
   jpa:

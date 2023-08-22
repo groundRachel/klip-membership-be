@@ -26,6 +26,9 @@ server:
       enabled: false
 
 spring:
+  cloud:
+    vault:
+      enabled: false
   data:
     redis:
       repositories:
