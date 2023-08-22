@@ -66,8 +66,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faq/*"),
                                            antMatcher("/tool/v1/members/me")).permitAll()
-                          .requestMatchers(antMatcher("/tool/v1/partners/apply")).hasAuthority(OAUTH2_USER)
-                          .requestMatchers(antMatcher("/tool/**")).hasRole(PARTNER)
+                          .requestMatchers(antMatcher("/tool/v1/partner-applications")).hasAuthority(OAUTH2_USER)
+                          .requestMatchers(antMatcher("/tool/v1/**")).hasRole(PARTNER)
                           .requestMatchers(antMatcher("/admin/v1/**")).hasRole(ADMIN)
                           .requestMatchers(antMatcher("/error/**")).permitAll()
                           .requestMatchers(antMatcher("/actuator/**")).permitAll()      // actuator

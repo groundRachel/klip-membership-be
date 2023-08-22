@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
-import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -39,7 +39,7 @@ public class PartnerApplicationToolController {
     @ResponseStatus(CREATED)
     public PartnerApplicationDto.ApplyResult apply(
             @Valid @RequestBody PartnerApplicationDto.Application body,
-            @AuthenticationPrincipal AuthenticatedUser user) {
+            @AuthenticationPrincipal OAuth2User user) {
         return partnerApplicationService.apply(body, user);
     }
 }

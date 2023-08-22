@@ -18,9 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
-import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.ApplyResult;
-import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
 
@@ -54,7 +52,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
         partnerApplicationRepository.flush();
     }
 
-    @WithPartnerUser(memberId = 2, email = "example@groundx.xyz")
+    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016")
     @DisplayName("파트너 가입 요청 성공")
     @Test
     Integer apply(@Autowired MockMvc mvc) throws Exception {
@@ -64,8 +62,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
                               .andExpect(status().isCreated())
                               .andExpect(jsonPath("$.id").exists())
                               .andExpect(jsonPath("$.name").value("(주) 그라운드엑스"))
-                              .andExpect(jsonPath("$.createdAt").exists())
-                              .andExpect(jsonPath("$.updatedAt").exists());
+                              .andExpect(jsonPath("$.createdAt").exists());
 
         Integer applicationId = getId(ra);
         PartnerApplication partnerApplication = partnerApplicationRepository.findById(applicationId).orElseThrow();
@@ -73,14 +70,12 @@ public class PartnerApplicationToolControllerIntegrationTest {
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partnerApplication.getEmail()).isEqualTo("example@groundx.xyz");
         assertThat(partnerApplication.getOAuthId()).isEqualTo("115419318504487812016");
-
         assertThat(partnerApplication.getCreatedAt()).isNotNull();
-        assertThat(partnerApplication.getUpdatedAt()).isEqualTo(partnerApplication.getCreatedAt());
 
         return applicationId;
     }
 
-    @WithPartnerUser(memberId = 2, email = "example@groundx.xyz")
+    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016")
     @Test
     void apply_duplicated_status_APPLIED(@Autowired MockMvc mvc) throws Exception {
         Integer applicationId = apply(mvc);
@@ -93,7 +88,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
            .andExpect(jsonPath("$.err", containsString("해당 이메일로 진행 중인 요청이 있습니다. ID: %d,".formatted(applicationId))));
     }
 
-    @WithPartnerUser(memberId = 2, email = "example@groundx.xyz")
+    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016")
     @Test
     void apply_duplicated_status_APPROVED(@Autowired MockMvc mvc) throws Exception {
         Integer applicationId = apply(mvc);

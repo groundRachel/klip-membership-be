@@ -24,7 +24,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 
 @Getter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)

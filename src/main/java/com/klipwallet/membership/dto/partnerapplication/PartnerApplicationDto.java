@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 
@@ -24,9 +24,8 @@ public class PartnerApplicationDto {
                               @NotBlank @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$") String phoneNumber,
                               // TODO add validation; requirement from design team
                               @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber) {
-        public PartnerApplication toPartnerApplication(AuthenticatedUser user) {
-            return new PartnerApplication(name, phoneNumber, businessRegistrationNumber, user.getEmail(),
-                                          user.getName(), user.getMemberId());
+        public PartnerApplication toPartnerApplication(OAuth2User user) {
+            return new PartnerApplication(name, phoneNumber, businessRegistrationNumber, user.getAttribute("email"), user.getAttribute("sub"));
         }
     }
 
@@ -34,8 +33,7 @@ public class PartnerApplicationDto {
     public record ApplyResult(
             @NonNull Integer id,
             @NonNull String name,
-            OffsetDateTime createdAt,
-            OffsetDateTime updatedAt
+            OffsetDateTime createdAt
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)

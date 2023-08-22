@@ -20,8 +20,7 @@ public class PartnerApplicationAssembler {
     @NonNull
     public ApplyResult toApplyResult(@NonNull PartnerApplication partnerApplication) {
         return new ApplyResult(partnerApplication.getId(), partnerApplication.getBusinessName(),
-                               dateTimeAssembler.toOffsetDateTime(partnerApplication.getCreatedAt()),
-                               dateTimeAssembler.toOffsetDateTime(partnerApplication.getUpdatedAt()));
+                               dateTimeAssembler.toOffsetDateTime(partnerApplication.getCreatedAt()));
     }
 
     @NonNull

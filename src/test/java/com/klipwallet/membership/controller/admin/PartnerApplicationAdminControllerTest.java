@@ -63,7 +63,7 @@ class PartnerApplicationAdminControllerTest {
     void approveResult_throwAlreadyProcessedToBadRequest(@Autowired MockMvc mvc) throws Exception {
         // given
         PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00001", "exampl-admin-controller1@groundx.xyz",
-                                                          "192085223831.apps.googleusercontent.com", new MemberId(23));
+                                                          "192085223831.apps.googleusercontent.com");
         partnerApplicationRepository.save(apply);
         partnerApplicationRepository.flush();
 
@@ -87,7 +87,7 @@ class PartnerApplicationAdminControllerTest {
     void approveResult_status_APPROVED(@Autowired MockMvc mvc) throws Exception {
         // given
         PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00002", "exampl-admin-controller2@groundx.xyz",
-                                                          "292085223831.apps.googleusercontent.com", new MemberId(23));
+                                                          "292085223831.apps.googleusercontent.com");
         partnerApplicationRepository.save(apply);
         partnerApplicationRepository.flush();
 
@@ -123,7 +123,7 @@ class PartnerApplicationAdminControllerTest {
     void approveResult_status_REJECTED(@Autowired MockMvc mvc) throws Exception {
         // given
         PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00003", "exampl-admin-controller3@groundx.xyz",
-                                                          "392085223831.apps.googleusercontent.com", new MemberId(23));
+                                                          "392085223831.apps.googleusercontent.com");
         partnerApplicationRepository.save(apply);
         partnerApplicationRepository.flush();
 

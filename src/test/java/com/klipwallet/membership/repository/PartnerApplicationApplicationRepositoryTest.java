@@ -41,9 +41,8 @@ class PartnerApplicationApplicationRepositoryTest {
         assertThat(findUser).isNotNull();
         assertThat(findUser.getId()).isNotNull();
         assertThat(findUser.getCreatedAt()).isBefore(LocalDateTime.now());
-        assertThat(findUser.getCreatorId()).isEqualTo(new MemberId(2));
-        assertThat(findUser.getUpdatedAt()).isBefore(LocalDateTime.now());
-        assertThat(findUser.getUpdaterId()).isEqualTo(new MemberId(2));
+        assertThat(findUser.getProcessedAt()).isBefore(LocalDateTime.now());
+        assertThat(findUser.getProcessorId()).isEqualTo(new MemberId(2));
         assertThat(saved).isEqualTo(findUser);
     }
 }

@@ -1,5 +1,7 @@
 package com.klipwallet.membership.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,16 +14,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class PartnerApplication extends BaseEntity<PartnerApplication> {
-    // TODO @winnie-byun https://groundx.atlassian.net/browse/KLDV-3069?focusedCommentId=195198
-
+@ToString
+@EqualsAndHashCode(of = "id")
+public class PartnerApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -30,7 +31,7 @@ public class PartnerApplication extends BaseEntity<PartnerApplication> {
     @Column(nullable = false)
     private String phoneNumber;
     // NOTE : 사업자번호, 이메일은 not unique
-    // 이유: admin이 요청 거절 시, DB에 데이터는 남아 있으며 email에 대해 중복 지원 가능
+    // 이유: admin이 요청 거절 시, DB에 데이터는 남아 있으며 같은 email로 재요청 가능
     @Column(nullable = false)
     private String businessRegistrationNumber;
 
@@ -42,16 +43,21 @@ public class PartnerApplication extends BaseEntity<PartnerApplication> {
     private Status status;
     private String rejectReason;
 
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+    private LocalDateTime processedAt;
+    private MemberId processorId;
 
-    public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, @NonNull String oAuthId,
-                              MemberId creatorId) {
+
+    public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
         this.businessName = businessName;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
         this.status = Status.APPLIED;
         this.email = email;
         this.oAuthId = oAuthId;
-        createBy(creatorId);
+        this.createdAt = LocalDateTime.now();
     }
 
     public PartnerApplication() {
@@ -94,16 +100,21 @@ public class PartnerApplication extends BaseEntity<PartnerApplication> {
         }
     }
 
+    private void processedBy(@NonNull MemberId processorId) {
+        this.processorId = processorId;
+        this.processedAt = LocalDateTime.now();
+    }
+
     public PartnerApplication approve(MemberId updater) {
         this.status = Status.APPROVED;
-        updateBy(updater);
+        processedBy(updater);
         return this;
     }
 
     public PartnerApplication reject(String rejectReason, MemberId updater) {
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
-        updateBy(updater);
+        processedBy(updater);
         return this;
     }
 }

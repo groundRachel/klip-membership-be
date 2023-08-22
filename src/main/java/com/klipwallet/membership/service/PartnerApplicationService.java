@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +36,15 @@ public class PartnerApplicationService {
     private final PartnerAssembler partnerAssembler;
 
 
-    private void canApply(AuthenticatedUser user) {
-        partnerApplicationRepository.findByEmailAndStatusIsIn(user.getEmail(), Arrays.asList(APPLIED, APPROVED))
+    private void canApply(OAuth2User user) {
+        partnerApplicationRepository.findByEmailAndStatusIsIn(user.getAttribute("email"), Arrays.asList(APPLIED, APPROVED))
                                     .ifPresent(s -> {
                                         throw new PartnerApplicationDuplicatedException(s);
                                     });
     }
 
     @Transactional
-    public PartnerApplicationDto.ApplyResult apply(Application body, AuthenticatedUser user) {
+    public PartnerApplicationDto.ApplyResult apply(Application body, OAuth2User user) {
         canApply(user);
 
         PartnerApplication entity = body.toPartnerApplication(user);
@@ -84,7 +85,7 @@ public class PartnerApplicationService {
     public void approve(Integer applicationId, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
         if (ifCanSkipRequest(partnerApplication.getStatus(), APPROVED,
-                             partnerApplication.getUpdaterId(), user.getMemberId())) {
+                             partnerApplication.getProcessorId(), user.getMemberId())) {
             return;
         }
         checkAppliedStatus(partnerApplication);
@@ -103,7 +104,7 @@ public class PartnerApplicationService {
     public void reject(Integer applicationId, RejectRequest body, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
         if (ifCanSkipRequest(partnerApplication.getStatus(), REJECTED,
-                             partnerApplication.getUpdaterId(), user.getMemberId())) {
+                             partnerApplication.getProcessorId(), user.getMemberId())) {
             return;
         }
         checkAppliedStatus(partnerApplication);
