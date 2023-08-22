@@ -116,6 +116,7 @@ public class SpringDocConfig {
         return new Schema<>().type("object").example(pdJson);
     }
 
+    @SuppressWarnings("rawtypes")
     private Schema problemDetail409Schema() {
         var pdJson = toJson(toProblemDetail(CONFLICT, new ConflictException(), "이미 처리된 요청입니다. ID: 3322, 처리상태: approved, 처리자: 8, 처리시각: {3}"));
         return new Schema<>().type("object").example(pdJson);

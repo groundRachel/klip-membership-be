@@ -94,7 +94,7 @@ public class ErrorRaiseController {
     }
 
     @GetMapping("/11")
-    public void raiseTypeMismatchException(@RequestParam("code") Integer code) {
+    public void raiseTypeMismatchException(@SuppressWarnings("unused") @RequestParam("code") Integer code) {
     }
 
     @GetMapping("/12")
