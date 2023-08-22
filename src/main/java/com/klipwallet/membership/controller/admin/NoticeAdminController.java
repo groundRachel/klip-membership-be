@@ -41,7 +41,7 @@ public class NoticeAdminController {
     @Operation(summary = "Admin 공지사항 작성")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "공지사항 작성 성공"),
-            @ApiResponse(responseCode = "400", description = "Invalid RequestBody", content = @Content(schema = @Schema(ref = "Error400"))),
+            @ApiResponse(responseCode = "400", description = "Invalid RequestBody", content = @Content(schema = @Schema(ref = "Error400Fields"))),
     })
     @ResponseStatus(CREATED)
     @PostMapping
@@ -58,7 +58,7 @@ public class NoticeAdminController {
     })
     @GetMapping
     public List<Row> list(
-            @Parameter(description = "필터링 할 공지 상태", required = true, example = "2") @RequestParam("status") Notice.Status status) {
+            @Parameter(description = "필터링 할 공지 상태", required = true, example = "draft") @RequestParam("status") Notice.Status status) {
         return noticeService.getListByStatus(status);
     }
 

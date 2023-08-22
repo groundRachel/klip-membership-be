@@ -20,6 +20,11 @@ management:
     readinessstate:
       enabled: true
 
+server:
+  error:
+    whitelabel:
+      enabled: false
+
 spring:
   data:
     redis:

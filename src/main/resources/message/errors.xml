@@ -4,6 +4,7 @@
     <comment>default(ko)</comment>
     <!-- 400 -->
     <entry key="problemDetail.code.400000">요청이 유효하지 않습니다.</entry>
+    <entry key="problemDetail.code.400001">요청 본문이 유효하지 않습니다. errors를 참고하세요.</entry>
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>
@@ -25,5 +26,9 @@
     <!-- 500 -->
     <entry key="problemDetail.code.500000">내부 서버에서 오류가 발생하였습니다.</entry>
     <entry key="problemDetail.code.500999">알 수 없는 오류가 발생하였습니다.</entry>
+
+    <!-- 503 -->
+    <entry key="problemDetail.code.503000">서비스를 사용할 수 없습니다.</entry>
+    <entry key="problemDetail.code.503001">Service Unavailable Due to async timeout.</entry>
 </properties>
 
