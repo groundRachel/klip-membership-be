@@ -1,6 +1,7 @@
 package com.klipwallet.membership.controller.tool;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -65,7 +66,9 @@ public class PartnerApplicationToolControllerIntegrationTest {
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partnerApplication.getEmail()).isEqualTo("example@groundx.xyz");
         assertThat(partnerApplication.getOAuthId()).isEqualTo("115419318504487812016");
-        assertThat(partnerApplication.getCreatedAt()).isNotNull();
+        assertThat(partnerApplication.getCreatedAt()).isBefore(LocalDateTime.now());
+        assertThat(partnerApplication.getProcessedAt()).isNull();
+        assertThat(partnerApplication.getProcessorId()).isNull();
     }
 
     @NotNull

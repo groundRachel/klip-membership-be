@@ -104,6 +104,8 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
         assertThat(partnerApplication.getOAuthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(APPROVED);
+        assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
+        assertThat(partnerApplication.getProcessorId()).isEqualTo(new MemberId(23));
 
         Partner partner = partnerRepository.findByBusinessRegistrationNumber("100-00-00002").orElseThrow();
         assertThat(partner).isNotNull();
@@ -147,6 +149,8 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getOAuthId()).isEqualTo("392085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(Status.REJECTED);
         assertThat(partnerApplication.getRejectReason()).isEqualTo("정상적이지 않은 사업자번호입니다.");
+        assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
+        assertThat(partnerApplication.getProcessorId()).isEqualTo(new MemberId(23));
 
         partnerRepository.findByBusinessRegistrationNumber("100-00-00003")
                          .ifPresent(p -> {throw new RuntimeException();});
