@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 public enum ErrorCode {
     INVALID_REQUEST(400_000),
+    INVALID_REQUEST_BODY(400_001),
 
     UNAUTHENTICATED(401_000),
     FORBIDDEN(403_000),
@@ -26,6 +27,8 @@ public enum ErrorCode {
     CONFLICT(409_000),
     INTERNAL_SERVER_ERROR(500_000),
     UNKNOWN(500_999),
+    SERVICE_UNAVAILABLE(503_000),
+    ASYNC_REQUEST_TIMEOUT(503_001),
 
     // NOTICE_*
     NOTICE_NOT_FOUND(404_001),
