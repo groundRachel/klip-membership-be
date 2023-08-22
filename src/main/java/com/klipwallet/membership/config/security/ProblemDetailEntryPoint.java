@@ -2,7 +2,6 @@ package com.klipwallet.membership.config.security;
 
 import java.io.IOException;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -27,7 +26,7 @@ public class ProblemDetailEntryPoint implements AuthenticationEntryPoint, Messag
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
+            throws IOException {
         ErrorCode unauthenticated = ErrorCode.UNAUTHENTICATED;
         String message = messageSource.getMessage(unauthenticated.toMessageCode(), null, LocaleContextHolder.getLocale());
         ProblemDetail problemDetail = GlobalRestControllerAdvice.toProblemDetail(unauthenticated, HttpStatus.UNAUTHORIZED, message);
