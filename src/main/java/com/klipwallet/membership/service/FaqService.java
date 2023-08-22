@@ -1,12 +1,22 @@
 package com.klipwallet.membership.service;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.klipwallet.membership.dto.common.Result;
+import com.klipwallet.membership.dto.common.Status;
 import com.klipwallet.membership.dto.faq.FaqAssembler;
 import com.klipwallet.membership.dto.faq.FaqCreate;
 import com.klipwallet.membership.dto.faq.FaqDetail;
+import com.klipwallet.membership.dto.faq.FaqList;
+import com.klipwallet.membership.dto.faq.FaqRow;
 import com.klipwallet.membership.dto.faq.FaqStatus;
 import com.klipwallet.membership.dto.faq.FaqSummary;
 import com.klipwallet.membership.dto.faq.FaqUpdate;
@@ -15,6 +25,8 @@ import com.klipwallet.membership.entity.Faq;
 import com.klipwallet.membership.entity.FaqUpdatable;
 import com.klipwallet.membership.exception.FaqNotFoundException;
 import com.klipwallet.membership.repository.FaqRepository;
+
+import static com.klipwallet.membership.entity.Faq.Status.LIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -75,5 +87,81 @@ public class FaqService {
     private Faq tryGetNotice(Integer faqId) {
         return faqRepository.findById(faqId)
                                .orElseThrow(() -> new FaqNotFoundException(faqId));
+    }
+
+    /**
+     * FAQ 삭제
+     *
+     * @param faqId 수정할 FAQ ID
+     * @return 성공
+     */
+    @Transactional
+    public Result delete(Integer faqId) {
+        Faq faq = tryGetNotice(faqId);
+        faqRepository.delete(faq);
+        return new Result(Status.SUCCESS);
+    }
+
+    /**
+     * FAQ 상세 조회
+     *
+     * @param faqId 조회할 FAQ ID
+     * @return FAQ 상세
+     */
+    public FaqDetail getDetail(Integer faqId) {
+        Faq faq = tryGetNotice(faqId);
+        return faqAssembler.toDetail(faq);
+    }
+
+    /**
+     * FAQ 상세 조회
+     *
+     * @param faqId 조회할 FAQ ID
+     * @return FAQ 상세
+     */
+    public FaqDetail getLivedDetail(Integer faqId) {
+        Faq faq = tryGetLivedFAQ(faqId);
+        return faqAssembler.toDetail(faq);
+    }
+
+    private Faq tryGetLivedFAQ(Integer faqId) {
+        return faqRepository.findById(faqId)
+                               .filter(Faq::isLive)
+                               .orElseThrow(() -> new FaqNotFoundException(faqId));
+    }
+
+
+    /**
+     * FAQ 목록 조회
+     *
+     * @param status 조회할 상태
+     * @param page 조회할 페이지
+     * @param size 조회할 사이즈
+     * @return FAQ 상세
+     */
+    public FaqList listByStatus(Faq.Status status, Integer page, Integer size) {
+        Sort sort = toSort(status);
+        Pageable pageable = PageRequest.of(page-1, size, sort);
+        Page<Faq> faqs = null;
+        if (status == null) {
+           faqs = faqRepository.findAll(pageable);
+        } else {
+           faqs = faqRepository.findByStatus(status, pageable);
+        }
+        List<FaqRow> rows = faqAssembler.toRows(faqs.toList());
+        return new FaqList(rows, faqs.getTotalElements(), faqs.getTotalPages());
+    }
+
+    private Sort toSort(Faq.Status status) {
+        if (status == LIVE) {
+            // order by livedAt desc
+            return sortLivedAtDesc();
+        }
+        // order by updatedAt desc
+        return Sort.sort(Faq.class).by(Faq::getUpdatedAt).descending();
+    }
+
+    private Sort sortLivedAtDesc() {
+        return Sort.sort(Faq.class).by(Faq::getLivedAt).descending();
     }
 }
