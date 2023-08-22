@@ -105,16 +105,16 @@ public class PartnerApplication {
         this.processedAt = LocalDateTime.now();
     }
 
-    public PartnerApplication approve(MemberId updater) {
+    public PartnerApplication approve(MemberId processor) {
         this.status = Status.APPROVED;
-        processedBy(updater);
+        processedBy(processor);
         return this;
     }
 
-    public PartnerApplication reject(String rejectReason, MemberId updater) {
+    public PartnerApplication reject(String rejectReason, MemberId processor) {
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
-        processedBy(updater);
+        processedBy(processor);
         return this;
     }
 }
