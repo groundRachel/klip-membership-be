@@ -17,6 +17,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 
+import static com.klipwallet.membership.config.SecurityConfig.ROLE_ADMIN;
+
 @SuppressWarnings("ClassCanBeRecord")
 @RequiredArgsConstructor
 @ToString
@@ -39,7 +41,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     // FIXME @Jordan Add Partner arg. Processing ADMIN, SUPER_ADMIN
     static KlipMembershipOAuth2User memberOnGoogle(OAuth2User googleUser) {
         return new KlipMembershipOAuth2User(new MemberId(2), googleUser.getAttributes(),
-                                            AuthorityUtils.createAuthorityList("ROLE_PARTNER", "ROLE_ADMIN"),
+                                            AuthorityUtils.createAuthorityList(ROLE_ADMIN),
                                             googleUser.getName(),
                                             getGoogleEmail(googleUser.getAttributes()));
     }

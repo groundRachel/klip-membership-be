@@ -1,5 +1,7 @@
 package com.klipwallet.membership.config;
 
+import java.lang.reflect.Method;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.models.Components;
@@ -7,18 +9,27 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
+import com.klipwallet.membership.controller.GlobalRestControllerAdvice;
+import com.klipwallet.membership.controller.admin.NoticeAdminController;
+import com.klipwallet.membership.dto.notice.NoticeDto.Create;
 import com.klipwallet.membership.entity.Address;
+import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.exception.ConflictException;
 import com.klipwallet.membership.exception.ForbiddenException;
@@ -38,9 +49,15 @@ import static org.springframework.http.HttpStatus.*;
 @ConditionalOnProperty(name = SPRINGDOC_ENABLED, matchIfMissing = true)
 public class SpringDocConfig {
     private final ObjectMapper mapper;
+    private final GlobalRestControllerAdvice globalRestControllerAdvice;
+    private final NoticeAdminController noticeAdminController;
 
-    public SpringDocConfig(ObjectMapper mapper) {
+    public SpringDocConfig(ObjectMapper mapper,
+                           GlobalRestControllerAdvice globalRestControllerAdvice,
+                           NoticeAdminController noticeAdminController) {
         this.mapper = mapper;
+        this.globalRestControllerAdvice = globalRestControllerAdvice;
+        this.noticeAdminController = noticeAdminController;
         initCustomSchema();
     }
 
@@ -61,11 +78,23 @@ public class SpringDocConfig {
                                        .description("Klip Membership Tool Management & Internal API")
                                        .version(version))
                        .components(new Components().addSchemas("Error400", problemDetail400Schema())
+                                                   .addSchemas("Error400Fields", problemDetail400FieldsSchema())
                                                    .addSchemas("Error401", problemDetail401Schema())
                                                    .addSchemas("Error403", problemDetail403Schema())
                                                    .addSchemas("Error404", problemDetail404Schema())
                                                    .addSchemas("Error409", problemDetail409Schema())
                                                    .addSchemas("Error500", problemDetail500Schema()));
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Schema problemDetail400FieldsSchema() {
+        Method method = MethodUtils.getAccessibleMethod(NoticeAdminController.class, "create", Create.class, AuthenticatedUser.class);
+        MethodParameter methodParameter = new MethodParameter(method, 0);
+        BindException create = new BindException(noticeAdminController, "create");
+        create.addError(new FieldError("create", "title", "title: '크기가 1에서 200 사이여야 합니다'"));
+        MethodArgumentNotValidException cause = new MethodArgumentNotValidException(methodParameter, create);
+        var pdJson = toJson(globalRestControllerAdvice.toProblemDetail(cause));
+        return new Schema<>().type("object").example(pdJson);
     }
 
     @SuppressWarnings("rawtypes")
