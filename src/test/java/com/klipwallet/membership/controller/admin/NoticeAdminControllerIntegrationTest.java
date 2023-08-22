@@ -2,16 +2,18 @@ package com.klipwallet.membership.controller.admin;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,11 +27,13 @@ import com.klipwallet.membership.entity.Notice.Status;
 import com.klipwallet.membership.repository.NoticeRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -79,6 +83,23 @@ class NoticeAdminControllerIntegrationTest {
         lastNoticeId = summary.id();
     }
 
+    @DisplayName("관리자 공지사항 생성: 인증 없음. > 401")
+    @Test
+    void createOnUnauthenticated(@Autowired MockMvc mvc) throws Exception {
+        String body = """
+                      {
+                        "title": "클립 멤버십 툴이 공식 오픈하였습니다.",
+                        "body": "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>"
+                      }
+                      """;
+        mvc.perform(post("/admin/v1/notices")
+                            .contentType(ALL)
+                            .content(body))
+           .andExpect(status().isUnauthorized())
+           .andExpect(jsonPath("$.code").value(401_000))
+           .andExpect(jsonPath("$.err").value("인증되지 않았습니다."));
+    }
+
     @WithPartnerUser
     @DisplayName("관리자 공지사항 생성: 파트너 권한으로 시도 > 403")
     @Test
@@ -90,12 +111,11 @@ class NoticeAdminControllerIntegrationTest {
                       }
                       """;
         mvc.perform(post("/admin/v1/notices")
-                            .contentType(APPLICATION_JSON)
+                            .contentType(ALL)
                             .content(body))
-           .andExpect(status().isForbidden());
-        // FIXME @Jordan AccessDeniedException
-        //           .andExpect(jsonPath("$.code").value(403_000))
-        //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
+           .andExpect(status().isForbidden())
+           .andExpect(forwardedUrl("/error/403"))   // forward 된 후 응답 모델로 비교하고 싶었으나, 이게 최선임
+           .andExpect(request().attribute(WebAttributes.ACCESS_DENIED_403, instanceOf(AccessDeniedException.class)));
     }
 
     @WithAdminUser
@@ -110,11 +130,15 @@ class NoticeAdminControllerIntegrationTest {
                       """;
         mvc.perform(post("/admin/v1/notices")
                             .contentType(APPLICATION_JSON)
-                            .content(body))
-           .andExpect(status().isBadRequest());
-        // TODO @Jordan 적절한 BadRequest 예외 처리(MethodArgumentNotValidException on DefaultHandlerExceptionResolver)
-        //           .andExpect(jsonPath("$.code").value(1024))
-        //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
+                            .content(body)
+                            .locale(Locale.KOREAN))
+           .andExpect(status().isBadRequest())
+
+           .andExpect(jsonPath("$.code").value(400_001))
+           .andExpect(jsonPath("$.err").value("요청 본문이 유효하지 않습니다. errors를 참고하세요."))
+           .andExpect(jsonPath("$.errors.length()").value(2))
+           .andExpect(jsonPath("$.errors[?(@.field == 'title')].message").value("title: '공백일 수 없습니다'"))
+           .andExpect(jsonPath("$.errors[?(@.field == 'body')].message").value("body: '공백일 수 없습니다'"));
     }
 
     @WithAdminUser
@@ -189,7 +213,6 @@ class NoticeAdminControllerIntegrationTest {
         mvc.perform(get("/admin/v1/notices")
                             .param("status", "something"))
            .andExpect(status().isBadRequest())
-           // TODO @Jordan handle MissingServletRequestParameterException
            .andExpect(jsonPath("$.code").value(400_000))
            .andExpect(jsonPath("$.err").value("Required parameter 'status' is not present."));
     }
@@ -351,27 +374,6 @@ class NoticeAdminControllerIntegrationTest {
         Notice notice2 = noticeRepository.findById(noticeId1).orElse(null);
         assertThat(notice2).isNotNull();
         assertThat(notice2.isPrimary()).isFalse();
-    }
-
-    @Disabled("/oauth2/authorization/google 으로 redirect 되고 있어서 수정이 요구됨.")
-    @DisplayName("관리자 공지사항 수정: 인증되지 않음으로 시도 > 401")
-    @Test
-    void updateOnNoAuth(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
-        String body = """
-                      {
-                        "title": "클립 멤버십 툴 1.1.0이 릴리즈 되었습니다.",
-                        "body": "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다. KlipDrops에 이이서 KlipPartners 까지 지원합니다.</p>"
-                      }
-                      """;
-        mvc.perform(put("/admin/v1/notices/{0}", noticeId)
-                            .contentType(APPLICATION_JSON)
-                            .content(body))
-           .andExpect(status().isForbidden());
-        // TODO @Jordan 적절한 AuthenticationException 처리 (redirection이 아닌 401)
-        //           .andExpect(jsonPath("$.code").value(1024))
-        //           .andExpect(jsonPath("$.err").value("적절한 오류 메시지"));
     }
 
     @WithAdminUser

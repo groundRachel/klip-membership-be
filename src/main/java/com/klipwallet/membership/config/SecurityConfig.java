@@ -1,5 +1,6 @@
 package com.klipwallet.membership.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,10 +9,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2UserService;
+import com.klipwallet.membership.config.security.ProblemDetailEntryPoint;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -61,7 +61,8 @@ public class SecurityConfig {
      */
     @SuppressWarnings("Convert2MethodRef")
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   ProblemDetailEntryPoint problemDetailEntryPoint) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faq/*"),
@@ -83,14 +84,11 @@ public class SecurityConfig {
             .httpBasic(h -> h.disable())
             .formLogin(f -> f.disable())
             .rememberMe(r -> r.disable())
-            .exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()));
+            .exceptionHandling(
+                    e -> e.authenticationEntryPoint(problemDetailEntryPoint)
+                          .accessDeniedPage("/error/403"));
 
         return http.build();
-    }
-
-    private AccessDeniedHandler accessDeniedHandler() {
-        // TODO @Jordan Impl
-        return new AccessDeniedHandlerImpl();
     }
 
     /**
@@ -99,6 +97,11 @@ public class SecurityConfig {
     @Bean
     KlipMembershipOAuth2UserService oauth2UserService() {
         return new KlipMembershipOAuth2UserService();
+    }
+
+    @Bean
+    ProblemDetailEntryPoint problemDetailEntryPoint(ObjectMapper objectMapper) {
+        return new ProblemDetailEntryPoint(objectMapper);
     }
 }
 
