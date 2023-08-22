@@ -85,9 +85,28 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
         OAuth2Error error = cause.getError();
         ProblemDetail result = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, error.getDescription());
         result.setType(URI.create(error.getUri()));
-        result.setProperty(CODE, ErrorCode.UNAUTHENTICATED.getCode());
+        result.setProperty(CODE, ErrorCode.UNAUTHENTICATED_BY_OAUTH2.getCode());
         result.setProperty("providerCode", error.getErrorCode());
         result.setProperty(ERR, error.getDescription());
+        return result;
+    }
+
+    @Nonnull
+    public static ProblemDetail toProblemDetail(ErrorCode errorCode, HttpStatus httpStatus, String message) {
+        ProblemDetail result = ProblemDetail.forStatusAndDetail(httpStatus, message);
+        result.setType(fromHttpUrl(TYPE_URL_PATH).path(errorCode.name()).build().toUri());
+        result.setProperty(CODE, errorCode.getCode());
+        result.setProperty(ERR, message);
+        return result;
+    }
+
+    @Nonnull
+    public static ProblemDetail toProblemDetail(@Nonnull AccessDeniedException cause) {
+        ErrorCode errorCode = ErrorCode.FORBIDDEN;
+        ProblemDetail result = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, cause.getMessage());
+        result.setType(fromHttpUrl(TYPE_URL_PATH).path(errorCode.name()).build().toUri());
+        result.setProperty(CODE, errorCode.getCode());
+        result.setProperty(ERR, cause.getMessage());
         return result;
     }
 

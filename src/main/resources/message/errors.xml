@@ -8,6 +8,7 @@
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>
+    <entry key="problemDetail.code.401001">외부(ex: google) 인증이 실패하였습니다.</entry>
 
     <!-- 403 -->
     <entry key="problemDetail.code.403000">권한이 부족합니다.</entry>

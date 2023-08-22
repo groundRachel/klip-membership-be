@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +47,15 @@ public class ProblemDetailErrorController extends AbstractErrorController {
         }
         Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
         return new ResponseEntity<>(body, status);
+    }
+
+    @RequestMapping("/403")
+    public ProblemDetail accessDenied(HttpServletRequest request) {
+        AccessDeniedException cause = (AccessDeniedException) request.getAttribute(WebAttributes.ACCESS_DENIED_403);
+        if (cause == null) {
+            cause = new AccessDeniedException("Forbidden");
+        }
+        return GlobalRestControllerAdvice.toProblemDetail(cause);
     }
 
     @ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
