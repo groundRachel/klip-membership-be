@@ -48,8 +48,7 @@ public class PartnerApplication {
     private LocalDateTime createdAt;
     private LocalDateTime processedAt;
     private MemberId processorId;
-
-
+    
     public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
         this.businessName = businessName;
         this.phoneNumber = phoneNumber;
@@ -61,14 +60,6 @@ public class PartnerApplication {
     }
 
     public PartnerApplication() {
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
     }
 
     @Schema(name = "PartnerApplication.Status", description = "파트너 가입 요청 상태", example = "approved")
