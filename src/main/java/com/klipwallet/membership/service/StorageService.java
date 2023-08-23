@@ -10,5 +10,12 @@ import com.klipwallet.membership.entity.ObjectId;
  * </p>
  */
 public interface StorageService {
+
+    /**
+     * 파일을 저장
+     *
+     * @param command 파일 저장 인터페이스
+     * @return 저장된 파일 정보
+     */
     ObjectId store(Attachable command);
 }

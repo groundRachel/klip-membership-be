@@ -23,7 +23,7 @@ public class ObjectId implements Serializable {
     private static final long serialVersionUID = -4419724155394908795L;
 
     @JsonValue
-    @Column(name = "object_id")
+    @Column(name = "object_id", nullable = false)
     String value;
 
     @SuppressWarnings("ProtectedMemberInFinalClass")

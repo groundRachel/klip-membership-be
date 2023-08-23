@@ -85,8 +85,9 @@ public class SecurityConfig {
             .formLogin(f -> f.disable())
             .rememberMe(r -> r.disable())
             .exceptionHandling(
-                    e -> e.authenticationEntryPoint(problemDetailEntryPoint)
-                          .accessDeniedPage("/error/403"));
+                    e -> e.accessDeniedPage("/error/403")
+                    // .authenticationEntryPoint(problemDetailEntryPoint) FIXME @Jordan FE 붙이면 주석 제거
+            );
 
         return http.build();
     }

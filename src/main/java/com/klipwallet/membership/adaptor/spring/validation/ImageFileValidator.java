@@ -26,7 +26,7 @@ public class ImageFileValidator implements ConstraintValidator<ImageFile, Multip
             MediaType mediaType = MediaType.valueOf(contentType);
             return IMAGE_ALL.includes(mediaType);
         } catch (InvalidMediaTypeException cause) {
-            log.warn("Invalid Media type: {}", contentType, cause);
+            log.warn("Invalid Media-Type: {}", contentType, cause);
             return false;
         }
     }

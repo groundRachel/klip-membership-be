@@ -7,6 +7,10 @@ public class InvalidRequestException extends BaseCodeException {
         super(ErrorCode.INVALID_REQUEST);
     }
 
+    public InvalidRequestException(String message) {
+        super(ErrorCode.INVALID_REQUEST, message);
+    }
+
     public InvalidRequestException(ErrorCode code) {
         super(code);
     }

@@ -23,9 +23,11 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
 import com.klipwallet.membership.controller.GlobalRestControllerAdvice;
+import com.klipwallet.membership.controller.admin.AttachFileAdminController;
 import com.klipwallet.membership.controller.admin.NoticeAdminController;
 import com.klipwallet.membership.dto.notice.NoticeDto.Create;
 import com.klipwallet.membership.entity.Address;
@@ -79,6 +81,7 @@ public class SpringDocConfig {
                                        .version(version))
                        .components(new Components().addSchemas("Error400", problemDetail400Schema())
                                                    .addSchemas("Error400Fields", problemDetail400FieldsSchema())
+                                                   .addSchemas("Error400File", problemDetail400FileSchema())
                                                    .addSchemas("Error401", problemDetail401Schema())
                                                    .addSchemas("Error403", problemDetail403Schema())
                                                    .addSchemas("Error404", problemDetail404Schema())
@@ -92,6 +95,18 @@ public class SpringDocConfig {
         MethodParameter methodParameter = new MethodParameter(method, 0);
         BindException create = new BindException(noticeAdminController, "create");
         create.addError(new FieldError("create", "title", "title: '크기가 1에서 200 사이여야 합니다'"));
+        create.addError(new FieldError("create", "body", "body: '본문은 비어있으면 안됩니다.'"));
+        MethodArgumentNotValidException cause = new MethodArgumentNotValidException(methodParameter, create);
+        var pdJson = toJson(globalRestControllerAdvice.toProblemDetail(cause));
+        return new Schema<>().type("object").example(pdJson);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private Schema problemDetail400FileSchema() {
+        Method method = MethodUtils.getAccessibleMethod(AttachFileAdminController.class, "uploadImage", MultipartFile.class, AuthenticatedUser.class);
+        MethodParameter methodParameter = new MethodParameter(method, 0);
+        BindException create = new BindException(noticeAdminController, "upload");
+        create.addError(new FieldError("upload", "upload.file", "이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"));
         MethodArgumentNotValidException cause = new MethodArgumentNotValidException(methodParameter, create);
         var pdJson = toJson(globalRestControllerAdvice.toProblemDetail(cause));
         return new Schema<>().type("object").example(pdJson);
