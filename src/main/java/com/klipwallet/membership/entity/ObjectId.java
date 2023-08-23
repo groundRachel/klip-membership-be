@@ -16,6 +16,7 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 /**
  * 저장된 파일의 객체 아이디
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Embeddable
 @Value
 public class ObjectId implements Serializable {

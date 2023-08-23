@@ -1,6 +1,6 @@
 package com.klipwallet.membership.exception;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unused"})
 public class InvalidRequestException extends BaseCodeException {
 
     public InvalidRequestException() {

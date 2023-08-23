@@ -62,7 +62,7 @@ public class SecurityConfig {
     @SuppressWarnings("Convert2MethodRef")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   ProblemDetailEntryPoint problemDetailEntryPoint) throws Exception {
+                                                   @SuppressWarnings("unused") ProblemDetailEntryPoint problemDetailEntryPoint) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faq/*"),

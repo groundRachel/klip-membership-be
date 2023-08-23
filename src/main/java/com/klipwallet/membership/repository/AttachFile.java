@@ -31,6 +31,7 @@ import com.klipwallet.membership.exception.InvalidRequestException;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString(callSuper = true)
 public class AttachFile extends BaseEntity<AttachFile> {
+    @SuppressWarnings("unused")
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

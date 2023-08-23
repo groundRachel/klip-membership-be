@@ -34,6 +34,7 @@ public class AttachFileService {
         return new AttachFileDto.Meta(persistEntity);
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private AttachFile toAttacheFile(Attachable command, AuthenticatedUser creator, ObjectId objectId) {
         String linkUrl = storageHelper.toLinkUrl(command);
         return new AttachFile(command, objectId, linkUrl, creator.getMemberId());
