@@ -26,6 +26,7 @@ public class PartnerApplicationServiceTest {
     @AfterEach
     void afterEach() {
         partnerApplicationRepository.deleteAll();
+        partnerApplicationRepository.flush();
     }
 
     @Test

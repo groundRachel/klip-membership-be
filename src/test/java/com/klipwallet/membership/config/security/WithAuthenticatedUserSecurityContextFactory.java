@@ -16,7 +16,8 @@ public class WithAuthenticatedUserSecurityContextFactory implements WithSecurity
     public SecurityContext createSecurityContext(WithAuthenticatedUser user) {
         SecurityContext context = SecurityContextHolder.getContextHolderStrategy().createEmptyContext();
         KlipMembershipOAuth2User principal = new KlipMembershipOAuth2User(
-                new MemberId(user.memberId()), Collections.emptyMap(), AuthorityUtils.createAuthorityList(user.authorities()), "39900203939", user.email());
+                new MemberId(user.memberId()), Collections.emptyMap(), AuthorityUtils.createAuthorityList(user.authorities()), user.name(),
+                user.email());
         Authentication auth = new OAuth2AuthenticationToken(principal, principal.getAuthorities(), "google");
         context.setAuthentication(auth);
         return context;

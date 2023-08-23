@@ -2,7 +2,6 @@ package com.klipwallet.membership.dto.partnerapplication;
 
 import java.time.OffsetDateTime;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -11,9 +10,9 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
-import com.klipwallet.membership.entity.MemberId;
 
 @RequiredArgsConstructor
 public class PartnerApplicationDto {
@@ -22,25 +21,22 @@ public class PartnerApplicationDto {
                               // TODO add validation; requirement from design team
                               @NotBlank @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$") String phoneNumber,
                               // TODO add validation; requirement from design team
-                              @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber,
-                              @NotBlank @Email String email,
-                              @NotBlank String oAuthId) {
-        public PartnerApplication toPartnerApplication() {
-            return new PartnerApplication(name, phoneNumber, businessRegistrationNumber, email, oAuthId);
+                              @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber) {
+        public PartnerApplication toPartnerApplication(AuthenticatedUser user) {
+            return new PartnerApplication(name, phoneNumber, businessRegistrationNumber, user.getEmail(), user.getName());
         }
     }
 
     @Schema(description = "[TOOL] 파트너 신청 후 응답 DTO", accessMode = AccessMode.READ_ONLY)
     public record ApplyResult(
-            @NonNull MemberId id,
+            @NonNull Integer id,
             @NonNull String name,
-            OffsetDateTime createdAt,
-            OffsetDateTime updatedAt
+            OffsetDateTime createdAt
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record PartnerApplicationRow(
-            @NonNull MemberId id,
+            @NonNull Integer id,
             @NonNull String name,
             OffsetDateTime createdAt,
             Status status,

@@ -23,7 +23,8 @@
 
     <!-- 409 -->
     <entry key="problemDetail.code.409000">서버의 현재 상태와 요청이 충돌했습니다.</entry>
-    <entry key="problemDetail.code.409001">이미 처리된 파트너 가입 요청입니다. ID: {0,number,#}, 처리상태: {1}, 처리자: {2}, 처리시각: {3}</entry>
+    <entry key="problemDetail.code.409001">이미 처리된 파트너 가입 요청입니다. ID: {0,number,#}, 처리상태: {1}, 처리자: {2,number,#}, 처리시각: {3}</entry>
+    <entry key="problemDetail.code.409002">해당 이메일로 진행 중인 요청이 있습니다. ID: {0,number,#}, 요청시각: {3}</entry>
 
     <!-- 500 -->
     <entry key="problemDetail.code.500000">내부 서버에서 오류가 발생하였습니다.</entry>
@@ -33,4 +34,3 @@
     <entry key="problemDetail.code.503000">서비스를 사용할 수 없습니다.</entry>
     <entry key="problemDetail.code.503001">Service Unavailable Due to async timeout.</entry>
 </properties>
-
