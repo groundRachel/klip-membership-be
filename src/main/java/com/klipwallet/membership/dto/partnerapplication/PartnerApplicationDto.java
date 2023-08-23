@@ -12,7 +12,6 @@ import org.springframework.lang.NonNull;
 
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication;
-import com.klipwallet.membership.entity.PartnerApplication.Status;
 
 @RequiredArgsConstructor
 public class PartnerApplicationDto {
@@ -37,10 +36,11 @@ public class PartnerApplicationDto {
     @Schema(description = "[ADMIN] 파트너 신청 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record PartnerApplicationRow(
             @NonNull Integer id,
-            @NonNull String name,
+            @NonNull String businessName,
+            Integer PartnerId, // TODO fetch info from drops
             OffsetDateTime createdAt,
-            Status status,
-            String rejectReason
+            OffsetDateTime processedAt,
+            String processorNickname
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)

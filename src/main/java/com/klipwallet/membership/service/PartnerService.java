@@ -4,12 +4,16 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.klipwallet.membership.dto.partner.PartnerAssembler;
-import com.klipwallet.membership.dto.partner.PartnerDto;
-import com.klipwallet.membership.entity.Partner;
+import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
+import com.klipwallet.membership.entity.Partner.PartnerSummary;
+import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.repository.PartnerRepository;
 
 @Service
@@ -20,9 +24,14 @@ public class PartnerService {
     private final PartnerAssembler partnerAssembler;
 
     @Transactional(readOnly = true)
-    public List<PartnerDto.ApprovedPartnerDto> getPartners() {
-        // TODO KLDV-3070 Pagination
-        List<Partner> partners = partnerRepository.findAll();
+    public List<ApprovedPartnerDto> getPartners(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, getSort());
+
+        List<PartnerSummary> partners = partnerRepository.findAllPartners(Status.APPROVED, pageable);
         return partnerAssembler.toPartnerDto(partners);
+    }
+
+    private Sort getSort() {
+        return Sort.sort(PartnerSummary.class).by(PartnerSummary::getProcessedAt).descending();
     }
 }

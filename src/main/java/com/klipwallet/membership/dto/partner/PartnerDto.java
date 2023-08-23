@@ -15,6 +15,10 @@ public class PartnerDto {
     public record ApprovedPartnerDto(
             @NonNull MemberId id,
             @NonNull String name,
-            OffsetDateTime createdAt
+
+            OffsetDateTime processedAt,
+            MemberId processorId
+
+            // TODO 오픈채팅 운영 여부 정보 포함하기
     ) {}
 }

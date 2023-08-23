@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
 @Tag(name = "Admin.PartnerApplication", description = "Admin의 파트너 가입 요청 관리 API")
@@ -32,14 +34,15 @@ import com.klipwallet.membership.service.PartnerApplicationService;
 public class PartnerApplicationAdminController {
     private final PartnerApplicationService partnerApplicationService;
 
-    @Operation(summary = "가입 요청한 파트너 목록 조회")
+    @Operation(summary = "파트너 가입 요청 목록 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
             @ApiResponse(responseCode = "403", description = "파트너 요청 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @GetMapping
-    public List<PartnerApplicationRow> getPartnerApplications() {
-        return partnerApplicationService.getPartnerApplications();
+    public List<PartnerApplicationRow> getPartnerApplications(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+                                                              @RequestParam(defaultValue = "applied") Status status) {
+        return partnerApplicationService.getPartnerApplications(page, size, status);
     }
 
     @Operation(summary = "요청한 파트너 승인")

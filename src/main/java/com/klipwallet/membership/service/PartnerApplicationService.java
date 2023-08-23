@@ -4,10 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.klipwallet.membership.dto.partner.PartnerAssembler;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationAssembler;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Application;
@@ -32,7 +34,6 @@ public class PartnerApplicationService {
     private final PartnerRepository partnerRepository;
 
     private final PartnerApplicationAssembler partnerApplicationAssembler;
-    private final PartnerAssembler partnerAssembler;
 
 
     private void canApply(AuthenticatedUser user) {
@@ -72,12 +73,21 @@ public class PartnerApplicationService {
 
 
     @Transactional(readOnly = true)
-    public List<PartnerApplicationDto.PartnerApplicationRow> getPartnerApplications() {
-        // TODO KLDV-3066 Pagination
+    public List<PartnerApplicationDto.PartnerApplicationRow> getPartnerApplications(int page, int size, Status status) {
         // TODO KLDV-3068 get and check partner business number from drops
         // TODO consider adding a cache; some results are from drops
-        List<PartnerApplication> partnerApplications = partnerApplicationRepository.findAll();
+
+        Pageable pageable = PageRequest.of(page, size, toSort(status));
+
+        List<PartnerApplication> partnerApplications = partnerApplicationRepository.findAllByStatus(status, pageable);
         return partnerApplicationAssembler.toPartnerApplicationRow(partnerApplications);
+    }
+
+    private Sort toSort(Status status) {
+        if (status == APPLIED) {
+            return Sort.sort(PartnerApplication.class).by(PartnerApplication::getCreatedAt).descending();
+        }
+        return Sort.sort(PartnerApplication.class).by(PartnerApplication::getProcessedAt).descending();
     }
 
     @Transactional

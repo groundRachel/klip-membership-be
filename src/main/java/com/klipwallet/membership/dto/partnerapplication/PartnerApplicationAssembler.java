@@ -27,8 +27,11 @@ public class PartnerApplicationAssembler {
     public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull List<PartnerApplication> partnerApplications) {
         return partnerApplications.stream()
                                   .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(),
+                                                                      -1,  // TODO fetch info from drops
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
-                                                                      p.getStatus(), p.getRejectReason()))
+                                                                      dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
+                                                                      // TODO change to admin nickname (current : applicant's nickname)
+                                                                      p.getEmail().split("@")[0]))
                                   .collect(Collectors.toList());
     }
 }

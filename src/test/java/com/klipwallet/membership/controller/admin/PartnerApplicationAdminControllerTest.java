@@ -1,6 +1,8 @@
 package com.klipwallet.membership.controller.admin;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,12 +20,13 @@ import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
 
-import static com.klipwallet.membership.entity.PartnerApplication.Status.APPROVED;
+import static com.klipwallet.membership.entity.PartnerApplication.Status.*;
 import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_ALREADY_PROCESSED;
 import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -154,5 +157,77 @@ class PartnerApplicationAdminControllerTest {
 
         partnerRepository.findByBusinessRegistrationNumber("100-00-00003")
                          .ifPresent(p -> {throw new RuntimeException();});
+    }
+
+    MemberId processor = new MemberId(23);
+    List<PartnerApplication> applications = Arrays.asList(
+            new PartnerApplication("(주) 그라운드엑스0", "010-1234-5678", "000-00-00001", "example1@groundx.xyz", "192085223830"),
+            new PartnerApplication("(주) 그라운드엑스1", "010-1234-5678", "00-00002", "example2@groundx.xyz", "292085223830"),
+            new PartnerApplication("(주) 그라운드엑스2", "010-1234-5678", "000-00-00003", "example3@groundx.xyz", "392085223830"),
+
+            new PartnerApplication("(주) 그라운드엑스3", "010-1234-5678", "000-00-00004", "example4@groundx.xyz", "492085223830").approve(processor),
+            new PartnerApplication("(주) 그라운드엑스4", "010-1234-5678", "000-00-00005", "example5@groundx.xyz", "592085223830").approve(processor),
+            new PartnerApplication("(주) 그라운드엑스5", "010-1234-5678", "000-00-00006", "example6@groundx.xyz", "692085223830").approve(processor),
+
+            new PartnerApplication("(주) 그라운드엑스6", "010-1234-5678", "000-00-00007", "example7@groundx.xyz", "792085223830").reject("", processor),
+            new PartnerApplication("(주) 그라운드엑스7", "010-1234-5678", "000-00-00008", "example8@groundx.xyz", "892085223830").reject("", processor),
+            new PartnerApplication("(주) 그라운드엑스8", "010-1234-5678", "000-00-00009", "example9@groundx.xyz", "992085223830").reject("", processor)
+    );
+
+    @WithAdminUser
+    @DisplayName("파트너 가입 요청 목록 조회: 요청 상태 > 200")
+    @Test
+    void getPartnerApplications_APPLIED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        partnerApplicationRepository.saveAll(applications);
+        partnerApplicationRepository.flush();
+
+        // when, then
+        mvc.perform(get("/admin/v1/partner-applications?status={0}", APPLIED.toDisplay())
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.length()").value(3L))
+           .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스2"))
+           .andExpect(jsonPath("$[0].processedAt").isEmpty())
+
+           .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스1"))
+           .andExpect(jsonPath("$[1].processedAt").isEmpty())
+
+           .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스0"))
+           .andExpect(jsonPath("$[2].processedAt").isEmpty());
+    }
+
+    @WithAdminUser
+    @DisplayName("파트너 가입 요청 목록 조회: 거절 상태 > 200")
+    @Test
+    void getPartnerApplications_REJECTED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        partnerApplicationRepository.saveAll(applications);
+        partnerApplicationRepository.flush();
+
+        // when, then
+        mvc.perform(get("/admin/v1/partner-applications?status={0}", REJECTED.toDisplay())
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.length()").value(3L))
+           .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스8"))
+           .andExpect(jsonPath("$[0].processedAt").isNotEmpty())
+           //           .andExpect(jsonPath("$[0].processorNickname").value("jordan.jung"))  // TODO change to admin nickname (current : applicant's nickname)
+           .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스7"))
+           .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스6"));
+    }
+
+    @WithAdminUser
+    @DisplayName("파트너 가입 요청 목록 조회: 비정상 입력 > 400")
+    @Test
+    void getPartnerApplications_UNDEFINED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        partnerApplicationRepository.saveAll(applications);
+        partnerApplicationRepository.flush();
+
+        // when, then
+        mvc.perform(get("/admin/v1/partner-applications?status={0}", "UNDEFINED")
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isBadRequest());
     }
 }

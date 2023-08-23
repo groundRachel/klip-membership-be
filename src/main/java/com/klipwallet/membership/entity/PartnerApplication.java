@@ -102,9 +102,10 @@ public class PartnerApplication {
         return this;
     }
 
-    public void reject(String rejectReason, MemberId processor) {
+    public PartnerApplication reject(String rejectReason, MemberId processor) {
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
         processedBy(processor);
+        return this;
     }
 }
