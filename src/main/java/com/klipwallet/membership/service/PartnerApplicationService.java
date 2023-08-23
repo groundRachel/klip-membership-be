@@ -57,8 +57,8 @@ public class PartnerApplicationService {
                                            .orElseThrow(() -> new PartnerApplicationNotFoundException(applicationId));
     }
 
-    private boolean ifCanSkipRequest(Status currentStatus, Status expectedStatus,
-                                     MemberId currentUpdatedId, MemberId expectedUpdatedId) {
+    private boolean canSkipRequest(Status currentStatus, Status expectedStatus,
+                                   MemberId currentUpdatedId, MemberId expectedUpdatedId) {
         // TODO WINNIE testcode
         return currentStatus == expectedStatus && currentUpdatedId == expectedUpdatedId;
     }
@@ -83,8 +83,8 @@ public class PartnerApplicationService {
     @Transactional
     public void approve(Integer applicationId, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
-        if (ifCanSkipRequest(partnerApplication.getStatus(), APPROVED,
-                             partnerApplication.getProcessorId(), user.getMemberId())) {
+        if (canSkipRequest(partnerApplication.getStatus(), APPROVED,
+                           partnerApplication.getProcessorId(), user.getMemberId())) {
             return;
         }
         checkAppliedStatus(partnerApplication);
@@ -102,8 +102,8 @@ public class PartnerApplicationService {
     @Transactional
     public void reject(Integer applicationId, RejectRequest body, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
-        if (ifCanSkipRequest(partnerApplication.getStatus(), REJECTED,
-                             partnerApplication.getProcessorId(), user.getMemberId())) {
+        if (canSkipRequest(partnerApplication.getStatus(), REJECTED,
+                           partnerApplication.getProcessorId(), user.getMemberId())) {
             return;
         }
         checkAppliedStatus(partnerApplication);
