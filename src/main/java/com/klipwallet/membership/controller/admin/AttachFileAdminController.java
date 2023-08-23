@@ -21,7 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.klipwallet.membership.adaptor.spring.validation.ImageFile;
 import com.klipwallet.membership.controller.dto.MultipartAttacheFile;
-import com.klipwallet.membership.dto.attachfile.AttachFileDto;
+import com.klipwallet.membership.dto.attachfile.AttachFileDto.MetaData;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.AttachFileService;
 
@@ -40,7 +40,7 @@ public class AttachFileAdminController {
     })
     @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public AttachFileDto.Meta uploadImage(
+    public MetaData uploadImage(
             @Parameter(description = "업로드 할 이미지 파일", required = true, example = "draft") @ImageFile @RequestPart("file") MultipartFile file,
             @AuthenticationPrincipal AuthenticatedUser user) {
         return attachFileService.create(new MultipartAttacheFile(file), user);
