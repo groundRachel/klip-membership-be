@@ -30,6 +30,10 @@
     <entry key="problemDetail.code.500000">내부 서버에서 오류가 발생하였습니다.</entry>
     <entry key="problemDetail.code.500999">알 수 없는 오류가 발생하였습니다.</entry>
 
+    <!-- 500_001 Storage -->
+    <entry key="problemDetail.code.500100">파일 관련해서 오류가 발생하였습니다.</entry>
+    <entry key="problemDetail.code.500101">파일 저장이 실패하였습니다.</entry>
+
     <!-- 503 -->
     <entry key="problemDetail.code.503000">서비스를 사용할 수 없습니다.</entry>
     <entry key="problemDetail.code.503001">Service Unavailable Due to async timeout.</entry>

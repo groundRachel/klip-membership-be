@@ -49,11 +49,16 @@ spring:
   messages:
     basename: classpath:message/errors
     fallback-to-system-locale: false
-  profiles:
-    active: local         # default profile
   mvc:
     problemdetails:
       enabled: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+      file-size-threshold: 500KB
+  profiles:
+    active: local         # default profile
 
 springdoc:
   api-docs:

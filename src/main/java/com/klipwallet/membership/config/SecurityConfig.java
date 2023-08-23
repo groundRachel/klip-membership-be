@@ -62,7 +62,7 @@ public class SecurityConfig {
     @SuppressWarnings("Convert2MethodRef")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   ProblemDetailEntryPoint problemDetailEntryPoint) throws Exception {
+                                                   @SuppressWarnings("unused") ProblemDetailEntryPoint problemDetailEntryPoint) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faq/*"),
@@ -85,8 +85,9 @@ public class SecurityConfig {
             .formLogin(f -> f.disable())
             .rememberMe(r -> r.disable())
             .exceptionHandling(
-                    e -> e.authenticationEntryPoint(problemDetailEntryPoint)
-                          .accessDeniedPage("/error/403"));
+                    e -> e.accessDeniedPage("/error/403")
+                    // .authenticationEntryPoint(problemDetailEntryPoint) FIXME @Jordan FE 붙이면 주석 제거
+            );
 
         return http.build();
     }

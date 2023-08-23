@@ -2,12 +2,14 @@ package com.klipwallet.membership.controller.error;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 import org.springframework.validation.FieldError;
 
 @Schema(description = "요청 본문 Field 오류 DTO", accessMode = AccessMode.READ_ONLY)
 @Value
+@AllArgsConstructor
 public class FieldErrorView {
     @Schema(description = "오류가 발생한 Field명", example = "title")
     String field;
