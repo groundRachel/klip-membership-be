@@ -44,7 +44,10 @@ public enum ErrorCode {
     PARTNER_NOT_FOUND(404_003),
 
     // FAQ_*
-    FAQ_NOT_FOUND(404_005);
+    FAQ_NOT_FOUND(404_005),
+
+    // Storage
+    STORAGE_STORE(500_101);
 
     final int code;
 

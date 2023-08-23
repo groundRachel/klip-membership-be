@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -164,6 +166,46 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @Nonnull
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ProblemDetail handleConstraintViolationException(ConstraintViolationException cause) {
+        return toProblemDetail(cause);
+    }
+
+    public ProblemDetail toProblemDetail(ConstraintViolationException ex) {
+        ErrorCode errorCode = ErrorCode.INVALID_REQUEST_BODY;
+        Locale locale = LocaleContextHolder.getLocale();
+        List<FieldErrorView> errors = getFieldErrorViews(ex, locale);
+        String message = toMessage(errorCode, errors);
+
+        ProblemDetail result = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+        result.setType(fromHttpUrl(TYPE_URL_PATH).path(errorCode.name()).build().toUri());
+        result.setProperty(CODE, errorCode.getCode());
+        result.setProperty(ERR, message);
+        result.setProperty(ERRORS, errors);
+        return result;
+    }
+
+    private String toMessage(ErrorCode errorCode, List<FieldErrorView> errors) {
+        if (errors.size() == 1) {
+            return errors.get(0).getMessage();
+        }
+        return tryGetMessage(errorCode);
+    }
+
+    @SuppressWarnings("unused")
+    private List<FieldErrorView> getFieldErrorViews(ConstraintViolationException ex, Locale locale) {
+        return ex.getConstraintViolations().stream()
+                 .map(this::toFieldErrorView)
+                 .collect(Collectors.toList());
+    }
+
+    private FieldErrorView toFieldErrorView(ConstraintViolation<?> constraintViolation) {
+        String field = constraintViolation.getPropertyPath().toString();
+        String message = constraintViolation.getMessage();
+        return new FieldErrorView(field, message);
+    }
+
+    @Nonnull
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleAccessDeniedException(AccessDeniedException cause) {
         return toProblemDetail(HttpStatus.FORBIDDEN, cause);
@@ -236,9 +278,9 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
 
     public ProblemDetail toProblemDetail(MethodArgumentNotValidException ex) {
         ErrorCode errorCode = ErrorCode.INVALID_REQUEST_BODY;
-        String message = tryGetMessage(errorCode, null);
         Locale locale = LocaleContextHolder.getLocale();
         List<FieldErrorView> errors = getFieldErrorViews(ex, locale);
+        String message = toMessage(errorCode, errors);
 
         ProblemDetail result = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), message);
         result.setType(fromHttpUrl(TYPE_URL_PATH).path(errorCode.name()).build().toUri());
