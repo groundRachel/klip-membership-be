@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -162,40 +163,40 @@ public class SpringDocConfig {
         }
     }
 
-    //
-    //    @Bean
-    //    public GroupedOpenApi toolApi() {
-    //        return GroupedOpenApi.builder()
-    //                             .group("1. klip-membership-tool.tool")
-    //                             .pathsToMatch("/tool/**")
-    //                             .displayName("1. 파트너를 위한 Tool API")
-    //                             .build();
-    //    }
-    //
-    //    @Bean
-    //    public GroupedOpenApi adminApi() {
-    //        return GroupedOpenApi.builder()
-    //                             .group("2. klip-membership-tool.admin")
-    //                             .pathsToMatch("/admin/**")
-    //                             .displayName("2. 관리자를 위한 Admin API")
-    //                             .build();
-    //    }
-    //
-    //    @Bean
-    //    public GroupedOpenApi externalApi() {
-    //        return GroupedOpenApi.builder()
-    //                             .group("3. klip-membership-tool.external")
-    //                             .pathsToMatch("/open/**", "/internal/**")
-    //                             .displayName("3. 외부 제공 API")
-    //                             .build();
-    //    }
-    //
-    //    @Bean
-    //    public GroupedOpenApi all() {
-    //        return GroupedOpenApi.builder()
-    //                             .group("0. All")
-    //                             .pathsToMatch("/**")
-    //                             .displayName("0. ALL")
-    //                             .build();
-    //    }
+
+    @Bean
+    public GroupedOpenApi all() {
+        return GroupedOpenApi.builder()
+                             .group("0. All")
+                             .pathsToMatch("/**")
+                             .displayName("0. ALL")
+                             .build();
+    }
+
+    @Bean
+    public GroupedOpenApi toolApi() {
+        return GroupedOpenApi.builder()
+                             .group("1. klip-membership-tool.tool")
+                             .pathsToMatch("/tool/**")
+                             .displayName("1. 파트너를 위한 Tool API")
+                             .build();
+    }
+
+    @Bean
+    public GroupedOpenApi adminApi() {
+        return GroupedOpenApi.builder()
+                             .group("2. klip-membership-tool.admin")
+                             .pathsToMatch("/admin/**")
+                             .displayName("2. 관리자를 위한 Admin API")
+                             .build();
+    }
+
+    @Bean
+    public GroupedOpenApi externalApi() {
+        return GroupedOpenApi.builder()
+                             .group("3. klip-membership-tool.external")
+                             .pathsToMatch("/open/**", "/internal/**")
+                             .displayName("3. 외부 제공 API")
+                             .build();
+    }
 }
