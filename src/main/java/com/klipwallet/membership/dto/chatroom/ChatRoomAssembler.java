@@ -23,14 +23,14 @@ public class ChatRoomAssembler {
 
     private ChatRoomRow toRow(ChatRoom entity) {
         return new ChatRoomRow(entity.getId(), entity.getTitle(), entity.getContractAddress(), entity.getStatus(),
-                               entity.getSource(), entity.getBase().getCreatedBy().value(), entity.getBase().getUpdatedBy().value(),
-                               dtAssembler.toOffsetDateTime(entity.getBase().getCreatedAt()),
-                               dtAssembler.toOffsetDateTime(entity.getBase().getUpdatedAt()));
+                               entity.getSource(), entity.getCreatorId().value(), entity.getUpdaterId().value(),
+                               dtAssembler.toOffsetDateTime(entity.getCreatedAt()),
+                               dtAssembler.toOffsetDateTime(entity.getUpdatedAt()));
     }
 
     public ChatRoomSummary toSummary(ChatRoom entity) {
         return new ChatRoomSummary(entity.getId(), entity.getOpenChatRoomSummary().getId(), entity.getOpenChatRoomSummary().getUrl(),
-                                   entity.getTitle(), entity.getBase().getCreatedBy().value(),
-                                   dtAssembler.toOffsetDateTime(entity.getBase().getCreatedAt()));
+                                   entity.getTitle(), entity.getCreatorId().value(),
+                                   dtAssembler.toOffsetDateTime(entity.getCreatedAt()));
     }
 }
