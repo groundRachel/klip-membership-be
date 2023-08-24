@@ -70,6 +70,9 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.cloud:spring-cloud-starter-vault-config")
+    implementation(platform("software.amazon.awssdk:bom:2.20.131"))
+    implementation("software.amazon.awssdk:s3")
+    implementation("software.amazon.awssdk:cloudfront")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.lettuce:lettuce-core")    // Redis
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
