@@ -17,8 +17,6 @@ public class BgmsToken {
 
     /**
      * 토큰이 만료되었는가?
-     *
-     * @return
      */
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiredAt);
