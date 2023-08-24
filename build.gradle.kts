@@ -25,6 +25,11 @@ jib {
         tags = setOf(System.getenv("IMAGE_TAG") ?: "default_tag")
     }
     container {
+        environment = [
+            'VAULT_ROLE_ID'     : System.getenv('VAULT_ROLE_ID'),
+            'VAULT_SECRET_ID'   : System.getenv('VAULT_SECRET_ID')
+        ]
+        
         jvmFlags = listOf(
             System.getenv("JVM_XMS") ?: "-Xms256m", 
             System.getenv("JVM_XMX") ?: "-Xmx256m",
