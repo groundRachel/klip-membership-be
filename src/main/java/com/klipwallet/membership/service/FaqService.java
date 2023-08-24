@@ -4,18 +4,16 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.klipwallet.membership.dto.common.Result;
-import com.klipwallet.membership.dto.common.Status;
 import com.klipwallet.membership.dto.faq.FaqAssembler;
 import com.klipwallet.membership.dto.faq.FaqCreate;
 import com.klipwallet.membership.dto.faq.FaqDetail;
-import com.klipwallet.membership.dto.faq.FaqList;
 import com.klipwallet.membership.dto.faq.FaqRow;
 import com.klipwallet.membership.dto.faq.FaqStatus;
 import com.klipwallet.membership.dto.faq.FaqSummary;
@@ -90,19 +88,6 @@ public class FaqService {
     }
 
     /**
-     * FAQ 삭제
-     *
-     * @param faqId 수정할 FAQ ID
-     * @return 성공
-     */
-    @Transactional
-    public Result delete(Integer faqId) {
-        Faq faq = tryGetNotice(faqId);
-        faqRepository.delete(faq);
-        return new Result(Status.SUCCESS);
-    }
-
-    /**
      * FAQ 상세 조회
      *
      * @param faqId 조회할 FAQ ID
@@ -135,13 +120,12 @@ public class FaqService {
      * FAQ 목록 조회
      *
      * @param status 조회할 상태
-     * @param page 조회할 페이지
-     * @param size 조회할 사이즈
+     * @param page 조회할 페이지, 사이즈 정보
      * @return FAQ 상세
      */
-    public FaqList listByStatus(Faq.Status status, Integer page, Integer size) {
+    public Page<FaqRow> listByStatus(Faq.Status status, Pageable page) {
         Sort sort = toSort(status);
-        Pageable pageable = PageRequest.of(page-1, size, sort);
+        Pageable pageable = PageRequest.of(page.getPageNumber()-1, page.getPageSize(), sort);
         Page<Faq> faqs = null;
         if (status == null) {
            faqs = faqRepository.findAll(pageable);
@@ -149,7 +133,7 @@ public class FaqService {
            faqs = faqRepository.findByStatus(status, pageable);
         }
         List<FaqRow> rows = faqAssembler.toRows(faqs.toList());
-        return new FaqList(rows, faqs.getTotalElements(), faqs.getTotalPages());
+        return new PageImpl<>(rows, pageable, faqs.getTotalElements());
     }
 
     private Sort toSort(Faq.Status status) {
