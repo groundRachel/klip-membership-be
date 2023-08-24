@@ -56,8 +56,8 @@ public class ChatRoomMember {
     @Schema(name = "ChatRoomMember.Role", description = "채팅방 멤버 역할", example = "host")
     public enum Role implements Statusable {
         HOST(0),
-        SUB_HOST(1),
-        MEMBER(2);
+        OPERATOR(1),
+        NFT_HOLDER(2);
         private final byte code;
 
         Role(int code) {

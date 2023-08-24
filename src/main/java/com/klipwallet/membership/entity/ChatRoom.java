@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.lang.Nullable;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
@@ -34,7 +33,7 @@ import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
+public class ChatRoom extends BaseEntity<ChatRoom> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -63,8 +62,6 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ChatRoomMember> chatRoomMembers;
-    @Embedded
-    private BaseMeta base;
 
     @ForJpa
     protected ChatRoom() {

@@ -12,9 +12,11 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import com.klipwallet.membership.dto.storage.StorageResult;
 import com.klipwallet.membership.entity.Attachable;
 import com.klipwallet.membership.entity.MemberId;
-import com.klipwallet.membership.entity.S3ObjectResult;
+import com.klipwallet.membership.entity.ObjectId;
+import com.klipwallet.membership.exception.storage.StorageStoreException;
 import com.klipwallet.membership.service.StorageService;
 
 @Component
@@ -32,20 +34,20 @@ public class S3Adaptor implements StorageService {
     private String distributionDomain;
 
     @Override
-    public S3ObjectResult store(Attachable command, MemberId memberId) {
-        String path = "%s/%d/%s".formatted(S3_SUB_PREFIX, memberId.value(), UUID.randomUUID());
+    public StorageResult store(Attachable command, MemberId memberId) {
+        String path = "%s/%s/%s".formatted(S3_SUB_PREFIX, String.valueOf(memberId.value()), UUID.randomUUID());
         String key = "%s/%s".formatted(s3Prefix, path);
         PutObjectRequest req = PutObjectRequest.builder().bucket(bucket).contentType(command.getContentType().toString()).key(key).build();
         RequestBody body;
         try {
             body = RequestBody.fromInputStream(command.getInputStream(), command.getBytesSize());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new StorageStoreException(e);
         }
         PutObjectResponse res = s3Client.putObject(req, body);
         if (!res.sdkHttpResponse().isSuccessful()) {
-            throw new RuntimeException("Failed to put object");
+            throw new StorageStoreException(String.valueOf(res.sdkHttpResponse().statusCode()));
         }
-        return new S3ObjectResult(key, "%s://%s/%s".formatted(CLOUDFRONT_PROTOCOL, distributionDomain, path));
+        return new StorageResult(new ObjectId(key), "%s://%s/%s".formatted(CLOUDFRONT_PROTOCOL, distributionDomain, path));
     }
 }

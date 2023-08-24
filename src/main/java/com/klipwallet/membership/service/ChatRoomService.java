@@ -12,7 +12,7 @@ import com.klipwallet.membership.dto.chatroom.ChatRoomRow;
 import com.klipwallet.membership.dto.chatroom.ChatRoomSummary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.ChatRoom;
-import com.klipwallet.membership.exception.ExceedSizelimitException;
+import com.klipwallet.membership.exception.ChatRoomExceedMemberLimitException;
 import com.klipwallet.membership.repository.ChatRoomRepository;
 
 @Service
@@ -26,7 +26,7 @@ public class ChatRoomService {
     @Transactional
     public ChatRoomSummary create(ChatRoomCreate command, AuthenticatedUser user) {
         if (command.coverImage().getSize() > COVER_IMAGE_SIZE_LIMIT) {
-            throw new ExceedSizelimitException(command.coverImage().getSize());
+            throw new ChatRoomExceedMemberLimitException(command.coverImage().getSize());
         }
         // upload image to s3
 

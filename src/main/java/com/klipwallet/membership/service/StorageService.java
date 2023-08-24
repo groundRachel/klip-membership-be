@@ -1,8 +1,8 @@
 package com.klipwallet.membership.service;
 
+import com.klipwallet.membership.dto.storage.StorageResult;
 import com.klipwallet.membership.entity.Attachable;
 import com.klipwallet.membership.entity.MemberId;
-import com.klipwallet.membership.entity.S3ObjectResult;
 
 /**
  * 파일을 관리할 수 있는 인터페이스
@@ -11,5 +11,5 @@ import com.klipwallet.membership.entity.S3ObjectResult;
  * </p>
  */
 public interface StorageService {
-    S3ObjectResult store(Attachable command, MemberId memberId);
+    StorageResult store(Attachable command, MemberId memberId);
 }

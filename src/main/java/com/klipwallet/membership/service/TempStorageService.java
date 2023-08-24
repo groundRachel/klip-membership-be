@@ -6,9 +6,10 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
+import com.klipwallet.membership.dto.storage.StorageResult;
 import com.klipwallet.membership.entity.Attachable;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.ObjectId;
 import com.klipwallet.membership.exception.storage.StorageStoreException;
 
@@ -18,7 +19,6 @@ import com.klipwallet.membership.exception.storage.StorageStoreException;
  * @deprecated 추후 S3 구현체가 생기면 제거 요망
  */
 @Deprecated
-@Service
 @Slf4j
 public class TempStorageService implements StorageService {
     private final Path uploadPath;
@@ -29,7 +29,7 @@ public class TempStorageService implements StorageService {
     }
 
     @Override
-    public ObjectId store(Attachable command) {
+    public StorageResult store(Attachable command, MemberId memberId) {
         ObjectId objectId = new ObjectId(UUID.randomUUID().toString());
         try {
             Path tempFile = Files.createTempFile(uploadPath, objectId.getValue(), null);
@@ -37,6 +37,6 @@ public class TempStorageService implements StorageService {
         } catch (IOException e) {
             throw new StorageStoreException(e);
         }
-        return objectId;
+        return new StorageResult(objectId, "file://temp/%s".formatted(objectId.toString()));
     }
 }
