@@ -28,8 +28,8 @@ spring:
       scheme: https
       authentication: APPROLE
       app-role:
-        role-id: ${VAULT_ROLE_ID}
-        secret-id: ${VAULT_SECRET_ID}
+        role-id: ed3d9ac7-9a9b-d1a8-7da9-fb120ad3989c
+        secret-id: 4fcdea86-ed8f-f618-4777-eeb3521e451e
   config:
     import: vault://klip/klip-membership
   datasource:
