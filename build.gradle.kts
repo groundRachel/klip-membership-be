@@ -25,7 +25,7 @@ jib {
         tags = setOf(System.getenv("IMAGE_TAG") ?: "default_tag")
     }
     container {
-        
+
         jvmFlags = listOf(
                 System.getenv("JVM_XMS") ?: "-Xms256m",
                 System.getenv("JVM_XMX") ?: "-Xmx256m",

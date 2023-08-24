@@ -1,9 +1,24 @@
 package com.klipwallet.membership.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
+import org.springframework.lang.Nullable;
+
+import com.klipwallet.membership.entity.ChatRoom.Source;
+
+import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 
 /**
  * 채팅방 멤버 Entity
@@ -14,8 +29,51 @@ import jakarta.persistence.Id;
  * </p>
  */
 @Entity
+@Value
+@RequiredArgsConstructor
 public class ChatRoomMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;
+    Long id;
+    @Column(name = "nickname")
+    String nickname;
+    @Column(name = "profile_image")
+    String profileImage;
+    @Column(name = "role")
+    Role role;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    ChatRoom chatRoom;
+
+    public ChatRoomMember() {
+        id = null;
+        nickname = null;
+        profileImage = null;
+        chatRoom = null;
+        role = null;
+    }
+
+    @Getter
+    @Schema(name = "ChatRoomMember.Role", description = "채팅방 멤버 역할", example = "host")
+    public enum Role implements Statusable {
+        HOST(0),
+        SUB_HOST(1),
+        MEMBER(2);
+        private final byte code;
+
+        Role(int code) {
+            this.code = requireVerifiedCode(code);
+        }
+
+        @JsonCreator
+        @Nullable
+        public static Source fromDisplay(String display) {
+            return Statusable.fromDisplay(Source.class, display);
+        }
+
+        @JsonValue
+        @Override
+        public String toDisplay() {
+            return Statusable.super.toDisplay();
+        }
+    }
 }

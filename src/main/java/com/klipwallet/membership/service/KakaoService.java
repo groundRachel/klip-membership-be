@@ -1,7 +1,7 @@
 package com.klipwallet.membership.service;
 
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
-import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 
 public interface KakaoService {
     /**
@@ -12,5 +12,5 @@ public interface KakaoService {
      * @param host       오픈채팅방장
      * @return 개선될 오픈채팅방 아이디 ValueObject
      */
-    OpenChatRoomId createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host);
+    OpenChatRoomSummary createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host);
 }
