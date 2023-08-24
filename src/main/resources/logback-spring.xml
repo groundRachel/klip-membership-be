@@ -9,7 +9,12 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-    <springProfile name="!local">
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+    <!-- <springProfile name="!local">
         <appender name="NEWRELIC" class="com.newrelic.logging.logback.NwRelicAsyncAppender">
             <appender-ref ref="CONSOLE"/>
         </appender>
@@ -24,5 +29,5 @@
         <root level="WARN">
             <appender-ref ref="NEWRELIC"/>
         </root>
-    </springProfile>
+    </springProfile> -->
 </configuration>
