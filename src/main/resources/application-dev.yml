@@ -25,10 +25,11 @@ spring:
       enabled: true
       host: vault.dev.klaytn.com
       port: 443
-      kubernetes:
-        role: klip-membership
-        service-account-token-file: /var/run/secrets/kubernetes.io/serviceaccount/token
-      authentication: KUBERNETES
+      scheme: https
+      authentication: APPROLE
+      app-role:
+        role-id: ${VAULT_ROLE_ID}
+        secret-id: ${VAULT_SECRET_ID}
   config:
     import: vault://klip/klip-membership
   datasource:
