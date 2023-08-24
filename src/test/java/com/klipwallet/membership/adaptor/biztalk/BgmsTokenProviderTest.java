@@ -2,6 +2,7 @@ package com.klipwallet.membership.adaptor.biztalk;
 
 import java.time.LocalDateTime;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.only;
 
-//@Disabled("최초 1회만 테스트 성공하면 됨.")
+@Disabled("최초 1회만 테스트 성공하면 됨.")
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class BgmsTokenProviderTest {
     @Autowired

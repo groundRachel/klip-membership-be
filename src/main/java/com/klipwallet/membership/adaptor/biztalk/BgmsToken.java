@@ -7,7 +7,13 @@ import lombok.Value;
 
 @Value
 public class BgmsToken {
+    /**
+     * 사용자 토큰
+     */
     String token;
+    /**
+     * 만료일시(로컬에 저장됨)
+     */
     LocalDateTime expiredAt;
 
 

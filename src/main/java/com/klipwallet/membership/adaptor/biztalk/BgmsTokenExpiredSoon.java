@@ -6,7 +6,10 @@ import lombok.Value;
 import com.klipwallet.membership.entity.DomainEvent;
 
 /**
- * BGMS 토큰이 곧 만료됨 이벤트
+ * BGMS 사용자 토큰이 곧 만료됨 이벤트
+ * <p>
+ * 사용자 토큰이 곧 만료되므로 background로 토큰을 재발급 시도.
+ * </p>
  *
  * @see com.klipwallet.membership.adaptor.biztalk.BgmsInvitationNotificationAdaptor
  */

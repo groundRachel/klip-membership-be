@@ -7,13 +7,18 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
 
-
+/**
+ * BGMS 사용자 토큰 응답 DTO
+ */
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class BgmsTokenRes extends BgmsBaseRes {
     /**
-     * 인증 토큰(성공일 경우에만 표시)
+     * 사용자 토큰(성공일 경우에만 표시)
+     * <p>
+     * JWT
+     * </p>
      */
     String token;
 

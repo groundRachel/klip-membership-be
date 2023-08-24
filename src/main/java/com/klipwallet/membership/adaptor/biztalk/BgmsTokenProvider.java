@@ -28,9 +28,9 @@ public class BgmsTokenProvider {
     private final ReentrantLock pending = new ReentrantLock();
 
     /**
-     * 인증 토큰을 준비함. 만약 토큰이 만료되지 않았으면, 그것을 그대로 사용함.
+     * BGMS 통신을 위한 사용자 토큰을 준비함. 만약 토큰이 만료되지 않았으면, 그것을 그대로 사용함.
      * <p>
-     * 기본적으로 인증 토큰의 만료시간은 24시간.
+     * 기본(=MAX) 사용자 토큰의 만료시간은 24시간.
      * </p>
      */
     BgmsToken prepareToken() {
@@ -47,14 +47,14 @@ public class BgmsTokenProvider {
     private BgmsToken newTokenOnLock() {
         pending.lock();    // 최후의 lock;
         try {
-            return findValidToken().orElseGet(this::generateBgmsToken);
+            return findValidToken().orElseGet(this::reissueToken);
         } finally {
             pending.unlock();
         }
     }
 
     @NonNull
-    private BgmsToken generateBgmsToken() {
+    private BgmsToken reissueToken() {
         LocalDateTime expiredAt = LocalDateTime.now().plusHours(24L);   // 요청 전에 만료일시를 미리 준비한다. (기본 24시간 설정)
         BgmsTokenReq req = BgmsTokenReq.expiredMax(bgmsProperties.getId(), bgmsProperties.getPassword());
         BgmsTokenRes res = bgmsApiClient.getToken(req);
@@ -81,7 +81,7 @@ public class BgmsTokenProvider {
     }
 
     /**
-     * 토큰이 곧 만료되므로, background도 재발급을 시도한다.
+     * 사용자 토큰이 곧 만료되므로, background(Async)로 재발급을 시도한다.
      */
     @Async
     @EventListener(BgmsTokenExpiredSoon.class)
