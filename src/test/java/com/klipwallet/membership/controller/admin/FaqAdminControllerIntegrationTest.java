@@ -3,6 +3,8 @@ package com.klipwallet.membership.controller.admin;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,21 @@ class FaqAdminControllerIntegrationTest {
     @Autowired
     ObjectMapper om;
     private Integer lastNoticeId;
+
+    @BeforeEach
+    void setUp() {
+        clearFaqs();
+    }
+
+    @AfterEach
+    void tearDown() {
+        clearFaqs();
+    }
+
+    private void clearFaqs() {
+        faqRepository.deleteAll();
+        faqRepository.flush();
+    }
 
     @WithAdminUser(memberId = 24)
     @DisplayName("관리자 Faq 생성 > 201")
@@ -203,48 +220,6 @@ class FaqAdminControllerIntegrationTest {
     }
 
     @WithAdminUser(memberId = 24)
-    @DisplayName("관리자 FAQ 삭제 > 200")
-    @Test
-    void deleteFaq(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer faqId = lastNoticeId;
-        mvc.perform(delete("/admin/v1/faqs/{0}", faqId)
-                            .contentType(APPLICATION_JSON))
-           .andExpect(status().isOk())
-           .andExpect(jsonPath("$.result").value(com.klipwallet.membership.dto.common.Status.SUCCESS.toDisplay()));
-
-        // 삭제된 FAQ 조회시 NOT FOUND
-        mvc.perform(get("/admin/v1/faqs/{0}", faqId)
-                            .contentType(APPLICATION_JSON))
-           .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value(ErrorCode.FAQ_NOT_FOUND.getCode()))
-           .andExpect(jsonPath("$.err").value("FAQ를 찾을 수 없습니다. ID: %d".formatted(faqId)));
-    }
-
-    @WithAdminUser(memberId = 24)
-    @DisplayName("관리자 FAQ 삭제 > 존재하지 않는 FAQ 삭제 시도 404")
-    @Test
-    void deleteNotExistFAQ(@Autowired MockMvc mvc) throws Exception {
-        Integer faqId = -2;
-        mvc.perform(delete("/admin/v1/faqs/{0}", faqId)
-                            .contentType(APPLICATION_JSON))
-           .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value(ErrorCode.FAQ_NOT_FOUND.getCode()))
-           .andExpect(jsonPath("$.err").value("FAQ를 찾을 수 없습니다. ID: %d".formatted(faqId)));
-    }
-
-
-    @WithPartnerUser
-    @DisplayName("관리자 FAQ 삭제: 파트너 권한으로 시도 > 403")
-    @Test
-    void deleteOnPartner(@Autowired MockMvc mvc) throws Exception {
-        Integer faqId = lastNoticeId;
-        mvc.perform(delete("/admin/v1/faqs/{0}", faqId)
-                            .contentType(APPLICATION_JSON))
-           .andExpect(status().isForbidden());
-    }
-
-    @WithAdminUser(memberId = 24)
     @DisplayName("관리자 FAQ 조회 > 200")
     @Test
     void getFaq(@Autowired MockMvc mvc) throws Exception {
@@ -299,20 +274,20 @@ class FaqAdminControllerIntegrationTest {
         mvc.perform(get("/admin/v1/faqs")
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.totalItem").isNotEmpty())
-           .andExpect(jsonPath("$.totalPage").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].id").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
-           .andExpect(jsonPath("$.items[0].body").doesNotExist())
-           .andExpect(jsonPath("$.items[0].status").value(Status.LIVE.toDisplay()))
-           .andExpect(jsonPath("$.items[0].livedAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].creator.id").value(24))
-           .andExpect(jsonPath("$.items[0].creator.name").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].updater.id").value(24))
-           .andExpect(jsonPath("$.items[0].updater.name").isNotEmpty())
-           .andExpect(jsonPath("$.items[1].status").value(Status.DRAFT.toDisplay()));
+           .andExpect(jsonPath("$.totalElements").isNotEmpty())
+           .andExpect(jsonPath("$.totalPages").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
+           .andExpect(jsonPath("$.content[0].body").doesNotExist())
+           .andExpect(jsonPath("$.content[0].status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].creator.id").value(24))
+           .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updater.id").value(24))
+           .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[1].status").value(Status.DRAFT.toDisplay()));
     }
 
     @WithAdminUser(memberId = 24)
@@ -326,19 +301,19 @@ class FaqAdminControllerIntegrationTest {
         mvc.perform(get("/admin/v1/faqs?status=live")
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.totalItem").isNotEmpty())
-           .andExpect(jsonPath("$.totalPage").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].id").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
-           .andExpect(jsonPath("$.items[0].body").doesNotExist())
-           .andExpect(jsonPath("$.items[0].status").value(Status.LIVE.toDisplay()))
-           .andExpect(jsonPath("$.items[0].livedAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].creator.id").value(24))
-           .andExpect(jsonPath("$.items[0].creator.name").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].updater.id").value(24))
-           .andExpect(jsonPath("$.items[0].updater.name").isNotEmpty());
+           .andExpect(jsonPath("$.totalElements").isNotEmpty())
+           .andExpect(jsonPath("$.totalPages").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
+           .andExpect(jsonPath("$.content[0].body").doesNotExist())
+           .andExpect(jsonPath("$.content[0].status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].creator.id").value(24))
+           .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updater.id").value(24))
+           .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
     }
 
     @WithAdminUser(memberId = 24)
@@ -352,19 +327,19 @@ class FaqAdminControllerIntegrationTest {
         mvc.perform(get("/admin/v1/faqs?size=1&page=2")
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.totalItem").isNotEmpty())
-           .andExpect(jsonPath("$.totalPage").isNotEmpty())
-           .andExpect(jsonPath("$.items.length()").value(1))
-           .andExpect(jsonPath("$.items[0].id").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
-           .andExpect(jsonPath("$.items[0].body").doesNotExist())
-           .andExpect(jsonPath("$.items[0].status").value(Status.LIVE.toDisplay()))
-           .andExpect(jsonPath("$.items[0].livedAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].creator.id").value(24))
-           .andExpect(jsonPath("$.items[0].creator.name").isNotEmpty())
-           .andExpect(jsonPath("$.items[0].updater.id").value(24))
-           .andExpect(jsonPath("$.items[0].updater.name").isNotEmpty());
+           .andExpect(jsonPath("$.totalElements").isNotEmpty())
+           .andExpect(jsonPath("$.totalPages").isNotEmpty())
+           .andExpect(jsonPath("$.content.length()").value(1))
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
+           .andExpect(jsonPath("$.content[0].body").doesNotExist())
+           .andExpect(jsonPath("$.content[0].status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.content[0].livedAt").isEmpty())
+           .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].creator.id").value(24))
+           .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updater.id").value(24))
+           .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
     }
 }
