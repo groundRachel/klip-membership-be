@@ -6,6 +6,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
@@ -30,6 +31,7 @@ import com.klipwallet.membership.controller.GlobalRestControllerAdvice;
 @Hidden
 @RestController
 @RequestMapping("${server.error.path:${error.path:/error}}")
+@ConditionalOnWebApplication
 public class ProblemDetailErrorController extends AbstractErrorController {
     private final ErrorProperties errorProperties;
 

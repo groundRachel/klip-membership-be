@@ -1,6 +1,12 @@
 # noinspection SpringBootApplicationYaml
 application:
-  version: ${_applicationVersion}  # from build.gradle.kts
+  version: ${G_APPLICATION_VERSION}  # from build.gradle.kts
+
+logging:
+  group:
+    openfeign:
+      - com.klipwallet.membership.adaptor.biztalk.BgmsApiClient
+      - com.klipwallet.membership.adaptor.kakao.KakaoApiClient
 
 management:
   endpoint:
@@ -27,6 +33,26 @@ server:
 
 spring:
   cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        group:
+          enabled: true
+      client:
+        config:
+          default:
+            logger-level: basic
+            connect-timeout: 2000
+            read-timeout: 8000
+          bgms:
+            url: \${application.bgms.api-url}
+          kakao:
+            url: \${application.kakao-api.openlink-url}
+      compression:
+        request:
+          enabled: true
+        response:
+          enabled: true
     vault:
       enabled: false
   data:

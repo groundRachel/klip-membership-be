@@ -26,10 +26,10 @@ jib {
     }
     container {
         jvmFlags = listOf(
-            System.getenv("JVM_XMS") ?: "-Xms256m", 
-            System.getenv("JVM_XMX") ?: "-Xmx256m",
+                System.getenv("JVM_XMS") ?: "-Xms256m",
+                System.getenv("JVM_XMX") ?: "-Xmx256m",
 
-        )
+                )
     }
 }
 
@@ -114,8 +114,9 @@ dependencyManagement {
 }
 
 tasks.processResources {
-    filesMatching("**/application.yml") {
-        expand("_applicationVersion" to project.version)
+    filesMatching("**/application*.yml") {
+        expand("G_APPLICATION_VERSION" to project.version,
+                "G_VAULT_TOKEN" to getLocalVaultToken())
     }
 }
 
@@ -128,3 +129,6 @@ checkstyle {
     maxWarnings = 0
     configFile = file("${rootDir}/config/checkstyle/gx-checkstyle.0.9.xml")
 }
+
+// VAULT_TOKEN property in `$home/.gradle/gradle.properties`
+fun getLocalVaultToken() = if (project.hasProperty("VAULT_TOKEN")) project.property("VAULT_TOKEN") else "dummy-token"
