@@ -22,6 +22,7 @@ management:
 spring:
   cloud:
     vault:
+      enabled: true
       host: vault.dev.klaytn.com
       port: 443
       scheme: https
