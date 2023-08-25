@@ -19,7 +19,7 @@
     <entry key="problemDetail.code.404002">파트너 신청 정보를 조회할 수 없습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.404003">파트너 정보를 조회할 수 없습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.404004">고정 공지를 찾을 수 없습니다.</entry>
-    <entry key="problemDetail.code.404005">FAQ를 찾을 수 없습니다. ID: {0}</entry>
+    <entry key="problemDetail.code.404005">FAQ를 찾을 수 없습니다. ID: {0,number,#}</entry>
 
     <!-- 409 -->
     <entry key="problemDetail.code.409000">서버의 현재 상태와 요청이 충돌했습니다.</entry>

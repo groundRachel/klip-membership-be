@@ -19,5 +19,5 @@ public interface FaqUpdatable {
      * 수정 관리자 아이디
      */
     @Nonnull
-    MemberId getUpdater();
+    MemberId getUpdaterId();
 }

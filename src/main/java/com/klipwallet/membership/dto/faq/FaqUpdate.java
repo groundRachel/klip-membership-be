@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Size;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
+import net.minidev.json.annotate.JsonIgnore;
 
 import com.klipwallet.membership.entity.AuthenticatedUser;
 
@@ -17,7 +18,7 @@ public record FaqUpdate(
         @NotBlank
         String body) {
 
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @JsonIgnore
     public com.klipwallet.membership.entity.FaqUpdatable toUpdatable(AuthenticatedUser user) {
         return new FaqUpdatable(this.title(), this.body(), user.getMemberId());
     }

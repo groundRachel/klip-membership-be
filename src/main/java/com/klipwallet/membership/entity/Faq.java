@@ -61,7 +61,7 @@ public class Faq extends BaseEntity<Faq> {
     public void update(FaqUpdatable command) {
         this.title = command.getTitle();
         this.body = command.getBody();
-        updateBy(command.getUpdater());
+        updateBy(command.getUpdaterId());
     }
 
     public void changeStatus(@NonNull Status status, MemberId updater) {
@@ -79,6 +79,10 @@ public class Faq extends BaseEntity<Faq> {
     private void live() {
         this.status = Status.LIVE;
         this.livedAt = LocalDateTime.now();
+    }
+
+    public boolean isLive() {
+        return status == Faq.Status.LIVE;
     }
 
     public boolean equalId(@NonNull Integer noticeId) {
