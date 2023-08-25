@@ -38,8 +38,8 @@ spring:
       namespace: vault
       authentication: APPROLE
       app-role:
-        role-id: ${VAULT_ROLE_ID}
-        secret-id: ${VAULT_SECRET_ID}
+        role-id: \${VAULT_ROLE_ID}
+        secret-id: \${VAULT_SECRET_ID}
         role: klip-membership-role
         app-role-path: approle
   config:
