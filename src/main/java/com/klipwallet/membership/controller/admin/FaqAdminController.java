@@ -105,7 +105,7 @@ public class FaqAdminController {
     @GetMapping
     public Page<FaqRow> list(
             @Parameter(description = "필터링 할 FAQ 상태", example = "live") @RequestParam(value = "status", required = false) Faq.Status status,
-            @ParameterObject @PageableDefault(size = 100, page = 1) Pageable page) {
-        return faqService.listByStatus(status, page);
+            @ParameterObject @PageableDefault(page = 1) Pageable pageable) {
+        return faqService.listByStatus(status, pageable);
     }
 }

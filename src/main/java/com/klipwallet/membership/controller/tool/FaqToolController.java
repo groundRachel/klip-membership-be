@@ -40,7 +40,7 @@ public class FaqToolController {
     @Operation(summary = "FAQ 목록 조회")
     @ApiResponses({@ApiResponse(responseCode = "200", description = "FAQ 조회 성공"),})
     @GetMapping
-    public Page<FaqRow> list(@ParameterObject @PageableDefault(size = 100, page = 1) Pageable page) {
-        return faqService.listByStatus(Status.LIVE, page);
+    public Page<FaqRow> list(@ParameterObject @PageableDefault(page = 1) Pageable pageable) {
+        return faqService.listByStatus(Status.LIVE, pageable);
     }
 }

@@ -64,6 +64,8 @@ spring:
         page-parameter: page
         one-indexed-parameters: true
         max-page-size: 1000
+        default-page-size: 20
+
   devtools:
     livereload:
       enabled: false

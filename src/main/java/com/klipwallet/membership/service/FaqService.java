@@ -105,11 +105,11 @@ public class FaqService {
      * @return FAQ 상세
      */
     public FaqDetail getLivedDetail(Integer faqId) {
-        Faq faq = tryGetLivedFAQ(faqId);
+        Faq faq = tryGetLivedFaq(faqId);
         return faqAssembler.toDetail(faq);
     }
 
-    private Faq tryGetLivedFAQ(Integer faqId) {
+    private Faq tryGetLivedFaq(Integer faqId) {
         return faqRepository.findById(faqId)
                                .filter(Faq::isLive)
                                .orElseThrow(() -> new FaqNotFoundException(faqId));
