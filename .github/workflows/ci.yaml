@@ -63,6 +63,9 @@ jobs:
           gradle-${{ runner.os }}-
     - name: Run Gradle test
       run: ./gradlew test
+      env:
+        VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+        VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
     - name: Upload test report
       if: always() 
       uses: actions/upload-artifact@v3
