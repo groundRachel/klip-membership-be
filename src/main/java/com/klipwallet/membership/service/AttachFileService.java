@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.klipwallet.membership.dto.attachfile.AttachFileDto.MetaData;
+import com.klipwallet.membership.dto.storage.StorageResult;
 import com.klipwallet.membership.entity.Attachable;
 import com.klipwallet.membership.entity.AuthenticatedUser;
-import com.klipwallet.membership.entity.ObjectId;
 import com.klipwallet.membership.repository.AttachFile;
 import com.klipwallet.membership.repository.AttachFileRepository;
 
@@ -16,7 +16,6 @@ import com.klipwallet.membership.repository.AttachFileRepository;
 public class AttachFileService {
     private final AttachFileRepository attachFileRepository;
     private final StorageService storageService;
-    private final StorageHelper storageHelper;
 
     /**
      * 첨부파일 생성(업로드)
@@ -27,7 +26,7 @@ public class AttachFileService {
     @Transactional
     public MetaData create(Attachable command, AuthenticatedUser creator) {
         // 파일 저장
-        ObjectId objectId = storageService.store(command);
+        StorageResult objectId = storageService.store(command, creator.getMemberId());
         // entity 생성
         AttachFile entity = toAttachFile(command, creator, objectId);
         AttachFile persistEntity = attachFileRepository.save(entity);
@@ -35,8 +34,7 @@ public class AttachFileService {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    private AttachFile toAttachFile(Attachable command, AuthenticatedUser creator, ObjectId objectId) {
-        String linkUrl = storageHelper.toLinkUrl(command);
-        return new AttachFile(command, objectId, linkUrl, creator.getMemberId());
+    private AttachFile toAttachFile(Attachable command, AuthenticatedUser creator, StorageResult storageResult) {
+        return new AttachFile(command, storageResult, creator.getMemberId());
     }
 }

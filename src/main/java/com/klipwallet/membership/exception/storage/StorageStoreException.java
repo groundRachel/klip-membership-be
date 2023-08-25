@@ -12,4 +12,8 @@ public class StorageStoreException extends BaseCodeException {
     public StorageStoreException(Throwable cause) {
         super(ErrorCode.STORAGE_STORE, cause);
     }
+
+    public StorageStoreException(String msg) {
+        super(ErrorCode.STORAGE_STORE, msg);
+    }
 }

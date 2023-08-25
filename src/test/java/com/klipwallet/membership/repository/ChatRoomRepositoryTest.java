@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.ChatRoom;
-import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration.builder;
@@ -25,8 +25,8 @@ class ChatRoomRepositoryTest {
 
     @Test
     void insertAndSelect() {
-        ChatRoom entity = new ChatRoom(new OpenChatRoomId("1"), "title", "http://coverImage",
-                                       new Address("0xa005e82487fb629923b9598fffd1c2e9499f0cab"), 1);
+        ChatRoom entity = new ChatRoom("title", "http://coverImage", new OpenChatRoomSummary(1L, "yes"),
+                                       new Address("0xa005e82487fb629923b9598fffd1c2e9499f0cab"));
 
         ChatRoom saved = chatRoomRepository.save(entity);
         em.flush();

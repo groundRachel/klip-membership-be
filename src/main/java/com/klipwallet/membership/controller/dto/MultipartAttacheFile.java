@@ -20,7 +20,7 @@ public class MultipartAttacheFile implements Attachable {
     MultipartFile file;
 
     @Override
-    public String getFilename() {
+    public String getFileName() {
         return file.getOriginalFilename();
     }
 

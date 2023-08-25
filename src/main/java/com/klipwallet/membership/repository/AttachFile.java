@@ -16,6 +16,7 @@ import lombok.ToString;
 import org.springframework.http.MediaType;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
+import com.klipwallet.membership.dto.storage.StorageResult;
 import com.klipwallet.membership.entity.Attachable;
 import com.klipwallet.membership.entity.BaseEntity;
 import com.klipwallet.membership.entity.LinkStatus;
@@ -74,13 +75,13 @@ public class AttachFile extends BaseEntity<AttachFile> {
     protected AttachFile() {
     }
 
-    public AttachFile(Attachable command, @NonNull ObjectId objectId, @NonNull String linkUrl, @NonNull MemberId creatorId) {
-        this.filename = command.getFilename();
+    public AttachFile(Attachable command, @NonNull StorageResult storageResult, @NonNull MemberId creatorId) {
+        this.filename = command.getFileName();
         this.contentType = verifiedNonNull(command.getContentType(), () -> "'contentType' is empty");
         verified(command.getBytesSize() > 0, () -> "'contentLength' is 0");
         this.contentLength = command.getBytesSize();
-        this.objectId = objectId;
-        this.linkUrl = linkUrl;
+        this.objectId = storageResult.objectId();
+        this.linkUrl = storageResult.objectUrl();
         this.linkStatus = LinkStatus.UNLINK;
         createBy(creatorId);
     }

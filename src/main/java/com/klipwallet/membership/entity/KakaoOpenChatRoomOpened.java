@@ -3,7 +3,7 @@ package com.klipwallet.membership.entity;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 
 
 /**
@@ -18,5 +18,6 @@ import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class KakaoOpenChatRoomOpened extends DomainEvent {
-    OpenChatRoomId openChatRoomId;
+    OpenChatRoomSummary openChatRoomSummary;
+    MemberId creatorId;
 }

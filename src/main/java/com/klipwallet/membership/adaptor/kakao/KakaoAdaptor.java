@@ -8,7 +8,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.klipwallet.membership.entity.KakaoOpenChatRoomOpened;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
-import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 import com.klipwallet.membership.service.KakaoService;
 
 @Component
@@ -17,11 +17,10 @@ import com.klipwallet.membership.service.KakaoService;
 public class KakaoAdaptor implements KakaoService {
     public static final String DEFAULT_TARGET_ID_TYPE = "user_id";
     public static final boolean DEFAULT_IGNORE_KICK_STATUS = false;
-
     private final KakaoApiClient apiClient;
 
     @Override
-    public OpenChatRoomId createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host) {
+    public OpenChatRoomSummary createOpenChatRoom(String title, String coverImage, OpenChatRoomHost host) {
         //TODO: Ian
         //         OpenlinkSummaryRes res = apiClient.createOpenlink(new CreateOpenlinkReq());
         //        return new OpenChatRoomId(res.getId());
@@ -41,17 +40,17 @@ public class KakaoAdaptor implements KakaoService {
      */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void subscribeOnRollback(KakaoOpenChatRoomOpened event) {
-        OpenChatRoomId id = event.getOpenChatRoomId();
-        log.warn("[KAKAO][OPEN_MEETING] OpenChatRoom try remove: {}", id);
+        OpenChatRoomSummary openChatRoomSummary = event.getOpenChatRoomSummary();
+        log.warn("[KAKAO][OPEN_MEETING] OpenChatRoom try remove: {}", openChatRoomSummary.getId());
         try {
-            this.removeOpenChatRoom(id);
-            log.info("[KAKAO][OPEN_MEETING] OpenChatRoom is removed: {}", id);
+            this.removeOpenChatRoom(openChatRoomSummary.getId());
+            log.info("[KAKAO][OPEN_MEETING] OpenChatRoom is removed: {}", openChatRoomSummary.getId());
         } catch (Exception cause) {
-            log.error("[KAKAO][OPEN_MEETING] Failed to remove OpenChatRoom: {}", id);
+            log.error("[KAKAO][OPEN_MEETING] Failed to remove OpenChatRoom: {}", openChatRoomSummary.getId());
         }
     }
 
-    private void removeOpenChatRoom(OpenChatRoomId id) {
+    private void removeOpenChatRoom(Long id) {
         // TODO Impl
     }
 }

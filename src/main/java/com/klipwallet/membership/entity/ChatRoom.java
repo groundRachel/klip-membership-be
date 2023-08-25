@@ -1,14 +1,17 @@
 package com.klipwallet.membership.entity;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -16,11 +19,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.lang.Nullable;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
-import com.klipwallet.membership.entity.kakao.OpenChatRoomId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 
 import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 
@@ -31,14 +33,14 @@ import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
+public class ChatRoom extends BaseEntity<ChatRoom> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
     /**
      * 연동된 카카오 오픈 채팅방 아이디
      */
-    private OpenChatRoomId openChatRoomId;
+    private OpenChatRoomSummary openChatRoomSummary;
     private String title;
     /**
      * 채팅방 커버 이미지
@@ -58,14 +60,8 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
      * 채팅방을 생성했다고, 무조건 방장이 되지 않는다. 방장은 {@link ChatRoomMember} 에서 방장 타입으로 조회한다.
      * </p>
      */
-    @Column(updatable = false)
-    private Integer creatorId;
-    @Column(insertable = false)
-    private Integer updaterId;
-    @Column(insertable = false, updatable = false)
-    private LocalDateTime createdAt;
-    @Column(insertable = false)
-    private LocalDateTime updatedAt;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<ChatRoomMember> chatRoomMembers;
 
     @ForJpa
     protected ChatRoom() {
@@ -74,16 +70,15 @@ public class ChatRoom extends AbstractAggregateRoot<ChatRoom> {
     /**
      * 채팅방 생성을 위한 기본 생성자.
      */
-    public ChatRoom(OpenChatRoomId openChatRoomId, String title, String coverImage, Address contractAddress, Integer creatorId) {
-        this.openChatRoomId = openChatRoomId;
+    public ChatRoom(String title, String coverImage, OpenChatRoomSummary openChatRoomSummary, Address contractAddress) {
         this.title = title;
         this.coverImage = coverImage;
-        this.contractAddress = contractAddress;
+        this.openChatRoomSummary = openChatRoomSummary;
         this.status = Status.ACTIVATED;
         this.source = Source.KLIP_DROPS;
-        this.creatorId = creatorId;
+        this.contractAddress = contractAddress;
         // 카카오 오픈 채팅방을 바로 삭제하는 경우(Rollback)를 위한 이벤트
-        super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomId));
+        super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomSummary, getCreatorId()));
     }
 
     @Getter
