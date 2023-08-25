@@ -78,7 +78,7 @@ public class ChatRoom extends BaseEntity<ChatRoom> {
         this.source = Source.KLIP_DROPS;
         this.contractAddress = contractAddress;
         // 카카오 오픈 채팅방을 바로 삭제하는 경우(Rollback)를 위한 이벤트
-        super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomSummary));
+        super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomSummary, getCreatorId()));
     }
 
     @Getter

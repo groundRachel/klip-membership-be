@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.chatroom;
+package com.klipwallet.membership.adaptor.klipdrops;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
