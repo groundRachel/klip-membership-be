@@ -48,7 +48,10 @@ public enum ErrorCode {
     FAQ_NOT_FOUND(404_005),
 
     // Storage
-    STORAGE_STORE(500_101);
+    STORAGE_STORE(500_101),
+
+    // InterApi
+    INTERNAL_API_ERROR(500_200);
 
     final int code;
 

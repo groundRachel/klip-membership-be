@@ -11,6 +11,14 @@ NFT 홀더를 위한 카카오 오픈 채팅을 개설하고 관리하는 기능
 
 Or IDE Run: IntelliJ Keymap(⌃⌥R)
 
+### vault config in `$home/.gradle/gradle.properties`
+Local에서 개발할 시 Vault 토큰을 위 파일에 속성으로 지정해야함.
+```properties
+VAULT_TOKEN=????????????????????????????
+```
+
+참고: https://vault.dev.klaytn.com/ (1Password)
+
 ### Swagger-UI
 
 [http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui)

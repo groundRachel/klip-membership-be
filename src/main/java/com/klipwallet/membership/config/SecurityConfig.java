@@ -2,6 +2,7 @@ package com.klipwallet.membership.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -19,6 +20,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Slf4j
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
+@ConditionalOnWebApplication
 public class SecurityConfig {
     public static final String OAUTH2_USER = "OAUTH2_USER";
     public static final String PARTNER = "PARTNER";

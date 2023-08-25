@@ -1,12 +1,17 @@
 application:
   kakao-api:
-    admin-key: 2e5db1d18c9deb08b6a8011850b40446
-    domain-id: 139
+    #   admin-key:   from Value /klip/klip-membership
+    #   domain-id:   from Value /klip/klip-membership
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
+  bgms:
+    api-url: https://www.biztalk-api.com
+    id: groundx_prod_dev
+    password: \${bgms_pw}  # from Vault /klip/common
 
 logging:
   level:
     sql: debug
+    openfeign: debug
     org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor: debug
 
 management:
@@ -21,15 +26,18 @@ management:
 
 spring:
   cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            logger-level: full
     vault:
-      enabled: false
+      enabled: true
       host: vault.dev.klaytn.com
       port: 443
-      token: ${VAULT_TOKEN}
-#  config:
-#    import: vault://klip/klip-membership
-  datasource:
-    url: jdbc:h2:mem:local;MODE=MYSQL;DATABASE_TO_LOWER=TRUE; # Vault
+      token: ${G_VAULT_TOKEN}   # from build.gradle.kts
+  config:
+    import: vault://klip/klip-membership, vault://klip/common
   flyway:
     enabled: false
   jpa:
@@ -51,9 +59,9 @@ springdoc:
   swagger-ui:
     enabled: true
     oauth:
-      app-name: ${spring.security.oauth2.client.registration.google.provider}
-      client-id: ${spring.security.oauth2.client.registration.google.client-id}
-      client-secret: ${spring.security.oauth2.client.registration.google.client-secret}
-      realm: ${spring.security.oauth2.client.registration.google.provider}
+      app-name: \${spring.security.oauth2.client.registration.google.provider}
+      client-id: \${spring.security.oauth2.client.registration.google.client-id}
+      client-secret: \${spring.security.oauth2.client.registration.google.client-secret}
+      realm: \${spring.security.oauth2.client.registration.google.provider}
 
 

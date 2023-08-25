@@ -18,9 +18,9 @@ import com.klipwallet.membership.adaptor.kakao.dto.OpenlinkResItem;
 import com.klipwallet.membership.adaptor.kakao.dto.OpenlinkSummaryRes;
 import com.klipwallet.membership.adaptor.kakao.dto.UpdateOpenlinkReq;
 import com.klipwallet.membership.adaptor.kakao.dto.UpdateProfileReq;
-import com.klipwallet.membership.config.FeignConfig;
+import com.klipwallet.membership.adaptor.kakao.feign.KakaoFeignConfig;
 
-@FeignClient(name = "kakao", url = "${application.kakao-api.openlink-url}", configuration = {FeignConfig.class})
+@FeignClient(name = "kakao", configuration = KakaoFeignConfig.class)
 public interface KakaoApiClient {
 
     // TODO: linkIds Long[]을 받아서 String [1,2,3]으로 변환하는 CustomFormatter 구현
