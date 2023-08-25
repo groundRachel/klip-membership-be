@@ -3,6 +3,7 @@ package com.klipwallet.membership.dto.partner;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
@@ -14,7 +15,7 @@ import com.klipwallet.membership.entity.Partner.PartnerSummary;
 public class PartnerAssembler {
     private final DateTimeAssembler dateTimeAssembler;
 
-    public List<ApprovedPartnerDto> toPartnerDto(List<PartnerSummary> partners) {
+    public List<ApprovedPartnerDto> toPartnerDto(Page<PartnerSummary> partners) {
         return partners.stream().map(p -> new ApprovedPartnerDto(p.getMemberId(), p.getName(), dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
                                                                  p.getProcessorId())).toList();
     }

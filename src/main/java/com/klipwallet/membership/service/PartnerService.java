@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,10 +25,10 @@ public class PartnerService {
     private final PartnerAssembler partnerAssembler;
 
     @Transactional(readOnly = true)
-    public List<ApprovedPartnerDto> getPartners(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, getSort());
+    public List<ApprovedPartnerDto> getPartners(Pageable page) {
+        Pageable pageable = PageRequest.of(page.getPageNumber(), page.getPageSize(), getSort());
 
-        List<PartnerSummary> partners = partnerRepository.findAllPartners(Status.APPROVED, pageable);
+        Page<PartnerSummary> partners = partnerRepository.findAllPartners(Status.APPROVED, pageable);
         return partnerAssembler.toPartnerDto(partners);
     }
 

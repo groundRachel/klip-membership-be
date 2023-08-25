@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +32,7 @@ public class PartnerAdminController {
             @ApiResponse(responseCode = "403", description = "파트너 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @GetMapping
-    public List<ApprovedPartnerDto> getPartners(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
-        return partnerService.getPartners(page, size);
+    public List<ApprovedPartnerDto> getPartners(@RequestParam @PageableDefault(page = 0, size = 20) Pageable page) {
+        return partnerService.getPartners(page);
     }
 }

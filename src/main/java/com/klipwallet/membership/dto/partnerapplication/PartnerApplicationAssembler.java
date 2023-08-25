@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ public class PartnerApplicationAssembler {
     }
 
     @NonNull
-    public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull List<PartnerApplication> partnerApplications) {
+    public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull Page<PartnerApplication> partnerApplications) {
         return partnerApplications.stream()
                                   .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(),
                                                                       -1,  // TODO fetch info from drops

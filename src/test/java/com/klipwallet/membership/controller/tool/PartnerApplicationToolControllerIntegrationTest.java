@@ -27,7 +27,7 @@ import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import static com.klipwallet.membership.config.SecurityConfig.OAUTH2_USER;
 import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_DUPLICATED;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,13 +41,13 @@ public class PartnerApplicationToolControllerIntegrationTest {
     @Autowired
     ObjectMapper om;
 
-    String defaultRequestJson = """
-                                {
-                                  "name": "(주) 그라운드엑스",
-                                  "phoneNumber": "010-1234-5678",
-                                  "businessRegistrationNumber": "000-00-00000"
-                                }
-                                """;
+    final String defaultRequestJson = """
+                                      {
+                                        "name": "(주) 그라운드엑스",
+                                        "phoneNumber": "010-1234-5678",
+                                        "businessRegistrationNumber": "000-00-00000"
+                                      }
+                                      """;
 
     @AfterEach
     void afterEach() {
@@ -94,7 +94,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
                             .content(defaultRequestJson))
            .andExpect(status().isConflict())
            .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_DUPLICATED.getCode()))
-           .andExpect(jsonPath("$.err", containsString("해당 이메일로 진행 중인 요청이 있습니다. ID: %d,".formatted(applicationId))));
+           .andExpect(jsonPath("$.err", startsWith("해당 이메일로 진행 중인 요청이 있습니다. ID: %d,".formatted(applicationId))));
     }
 
     @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016", authorities = OAUTH2_USER)
@@ -113,7 +113,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
                             .content(defaultRequestJson))
            .andExpect(status().isConflict())
            .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_DUPLICATED.getCode()))
-           .andExpect(jsonPath("$.err", containsString("해당 이메일로 진행 중인 요청이 있습니다. ID: %d,".formatted(applicationId))));
+           .andExpect(jsonPath("$.err", startsWith("해당 이메일로 진행 중인 요청이 있습니다. ID: %d,".formatted(applicationId))));
     }
 
     @NotNull

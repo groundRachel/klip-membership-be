@@ -24,7 +24,7 @@ import static com.klipwallet.membership.entity.PartnerApplication.Status.*;
 import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_ALREADY_PROCESSED;
 import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -81,7 +81,7 @@ class PartnerApplicationAdminControllerTest {
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isConflict())
            .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_ALREADY_PROCESSED.getCode()))
-           .andExpect(jsonPath("$.err", containsString("이미 처리된 파트너 가입 요청입니다. ID: %d, 처리상태: %s, 처리자: %d,".formatted(id, APPROVED.toDisplay(), 23))));
+           .andExpect(jsonPath("$.err", startsWith("이미 처리된 파트너 가입 요청입니다. ID: %d, 처리상태: %s, 처리자: %d,".formatted(id, APPROVED.toDisplay(), 23))));
     }
 
     @WithAdminUser
@@ -183,8 +183,9 @@ class PartnerApplicationAdminControllerTest {
         partnerApplicationRepository.flush();
 
         // when, then
-        mvc.perform(get("/admin/v1/partner-applications?status={0}", APPLIED.toDisplay())
-                            .contentType(APPLICATION_JSON))
+        mvc.perform(get("/admin/v1/partner-applications").
+                            param("status", APPLIED.toDisplay()).
+                            contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스2"))
@@ -206,8 +207,9 @@ class PartnerApplicationAdminControllerTest {
         partnerApplicationRepository.flush();
 
         // when, then
-        mvc.perform(get("/admin/v1/partner-applications?status={0}", REJECTED.toDisplay())
-                            .contentType(APPLICATION_JSON))
+        mvc.perform(get("/admin/v1/partner-applications").
+                            param("status", REJECTED.toDisplay()).
+                            contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스8"))
@@ -226,8 +228,23 @@ class PartnerApplicationAdminControllerTest {
         partnerApplicationRepository.flush();
 
         // when, then
-        mvc.perform(get("/admin/v1/partner-applications?status={0}", "UNDEFINED")
-                            .contentType(APPLICATION_JSON))
+        mvc.perform(get("/admin/v1/partner-applications").
+                            param("status", "UNDEFINED").
+                            contentType(APPLICATION_JSON))
+           .andExpect(status().isBadRequest());
+    }
+
+    @WithAdminUser
+    @DisplayName("파트너 가입 요청 목록 조회: 미입력 > 400")
+    @Test
+    void getPartnerApplications_NoStatus(@Autowired MockMvc mvc) throws Exception {
+        // given
+        partnerApplicationRepository.saveAll(applications);
+        partnerApplicationRepository.flush();
+
+        // when, then
+        mvc.perform(get("/admin/v1/partner-applications").
+                            contentType(APPLICATION_JSON))
            .andExpect(status().isBadRequest());
     }
 }

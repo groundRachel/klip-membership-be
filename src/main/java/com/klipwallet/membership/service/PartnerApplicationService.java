@@ -1,9 +1,9 @@
 package com.klipwallet.membership.service;
 
-import java.util.Arrays;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,16 +36,15 @@ public class PartnerApplicationService {
     private final PartnerApplicationAssembler partnerApplicationAssembler;
 
 
-    private void canApply(AuthenticatedUser user) {
-        partnerApplicationRepository.findByEmailAndStatusIsIn(user.getEmail(), Arrays.asList(APPLIED, APPROVED))
-                                    .ifPresent(s -> {
-                                        throw new PartnerApplicationDuplicatedException(s);
-                                    });
+    private void verifyApply(AuthenticatedUser user) {
+        if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED, APPROVED))) {
+            throw new PartnerApplicationDuplicatedException();
+        }
     }
 
     @Transactional
     public PartnerApplicationDto.ApplyResult apply(Application body, AuthenticatedUser user) {
-        canApply(user);
+        verifyApply(user);
 
         PartnerApplication entity = body.toPartnerApplication(user);
         PartnerApplication partnerApplication = partnerApplicationRepository.save(entity);
@@ -65,7 +64,7 @@ public class PartnerApplicationService {
     }
 
 
-    private void checkAppliedStatus(PartnerApplication partnerApplication) {
+    private void checkProcessable(PartnerApplication partnerApplication) {
         if (partnerApplication.getStatus() != APPLIED) {
             throw new PartnerApplicationAlreadyProcessedException(partnerApplication);
         }
@@ -73,13 +72,13 @@ public class PartnerApplicationService {
 
 
     @Transactional(readOnly = true)
-    public List<PartnerApplicationDto.PartnerApplicationRow> getPartnerApplications(int page, int size, Status status) {
+    public List<PartnerApplicationDto.PartnerApplicationRow> getPartnerApplications(Pageable page, Status status) {
         // TODO KLDV-3068 get and check partner business number from drops
         // TODO consider adding a cache; some results are from drops
 
-        Pageable pageable = PageRequest.of(page, size, toSort(status));
+        Pageable pageable = PageRequest.of(page.getPageNumber(), page.getPageSize(), toSort(status));
 
-        List<PartnerApplication> partnerApplications = partnerApplicationRepository.findAllByStatus(status, pageable);
+        Page<PartnerApplication> partnerApplications = partnerApplicationRepository.findAllByStatus(status, pageable);
         return partnerApplicationAssembler.toPartnerApplicationRow(partnerApplications);
     }
 
@@ -97,7 +96,7 @@ public class PartnerApplicationService {
                            partnerApplication.getProcessorId(), user.getMemberId())) {
             return;
         }
-        checkAppliedStatus(partnerApplication);
+        checkProcessable(partnerApplication);
 
         partnerApplication.approve(user.getMemberId());
         partnerApplicationRepository.save(partnerApplication);
@@ -116,7 +115,7 @@ public class PartnerApplicationService {
                            partnerApplication.getProcessorId(), user.getMemberId())) {
             return;
         }
-        checkAppliedStatus(partnerApplication);
+        checkProcessable(partnerApplication);
 
         partnerApplication.reject(body.rejectReason(), user.getMemberId());
         partnerApplicationRepository.save(partnerApplication);

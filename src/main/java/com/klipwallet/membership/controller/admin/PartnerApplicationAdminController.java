@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +27,7 @@ import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Pa
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
+import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
 @Tag(name = "Admin.PartnerApplication", description = "Admin의 파트너 가입 요청 관리 API")
@@ -40,9 +43,12 @@ public class PartnerApplicationAdminController {
             @ApiResponse(responseCode = "403", description = "파트너 요청 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @GetMapping
-    public List<PartnerApplicationRow> getPartnerApplications(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size,
+    public List<PartnerApplicationRow> getPartnerApplications(@RequestParam @PageableDefault(page = 0, size = 20) Pageable page,
                                                               @RequestParam(defaultValue = "applied") Status status) {
-        return partnerApplicationService.getPartnerApplications(page, size, status);
+        if (status.getCode() == 0) {
+            throw new InvalidRequestException();
+        }
+        return partnerApplicationService.getPartnerApplications(page, status);
     }
 
     @Operation(summary = "요청한 파트너 승인")
