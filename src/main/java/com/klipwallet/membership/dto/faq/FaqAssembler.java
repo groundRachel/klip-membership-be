@@ -1,9 +1,7 @@
 package com.klipwallet.membership.dto.faq;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.Nonnull;
@@ -17,8 +15,6 @@ import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.Faq;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.service.MemberAssembler;
-
-import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Component
 @RequiredArgsConstructor
@@ -38,22 +34,10 @@ public class FaqAssembler {
     }
 
     public List<FaqRow> toRows(List<Faq> faqs) {
-        Map<MemberId, MemberSummary> members = getMemberSummaryMap(faqs);
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(faqs);
         return faqs.stream()
                       .map(n -> toRow(n, members))
                       .collect(Collectors.toList());
-    }
-
-    private Map<MemberId, MemberSummary> getMemberSummaryMap(List<Faq> faqs) {
-        Set<MemberId> memberIds = toAccessorIds(faqs);
-        return memberAssembler.getMemberSummaryMap(memberIds);
-    }
-
-    private Set<MemberId> toAccessorIds(Collection<Faq> faqs) {
-        return faqs.stream()
-                      .map(Faq::getAccessorIds)
-                      .flatMap(Set::stream)
-                      .collect(toUnmodifiableSet());
     }
 
     private FaqRow toRow(Faq entity, Map<MemberId, MemberSummary> members) {
