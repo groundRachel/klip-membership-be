@@ -23,7 +23,7 @@ abstract class BgmsBaseRes implements InternalApiError {
 
     @JsonIgnore
     boolean isSuccessful() {
-        return responseCode.equals("1000");
+        return responseCode.equals(CODE_SUCCESS);
     }
 
     @Override
