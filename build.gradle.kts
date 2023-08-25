@@ -4,7 +4,7 @@ plugins {
     idea
     checkstyle
     jacoco
-    id("org.springframework.boot") version "3.1.2"
+    id("org.springframework.boot") version "3.1.3"
     id("io.spring.dependency-management") version "1.1.0"
     id("com.google.cloud.tools.jib") version "3.3.2" // jib
 }
@@ -51,7 +51,7 @@ repositories {
 }
 
 // Properties
-extra["springCloudVersion"] = "2022.0.3"
+extra["springCloudVersion"] = "2022.0.4"
 extra["springdocVersion"] = "2.2.0"
 extra["spockVersion"] = "2.3-groovy-4.0"
 extra["newrelicLogbackVersion"] = "2.0"
