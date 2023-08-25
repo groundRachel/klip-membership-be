@@ -1,9 +1,7 @@
 package com.klipwallet.membership.service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.Nonnull;
@@ -19,8 +17,6 @@ import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Notice;
 
-import static java.util.stream.Collectors.toUnmodifiableSet;
-
 @Component
 @RequiredArgsConstructor
 public class NoticeAssembler {
@@ -29,7 +25,7 @@ public class NoticeAssembler {
 
     @Nonnull
     public Detail toDetail(@NonNull Notice notice) {
-        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMap(notice.getAccessorIds());
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(notice);
         return new Detail(notice.getId(), notice.getTitle(), notice.getBody(), notice.isPrimary(), notice.getStatus(),
                           dtAssembler.toOffsetDateTime(notice.getLivedAt()),
                           dtAssembler.toOffsetDateTime(notice.getCreatedAt()),
@@ -39,22 +35,10 @@ public class NoticeAssembler {
     }
 
     public List<Row> toRows(List<Notice> notices) {
-        Map<MemberId, MemberSummary> members = getMemberSummaryMap(notices);
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(notices);
         return notices.stream()
                       .map(n -> toRow(n, members))
                       .collect(Collectors.toList());
-    }
-
-    private Map<MemberId, MemberSummary> getMemberSummaryMap(List<Notice> notices) {
-        Set<MemberId> memberIds = toAccessorIds(notices);
-        return memberAssembler.getMemberSummaryMap(memberIds);
-    }
-
-    private Set<MemberId> toAccessorIds(Collection<Notice> notices) {
-        return notices.stream()
-                      .map(Notice::getAccessorIds)
-                      .flatMap(Set::stream)
-                      .collect(toUnmodifiableSet());
     }
 
     private Row toRow(Notice entity, Map<MemberId, MemberSummary> members) {

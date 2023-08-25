@@ -34,7 +34,7 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @MappedSuperclass
 @Getter
-public abstract class BaseEntity<E extends BaseEntity<E>> extends CreateBaseEntity<E> {
+public abstract class BaseEntity<E extends BaseEntity<E>> extends CreateBaseEntity<E> implements AccessorIdsGettable {
     /**
      * 수정일시
      *
@@ -83,6 +83,7 @@ public abstract class BaseEntity<E extends BaseEntity<E>> extends CreateBaseEnti
      * @return 생성자, 최근 수정자 아이디 Set
      * @see com.klipwallet.membership.service.MemberAssembler
      */
+    @Override
     public Set<MemberId> getAccessorIds() {
         if (equalCreatorAndUpdater()) {
             return Set.of(this.getCreatorId());
