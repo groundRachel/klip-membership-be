@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -105,7 +104,7 @@ public class FaqAdminController {
     @GetMapping
     public Page<FaqRow> list(
             @Parameter(description = "필터링 할 FAQ 상태", example = "live") @RequestParam(value = "status", required = false) Faq.Status status,
-            @ParameterObject @PageableDefault(page = 1) Pageable pageable) {
+            @ParameterObject Pageable pageable) {
         return faqService.listByStatus(status, pageable);
     }
 }
