@@ -31,7 +31,7 @@ spring:
       app-role:
         role-id: ${VAULT_ROLE_ID}
         secret-id: ${VAULT_SECRET_ID}
-        role: klip-role
+        role: klip-membership-role
         app-role-path: approle
   config:
     import: vault://klip/klip-membership
