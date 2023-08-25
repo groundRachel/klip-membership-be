@@ -19,9 +19,10 @@ import com.klipwallet.membership.service.MemberAssembler;
 public class FaqAssembler {
     private final DateTimeAssembler dateTimeAssembler;
     private final MemberAssembler memberAssembler;
+
     @Nonnull
     public FaqDetail toDetail(@NonNull Faq faq) {
-        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMap(faq.getAccessorIds());
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(faq);
         return new FaqDetail(faq.getId(), faq.getTitle(), faq.getBody(), faq.getStatus(),
                              dateTimeAssembler.toOffsetDateTime(faq.getLivedAt()),
                              dateTimeAssembler.toOffsetDateTime(faq.getCreatedAt()),
