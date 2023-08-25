@@ -73,7 +73,6 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.lettuce:lettuce-core")    // Redis
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
-    implementation("org.springdoc:springdoc-openapi-starter-common:${property("springdocVersion")}")
     // Newrelic
     implementation("com.newrelic.logging:logback:${property("newrelicLogbackVersion")}")
 
