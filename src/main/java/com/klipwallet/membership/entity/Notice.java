@@ -2,6 +2,9 @@ package com.klipwallet.membership.entity;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +14,7 @@ import jakarta.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -128,12 +132,44 @@ public class Notice extends BaseEntity<Notice> {
         this.livedAt = LocalDateTime.now();
     }
 
+    /**
+     * 공지 사항이 파트너에게 노출 가능한 상태인가?
+     */
     public boolean isLive() {
         return status == Status.LIVE;
     }
 
     public boolean equalId(Integer otherNoticeId) {
         return Objects.equals(this.getId(), otherNoticeId);
+    }
+
+    /**
+     * 공지사항이 (논리적) 삭제되었는가?
+     *
+     * @see #isEnabled()
+     */
+    public boolean isDeleted() {
+        return status == Status.DELETE;
+    }
+
+    /**
+     * 공지사항이 관리자가 접근 가능한 유효한 상태인가?
+     * <p>
+     * Not {@link #isDeleted()}
+     *
+     * @see #isDeleted()
+     * @see #isLive()
+     */
+    public boolean isEnabled() {
+        return this.status.isEnabled();
+    }
+
+    public void deleteBy(MemberId deleterId) {
+        if (isDeleted()) {  // 멱등성
+            return;
+        }
+        status = Status.DELETE;
+        updateBy(deleterId);
     }
 
     @Getter
@@ -150,7 +186,16 @@ public class Notice extends BaseEntity<Notice> {
         /**
          * 비활성화: 이용자가 조회할 수 없음.
          */
-        INACTIVE(2);
+        INACTIVE(2),
+        /**
+         * (논리적) 삭제
+         */
+        @Hidden
+        DELETE(3);
+
+        private static final Set<Status> ENABLES = Stream.of(values())
+                                                         .filter(s -> s != DELETE)
+                                                         .collect(Collectors.toUnmodifiableSet());
 
         private final byte code;
 
@@ -164,10 +209,26 @@ public class Notice extends BaseEntity<Notice> {
             return Statusable.fromDisplay(Status.class, display);
         }
 
+        /**
+         * 공지항 유효한 상태들
+         * <p>
+         * {@link #DELETE} 상태를 제외한 나머지 유효한 상태들 = 관리자가 접근 가능한 상태
+         * </p>
+         *
+         * @return 유효한 공지사항 상태들
+         */
+        public static Set<Status> enables() {
+            return ENABLES;
+        }
+
         @JsonValue
         @Override
         public String toDisplay() {
             return Statusable.super.toDisplay();
+        }
+
+        public boolean isEnabled() {
+            return enables().contains(this);
         }
     }
 }

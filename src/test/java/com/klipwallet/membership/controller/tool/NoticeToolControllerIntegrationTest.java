@@ -73,7 +73,7 @@ class NoticeToolControllerIntegrationTest {
     }
 
     /**
-     * 0 ~ 2: draft, 3 ~ 6: live, 7 ~ 9: inactive
+     * 0 ~ 2: draft, 3 ~ 6: live, 7 ~ 9: inactive, 10 ~ 11: delete
      */
     private void createSampleNotices() {
         List<Notice> notices = List.of(
@@ -86,7 +86,9 @@ class NoticeToolControllerIntegrationTest {
                 new Notice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", "7", new MemberId(1)),
                 new Notice("Klip Developer Forum에 게시글을 작성하기 전, 꼭! 확인해주세요.", "8", new MemberId(2)),
                 new Notice("[기능 개선] App2App REST API - execute_contract 및 sign_message 기능 추가", "9", new MemberId(1)),
-                new Notice("[문서 개선] 클립 NFT 메타데이터 표준 안내 페이지 추가", "10", new MemberId(2)));
+                new Notice("[문서 개선] 클립 NFT 메타데이터 표준 안내 페이지 추가", "10", new MemberId(2)),
+                new Notice("INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils", "10", new MemberId(1)),
+                new Notice("BeanFactory id=f7ff75ef-e558-3499-bc4a-1f50f170b10d", "11", new MemberId(2)));
         List<Notice> results = noticeRepository.saveAll(notices);
 
         results.get(3).changeStatus(Status.LIVE, new MemberId(3));
@@ -97,6 +99,9 @@ class NoticeToolControllerIntegrationTest {
         results.get(7).changeStatus(Status.INACTIVE, new MemberId(5));
         results.get(8).changeStatus(Status.INACTIVE, new MemberId(6));
         results.get(9).changeStatus(Status.INACTIVE, new MemberId(5));
+
+        results.get(10).deleteBy(new MemberId(6));
+        results.get(11).deleteBy(new MemberId(5));
 
         noticeRepository.saveAll(results);
         noticeRepository.flush();

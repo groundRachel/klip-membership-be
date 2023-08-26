@@ -3,6 +3,7 @@ package com.klipwallet.membership.service;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +17,16 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.entity.NoticeUpdatable;
 import com.klipwallet.membership.entity.PrimaryNoticeChanged;
+import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.exception.NoticeNotFoundException;
 import com.klipwallet.membership.exception.PrimaryNoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
 
+import static com.klipwallet.membership.entity.Notice.Status.DELETE;
 import static com.klipwallet.membership.entity.Notice.Status.LIVE;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class NoticeService {
     private final NoticeRepository noticeRepository;
@@ -56,6 +60,7 @@ public class NoticeService {
 
     private Notice tryGetNotice(Integer noticeId) {
         return noticeRepository.findById(noticeId)
+                               .filter(Notice::isEnabled)
                                .orElseThrow(() -> new NoticeNotFoundException(noticeId));
     }
 
@@ -172,6 +177,9 @@ public class NoticeService {
      */
     @Transactional(readOnly = true)
     public List<Row> getListByStatus(Notice.Status status) {
+        if (status == DELETE) {
+            throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
+        }
         Sort sort = toSort(status);
         List<Notice> notices = noticeRepository.findAllByStatus(status, sort);
         return noticeAssembler.toRows(notices);
@@ -184,5 +192,23 @@ public class NoticeService {
         }
         // order by updatedAt desc
         return Sort.sort(Notice.class).by(Notice::getUpdatedAt).descending();
+    }
+
+    /**
+     * 공지사항 논리적 삭제
+     *
+     * @param noticeId 삭제할 공지사항 아이디
+     * @param deleter  삭제 관리자
+     */
+    @Transactional
+    public void delete(Integer noticeId, AuthenticatedUser deleter) {
+        try {
+            Notice notice = tryGetNotice(noticeId);
+            notice.deleteBy(deleter.getMemberId());
+            noticeRepository.save(notice);
+        } catch (NoticeNotFoundException cause) {
+            // Ignored: 존재하지 않는 것은 이미 삭제된 것이라서 멱등하게 처리
+            log.warn("Notice is already deleted: {}", noticeId, cause);
+        }
     }
 }

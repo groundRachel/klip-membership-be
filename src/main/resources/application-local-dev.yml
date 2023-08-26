@@ -1,3 +1,4 @@
+# local-dev: local 환경이지만 dev 환경 인프라에 의존하는 환경. w/ vault(local-dev.properties)
 application:
   kakao-api:
     #   admin-key:   from Value /klip/klip-membership
@@ -30,20 +31,17 @@ spring:
       client:
         config:
           default:
-            logger-level: basic
+            logger-level: full
     vault:
       enabled: true
       host: vault.dev.klaytn.com
       port: 443
-      namespace: vault
-      authentication: APPROLE
-      app-role:
-        role-id: ${VAULT_ROLE_ID}
-        secret-id: ${VAULT_SECRET_ID}
-        role: klip-membership-role
-        app-role-path: approle
+      token: ${VAULT_TOKEN}   # from local-dev.properties
   config:
-    import: vault://klip/klip-membership, vault://klip/common
+    import:
+      - optional:classpath:/local-dev.properties  # Generate it yourself
+      - vault://klip/klip-membership
+      - vault://klip/common
   flyway:
     enabled: false
   jpa:

@@ -11,13 +11,35 @@ NFT 홀더를 위한 카카오 오픈 채팅을 개설하고 관리하는 기능
 
 Or IDE Run: IntelliJ Keymap(⌃⌥R)
 
-### vault config in `$home/.gradle/gradle.properties`
-Local에서 개발할 시 Vault 토큰을 위 파일에 속성으로 지정해야함.
+### Local 개발을 위한 추가 속성 설정
+
+`spring.profiles.active=local`(default)
+
+Local에서 개발할 시 Vault 정보를 아래 파일에 속성으로 지정해야함.
+
+`/src/main/resources/local.properties`
+
 ```properties
-VAULT_TOKEN=????????????????????????????
+application.kakao-api.admin-key=????????????????????????????
+application.kakao-api.domain-id=???
+bgms_pw=????????????????????????????????????????
+spring.cloud.vault.enabled=false
+spring.datasource.url=jdbc:h2:mem:local;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
 ```
 
-참고: https://vault.dev.klaytn.com/ (1Password)
+### Local에서 Dev 환경을 참조하는 개발을 위한 추가 속성 설정
+
+`spring.profiles.active=local-dev`
+
+Local 개발 시 DB, Redis, Kafka 등 인프라를 dev 환경에 의존함.
+
+`/src/main/resources/local-dev.properties`
+
+```properties
+VAULT_TOKEN=??????????????????????????
+```
+
+> 참고: https://vault.dev.klaytn.com/ (1Password)
 
 ### Swagger-UI
 
@@ -28,7 +50,7 @@ VAULT_TOKEN=????????????????????????????
 ```shell
 # 단위 테스트
 ./gradlew clean test
-# 통합 테스트
+# 통합 테스트(현재 미존재)
 ./gradlew clean integrationTest
 # 둘 다
 ./gradlew clean check
@@ -67,14 +89,16 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 
 ## Package Structure
 
-`src/main/java/com.klipwallet.membershiptool`
+`src/main/java/com.klipwallet.membership`
 
 | package      | description               |
 |--------------|---------------------------|
-| `adaptor`    | 구현 기술 Component           |
+| `adaptor`    | 구현 기술 Adaptors            |
 | `config`     | Spring 구성                 |
-| `controller` | Web Mvc Controller(API)   |
+| `controller` | API                       |
+| `dto`        | Data Transfer Object      |
 | `entity`     | Entity 등 주요 도메인 모델        |
+| `exception`  | Exceptions                |
 | `repository` | Repository 등 영속화 컴포넌트     |
 | `service`    | Rich Service(Transaction) |
 
@@ -93,8 +117,6 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
   * OpenFeign, CircuitBreaker, Vault
 * Spring Session, Cache
   * Spring Data Redis, Lettuce
-
-> [HELP.md](./HELP.md) 참고 요망
 
 ### Build Tools
 
@@ -127,7 +149,7 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 
 ## 주요 모델
 
-* `Member`: 파트너(이용자)
+* `Partner`: 파트너(이용자)
 * `MemberApplication`: 파트너 신청(이용자 등록 요청)
 * `Admin`: 관리자(GX담당자)
 * `ChatRoom`: 채팅방
