@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.service.NoticeService;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Tag(name = "Admin.Notice", description = "Admin 공지사항 API")
 @RestController
@@ -99,5 +101,18 @@ public class NoticeAdminController {
             @Valid @RequestBody NoticeDto.Status command,
             @AuthenticationPrincipal AuthenticatedUser user) {
         return noticeService.changeStatus(noticeId, command, user);
+    }
+
+    @Operation(summary = "Admin 공지사항 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "공지사항 삭제 성공"),
+            @ApiResponse(responseCode = "400", description = "Invalid Query", content = @Content(schema = @Schema(ref = "Error400")))
+    })
+    @DeleteMapping("/{noticeId}")
+    @ResponseStatus(NO_CONTENT)
+    public void delete(
+            @Parameter(description = "공지사항 id", required = true, example = "2") @PathVariable Integer noticeId,
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        noticeService.delete(noticeId, user);
     }
 }

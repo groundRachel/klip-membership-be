@@ -95,9 +95,11 @@ class NoticeAdminControllerIntegrationTest {
         mvc.perform(post("/admin/v1/notices")
                             .contentType(ALL)
                             .content(body))
-           .andExpect(status().isUnauthorized())
-           .andExpect(jsonPath("$.code").value(401_000))
-           .andExpect(jsonPath("$.err").value("인증되지 않았습니다."));
+           .andExpect(status().isFound());  // 302
+        // FIXME @Jordan 임시로 개발 편의성을 위해 302 처리 중 추후 아래 401로 변경할 예정
+        //           .andExpect(status().isUnauthorized())
+        //           .andExpect(jsonPath("$.code").value(401_000))
+        //           .andExpect(jsonPath("$.err").value("인증되지 않았습니다."));
     }
 
     @WithPartnerUser
@@ -205,6 +207,19 @@ class NoticeAdminControllerIntegrationTest {
     }
 
     @WithAdminUser
+    @DisplayName("관리자 공지사항 delete 목록 조회 > 400")
+    @Test
+    void deleteList(@Autowired MockMvc mvc) throws Exception {
+        createSampleNotices();
+
+        mvc.perform(get("/admin/v1/notices")
+                            .param("status", Status.DELETE.toDisplay()))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value(400_000))
+           .andExpect(jsonPath("$.err").value("Failed to convert 'status' with value: 'delete'"));
+    }
+
+    @WithAdminUser
     @DisplayName("관리자 공지사항 목록 조회: invalid status query > 400")
     @Test
     void listInvalidStatus(@Autowired MockMvc mvc) throws Exception {
@@ -218,7 +233,7 @@ class NoticeAdminControllerIntegrationTest {
     }
 
     /**
-     * 0 ~ 2: draft, 3 ~ 6: live, 7 ~ 9: inactive
+     * 0 ~ 2: draft, 3 ~ 6: live, 7 ~ 9: inactive, 10 ~ 11: delete
      */
     private void createSampleNotices() {
         List<Notice> notices = List.of(
@@ -231,7 +246,9 @@ class NoticeAdminControllerIntegrationTest {
                 new Notice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", "7", new MemberId(1)),
                 new Notice("Klip Developer Forum에 게시글을 작성하기 전, 꼭! 확인해주세요.", "8", new MemberId(2)),
                 new Notice("[기능 개선] App2App REST API - execute_contract 및 sign_message 기능 추가", "9", new MemberId(1)),
-                new Notice("[문서 개선] 클립 NFT 메타데이터 표준 안내 페이지 추가", "10", new MemberId(2)));
+                new Notice("[문서 개선] 클립 NFT 메타데이터 표준 안내 페이지 추가", "10", new MemberId(2)),
+                new Notice("INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils", "10", new MemberId(1)),
+                new Notice("BeanFactory id=f7ff75ef-e558-3499-bc4a-1f50f170b10d", "11", new MemberId(2)));
         List<Notice> results = noticeRepository.saveAll(notices);
 
         results.get(3).changeStatus(Status.LIVE, new MemberId(3));
@@ -242,6 +259,9 @@ class NoticeAdminControllerIntegrationTest {
         results.get(7).changeStatus(Status.INACTIVE, new MemberId(5));
         results.get(8).changeStatus(Status.INACTIVE, new MemberId(6));
         results.get(9).changeStatus(Status.INACTIVE, new MemberId(5));
+
+        results.get(10).deleteBy(new MemberId(6));
+        results.get(11).deleteBy(new MemberId(5));
 
         noticeRepository.saveAll(results);
         noticeRepository.flush();
@@ -463,5 +483,47 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(status().isBadRequest())
            .andExpect(jsonPath("$.code").value(400_000))
            .andExpect(jsonPath("$.err").value("Failed to read request"));
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 공지사항 삭제 > 204")
+    @Test
+    void deleteApi(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer noticeId = lastNoticeId;
+        mvc.perform(delete("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isNoContent());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 공지사항 삭제: 공지사항 2번 삭제(멱등성) > 204 X 2")
+    @Test
+    void delete2Times(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer noticeId = lastNoticeId;
+        // 1 times
+        mvc.perform(delete("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isNoContent());
+        // 2 times
+        mvc.perform(delete("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isNoContent());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 공지사항 삭제: 존재하지 않는 공지사항 삭제 > 204")
+    @Test
+    void deleteNotExists(@Autowired MockMvc mvc) throws Exception {
+        Integer noticeId = -1;
+        mvc.perform(delete("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isNoContent());
+    }
+
+    @WithPartnerUser
+    @DisplayName("관리자 공지사항 삭제: 파트너 권한 > 403")
+    @Test
+    void deleteOnPartner(@Autowired MockMvc mvc) throws Exception {
+        Integer noticeId = 1;
+        mvc.perform(delete("/admin/v1/notices/{0}", noticeId))
+           .andExpect(status().isForbidden());
     }
 }

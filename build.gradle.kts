@@ -25,7 +25,7 @@ jib {
         tags = setOf(System.getenv("IMAGE_TAG") ?: "default_tag")
     }
     container {
-        
+
         jvmFlags = listOf(
                 System.getenv("JVM_XMS") ?: "-Xms256m",
                 System.getenv("JVM_XMX") ?: "-Xmx256m",
@@ -75,8 +75,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
     // Newrelic
     implementation("com.newrelic.logging:logback:${property("newrelicLogbackVersion")}")
-
 //    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
+
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -115,9 +115,8 @@ dependencyManagement {
 }
 
 tasks.processResources {
-    filesMatching("**/application*.yml") {
-        expand("G_APPLICATION_VERSION" to project.version,
-                "G_VAULT_TOKEN" to getLocalVaultToken())
+    filesMatching("**/application.yml") {
+        expand("G_APPLICATION_VERSION" to project.version)
     }
 }
 
@@ -130,6 +129,3 @@ checkstyle {
     maxWarnings = 0
     configFile = file("${rootDir}/config/checkstyle/gx-checkstyle.0.9.xml")
 }
-
-// VAULT_TOKEN property in `$home/.gradle/gradle.properties`
-fun getLocalVaultToken() = if (project.hasProperty("VAULT_TOKEN")) project.property("VAULT_TOKEN") else "dummy-token"

@@ -91,7 +91,7 @@ spring:
       max-request-size: 11MB
       file-size-threshold: 500KB
   profiles:
-    active: local         # default profile
+    default: local
 
 springdoc:
   api-docs:
