@@ -2,6 +2,8 @@ package com.klipwallet.membership.service;
 
 import java.util.List;
 
+import jakarta.annotation.Nullable;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,13 +20,14 @@ import com.klipwallet.membership.dto.faq.FaqRow;
 import com.klipwallet.membership.dto.faq.FaqStatus;
 import com.klipwallet.membership.dto.faq.FaqSummary;
 import com.klipwallet.membership.dto.faq.FaqUpdate;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.Faq;
 import com.klipwallet.membership.entity.FaqUpdatable;
 import com.klipwallet.membership.exception.FaqNotFoundException;
 import com.klipwallet.membership.repository.FaqRepository;
 
-import static com.klipwallet.membership.entity.Faq.Status.LIVE;
+import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 
 @Service
 @RequiredArgsConstructor
@@ -50,9 +53,9 @@ public class FaqService {
     /**
      * FAQ 수정
      *
-     * @param faqId 수정할 FAQ ID
-     * @param command  수정할 FAQ 내용
-     * @param user     수정자
+     * @param faqId   수정할 FAQ ID
+     * @param command 수정할 FAQ 내용
+     * @param user    수정자
      * @return 수정된 FAQ 상세
      */
     @Transactional
@@ -69,9 +72,9 @@ public class FaqService {
     /**
      * FAQ 상태 변경
      *
-     * @param faqId 수정할 FAQ ID
-     * @param command  상태 변경 DTO
-     * @param user     수정자
+     * @param faqId   수정할 FAQ ID
+     * @param command 상태 변경 DTO
+     * @param user    수정자
      * @return 변경된 상태 DTO
      */
     @Transactional
@@ -84,7 +87,7 @@ public class FaqService {
 
     private Faq tryGetNotice(Integer faqId) {
         return faqRepository.findById(faqId)
-                               .orElseThrow(() -> new FaqNotFoundException(faqId));
+                            .orElseThrow(() -> new FaqNotFoundException(faqId));
     }
 
     /**
@@ -111,8 +114,8 @@ public class FaqService {
 
     private Faq tryGetLivedFaq(Integer faqId) {
         return faqRepository.findById(faqId)
-                               .filter(Faq::isLive)
-                               .orElseThrow(() -> new FaqNotFoundException(faqId));
+                            .filter(Faq::isLive)
+                            .orElseThrow(() -> new FaqNotFoundException(faqId));
     }
 
 
@@ -120,23 +123,25 @@ public class FaqService {
      * FAQ 목록 조회
      *
      * @param status 조회할 상태
-     * @param page 조회할 페이지, 사이즈 정보
+     * @param page   조회할 페이지, 사이즈 정보
      * @return FAQ 상세
      */
-    public Page<FaqRow> listByStatus(Faq.Status status, Pageable page) {
+    public Page<FaqRow> listByStatus(@Nullable ArticleStatus status, Pageable page) {
         Sort sort = toSort(status);
-        Pageable pageable = PageRequest.of(page.getPageNumber()-1, page.getPageSize(), sort);
-        Page<Faq> faqs = null;
-        if (status == null) {
-           faqs = faqRepository.findAll(pageable);
-        } else {
-           faqs = faqRepository.findByStatus(status, pageable);
-        }
+        Pageable pageable = PageRequest.of(page.getPageNumber() - 1, page.getPageSize(), sort);
+        Page<Faq> faqs = getResult(status, pageable);
         List<FaqRow> rows = faqAssembler.toRows(faqs.toList());
         return new PageImpl<>(rows, pageable, faqs.getTotalElements());
     }
 
-    private Sort toSort(Faq.Status status) {
+    private Page<Faq> getResult(ArticleStatus status, Pageable pageable) {
+        if (status == null) {
+            return faqRepository.findAll(pageable);
+        }
+        return faqRepository.findByStatus(status, pageable);
+    }
+
+    private Sort toSort(ArticleStatus status) {
         if (status == LIVE) {
             // order by livedAt desc
             return sortLivedAtDesc();

@@ -18,10 +18,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.faq.FaqSummary;
-import com.klipwallet.membership.entity.Faq.Status;
 import com.klipwallet.membership.exception.ErrorCode;
 import com.klipwallet.membership.repository.FaqRepository;
 
+import static com.klipwallet.membership.entity.ArticleStatus.DRAFT;
+import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -131,7 +132,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").value(faqId))
            .andExpect(jsonPath("$.title").value("멤버십 툴은 어떻게 사용하나요?"))
            .andExpect(jsonPath("$.body").value("<p>아래 링크를 통해 확인하실 수 있습니다.</p>"))
-           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.status").value(DRAFT.toDisplay()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(24))
@@ -175,7 +176,7 @@ class FaqAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()));
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()));
     }
 
     @Disabled("/oauth2/authorization/google 으로 redirect 되고 있어서 수정이 요구됨.")
@@ -231,7 +232,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").value(faqId))
            .andExpect(jsonPath("$.title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.body").value("<p>GX 파트너는 누구나 가입할 수 있습니다.</p>"))
-           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.livedAt").isNotEmpty())
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
@@ -279,7 +280,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].id").isNotEmpty())
            .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.content[0].body").doesNotExist())
-           .andExpect(jsonPath("$.content[0].status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
@@ -287,7 +288,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updater.id").value(24))
            .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty())
-           .andExpect(jsonPath("$.content[1].status").value(Status.DRAFT.toDisplay()));
+           .andExpect(jsonPath("$.content[1].status").value(DRAFT.toDisplay()));
     }
 
     @WithAdminUser(memberId = 24)
@@ -306,7 +307,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].id").isNotEmpty())
            .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.content[0].body").doesNotExist())
-           .andExpect(jsonPath("$.content[0].status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
@@ -333,7 +334,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].id").isNotEmpty())
            .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.content[0].body").doesNotExist())
-           .andExpect(jsonPath("$.content[0].status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.content[0].status").value(DRAFT.toDisplay()))
            .andExpect(jsonPath("$.content[0].livedAt").isEmpty())
            .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())

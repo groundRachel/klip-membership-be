@@ -31,8 +31,8 @@ import com.klipwallet.membership.dto.faq.FaqRow;
 import com.klipwallet.membership.dto.faq.FaqStatus;
 import com.klipwallet.membership.dto.faq.FaqSummary;
 import com.klipwallet.membership.dto.faq.FaqUpdate;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
-import com.klipwallet.membership.entity.Faq;
 import com.klipwallet.membership.service.FaqService;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -103,7 +103,7 @@ public class FaqAdminController {
     })
     @GetMapping
     public Page<FaqRow> list(
-            @Parameter(description = "필터링 할 FAQ 상태", example = "live") @RequestParam(value = "status", required = false) Faq.Status status,
+            @Parameter(description = "필터링 할 FAQ 상태", example = "live") @RequestParam(value = "status", required = false) ArticleStatus status,
             @ParameterObject Pageable pageable) {
         return faqService.listByStatus(status, pageable);
     }

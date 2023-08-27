@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 
 import com.klipwallet.membership.dto.member.MemberSummary;
-import com.klipwallet.membership.entity.Faq.Status;
+import com.klipwallet.membership.entity.ArticleStatus;
 
 @Schema(description = "FAQ 목록의 Row DTO", accessMode = AccessMode.READ_ONLY)
 public record FaqRow(
@@ -15,7 +15,7 @@ public record FaqRow(
         @Schema(description = "제목", minLength = 1, maxLength = 200, example = "멤버십 툴에 어떻게 가입하나요?")
         String title,
         @Schema(description = "상태", example = "live")
-        Status status,
+        ArticleStatus status,
         @Schema(description = "최근 Live 일시", example = "2023-07-24T15:38:24.005795+09:00")
         OffsetDateTime livedAt,
         @Schema(description = "생성일시", example = "2023-07-24T15:38:24.005795+09:00")
@@ -26,5 +26,5 @@ public record FaqRow(
         MemberSummary creator,
         @Schema(description = "마지막 수정자")
         MemberSummary updater
-){
+) {
 }
