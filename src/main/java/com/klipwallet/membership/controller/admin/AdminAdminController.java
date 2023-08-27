@@ -1,5 +1,7 @@
 package com.klipwallet.membership.controller.admin;
 
+import java.util.List;
+
 import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.admin.AdminDto;
+import com.klipwallet.membership.dto.admin.AdminDto.Row;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.AdminService;
 
@@ -40,5 +44,14 @@ public class AdminAdminController {
             @Valid @RequestBody AdminDto.Register command,
             @AuthenticationPrincipal AuthenticatedUser user) {
         return adminService.register(command, user);
+    }
+
+    @Operation(summary = "Admin 관리자 목록.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "어드민 목록 조회 성공")
+    })
+    @GetMapping
+    public List<Row> list() {
+        return adminService.getList();
     }
 }
