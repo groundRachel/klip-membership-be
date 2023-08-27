@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.AdminService;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Tag(name = "Admin.Admin", description = "Admin 어드민 API")
 @RestController
@@ -66,5 +68,17 @@ public class AdminAdminController {
     public AdminDto.Detail detail(
             @Parameter(description = "어드민 id", required = true, example = "2") @PathVariable Integer adminId) {
         return adminService.getDetail(adminId);
+    }
+
+    @Operation(summary = "Admin 어드민 삭제", description = "논리적 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "어드민 삭제됨")
+    })
+    @DeleteMapping("/{adminId}")
+    @ResponseStatus(NO_CONTENT)
+    public void delete(
+            @Parameter(description = "어드민 id", required = true, example = "2") @PathVariable Integer adminId,
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        adminService.delete(adminId, user);
     }
 }

@@ -1,32 +1,51 @@
 package com.klipwallet.membership.dto.member;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.entity.AccessorIdsGettable;
+import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.repository.MemberRepository;
 
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Component
+@RequiredArgsConstructor
 public class MemberAssembler {
-    public MemberSummary getMemberSummary(MemberId id) {
-        return MemberSummary.deactivated(id);
+    private final MemberRepository memberRepository;
+
+    public MemberSummary getMemberSummary(MemberId memberId) {
+        return memberRepository.findById(memberId.value())
+                               .map(MemberSummary::new)
+                               .orElseGet(() -> MemberSummary.deactivated(memberId));
     }
 
-    public Map<MemberId, MemberSummary> getMemberSummaryMap(@SuppressWarnings("unused") Collection<MemberId> ids) {
-        // TODO @Jordan
-        return Collections.emptyMap();
+    public Map<MemberId, MemberSummary> getMemberSummaryMap(Collection<MemberId> memberIds) {
+        Set<Integer> ids = toIdSet(memberIds);
+        List<Member> members = memberRepository.findAllById(ids);
+        return members.stream()
+                      .collect(toMap(Member::getMemberId, MemberSummary::new));
+    }
+
+    @NonNull
+    private Set<Integer> toIdSet(Collection<MemberId> memberIds) {
+        return memberIds.stream()
+                        .map(MemberId::value)
+                        .collect(Collectors.toSet());
     }
 
     @SuppressWarnings("unused")
-    public Map<MemberId, MemberSummary> getMemberSummaryMap(MemberId... ids) {
-        // TODO @Jordan
-        return Collections.emptyMap();
+    public Map<MemberId, MemberSummary> getMemberSummaryMap(MemberId... memberIds) {
+        return getMemberSummaryMap(List.of(memberIds));
     }
 
     public Map<MemberId, MemberSummary> getMemberSummaryMapBy(AccessorIdsGettable entity) {

@@ -210,7 +210,7 @@ public class Notice extends BaseEntity<Notice> {
         }
 
         /**
-         * 공지항 유효한 상태들
+         * 유효한 공지사항 상태들
          * <p>
          * {@link #DELETE} 상태를 제외한 나머지 유효한 상태들 = 관리자가 접근 가능한 상태
          * </p>

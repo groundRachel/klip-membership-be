@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import com.klipwallet.membership.dto.admin.AdminAssembler;
 import com.klipwallet.membership.dto.admin.AdminDto;
 import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.exception.member.AdminNotFoundException;
 import com.klipwallet.membership.repository.AdminRepository;
 
@@ -19,6 +21,7 @@ import com.klipwallet.membership.repository.AdminRepository;
  * 어드민 서비스
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AdminService {
     private final AdminRepository adminRepository;
@@ -69,9 +72,16 @@ public class AdminService {
         return adminAssembler.toDetail(admin);
     }
 
-    private Admin tryGetAdmin(Integer adminId) {
+    private Admin tryGetAdmin(@NonNull Integer adminId) {
         return adminRepository.findById(adminId)
+                              .filter(Member::isEnabled)
                               .orElseThrow(() -> new AdminNotFoundException(adminId));
+    }
+
+    private Admin tryGetAdmin(@NonNull String email) {
+        return adminRepository.findByEmail(email)
+                              .filter(Member::isEnabled)
+                              .orElseThrow(() -> new AdminNotFoundException(email));
     }
 
     /**
@@ -85,12 +95,29 @@ public class AdminService {
     @Transactional
     public Admin signIn(@NonNull AuthenticatedUser oauth2User) {
         String email = oauth2User.getEmail();
-        Admin admin = adminRepository.findByEmail(email)
-                                     .orElseThrow(() -> new AdminNotFoundException(email));
+        Admin admin = tryGetAdmin(email);
         if (admin.isSignUp()) {
             return admin;
         }
         admin.signUp(oauth2User.getName());
         return adminRepository.save(admin);
+    }
+
+    /**
+     * 멤버 탈퇴
+     * <p>
+     * 멤버 논리적 삭제
+     * </p>
+     */
+    @Transactional
+    public void withdraw(@NonNull Integer adminId, AuthenticatedUser deleter) {
+        try {
+            Admin admin = tryGetAdmin(adminId);
+            admin.withdraw(deleter.getMemberId());
+            adminRepository.save(admin);
+        } catch (AdminNotFoundException cause) {
+            // Ignore: 존재하지 않는 것은 이미 탈퇴된 것이라서 멱등하게 처리
+            log.warn("Admin is already deleted: {}", adminId, cause);
+        }
     }
 }

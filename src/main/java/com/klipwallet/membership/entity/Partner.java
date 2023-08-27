@@ -18,11 +18,11 @@ public class Partner extends Member {
     private String businessRegistrationNumber;
 
     public Partner(String name, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId, MemberId creator) {
-        this.name = name;
+        setName(name);
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
-        this.email = email;
-        this.oAuthId = oAuthId;
+        setEmail(email);
+        setOAuthId(oAuthId);
         createBy(creator);
     }
 

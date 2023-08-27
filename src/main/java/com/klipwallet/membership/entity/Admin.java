@@ -22,8 +22,8 @@ public class Admin extends Member {
     }
 
     public Admin(String email, MemberId creator) {
-        this.email = email;
-        this.name = toLocalPart(email);
+        setEmail(email);
+        setName(toLocalPart(email));
         createBy(creator);
     }
 
@@ -32,7 +32,7 @@ public class Admin extends Member {
     }
 
     public boolean isSignUp() {
-        return oAuthId != null;
+        return getOAuthId() != null;
     }
 
     /**
@@ -45,7 +45,7 @@ public class Admin extends Member {
      */
     @SuppressWarnings("DataFlowIssue")
     public void signUp(String oAuth2Id) {
-        this.oAuthId = oAuth2Id;
+        setOAuthId(oAuth2Id);
         updateBy(getMemberId());    // 나 자신이 접근한 것이므로 내가 updater
     }
 }
