@@ -186,10 +186,13 @@ class AdminAdminControllerIntegrationTest {
     @WithSuperAdminUser
     @DisplayName("Admin 어드민 탈퇴 > 204")
     @Test
-    void withdraw(@Autowired MockMvc mvc) throws Exception {
+    void withdraw2Times(@Autowired MockMvc mvc) throws Exception {
         // given
         MemberId adminId = createAdmin();
-        // when/then
+        // 1 time
+        mvc.perform(delete("/admin/v1/admins/{0}", adminId.value()))
+           .andExpect(status().isNoContent());
+        // 2 time
         mvc.perform(delete("/admin/v1/admins/{0}", adminId.value()))
            .andExpect(status().isNoContent());
     }

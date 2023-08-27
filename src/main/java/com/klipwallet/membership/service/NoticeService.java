@@ -209,7 +209,7 @@ public class NoticeService {
             noticeRepository.save(notice);
         } catch (NoticeNotFoundException cause) {
             // Ignore: 존재하지 않는 것은 이미 삭제된 것이라서 멱등하게 처리
-            log.warn("Notice is already deleted: {}", noticeId, cause);
+            log.warn("Notice is already deleted: {}", noticeId);
         }
     }
 }

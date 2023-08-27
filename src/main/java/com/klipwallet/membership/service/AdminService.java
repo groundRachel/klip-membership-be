@@ -117,7 +117,7 @@ public class AdminService {
             adminRepository.save(admin);
         } catch (AdminNotFoundException cause) {
             // Ignore: 존재하지 않는 것은 이미 탈퇴된 것이라서 멱등하게 처리
-            log.warn("Admin is already deleted: {}", adminId, cause);
+            log.warn("Admin is already deleted: {}", adminId);
         }
     }
 }
