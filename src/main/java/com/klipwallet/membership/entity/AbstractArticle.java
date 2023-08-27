@@ -26,6 +26,7 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 public class AbstractArticle<T extends AbstractArticle<T>> extends BaseEntity<T> {
+    @SuppressWarnings("unused")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

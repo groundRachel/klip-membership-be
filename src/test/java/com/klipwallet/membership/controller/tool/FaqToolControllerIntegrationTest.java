@@ -32,7 +32,6 @@ class FaqToolControllerIntegrationTest {
     FaqRepository faqRepository;
     @Autowired
     ObjectMapper om;
-    private Integer lastNoticeId;
 
     @BeforeEach
     void setUp() {

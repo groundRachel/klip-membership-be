@@ -24,7 +24,6 @@ import static java.lang.Boolean.TRUE;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Notice extends AbstractArticle<Notice> {
-    @SuppressWarnings("unused")
     /**
      * 고정 공지 여부
      * <p>
