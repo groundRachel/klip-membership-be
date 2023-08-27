@@ -45,8 +45,7 @@ public class AdminDto {
     public record Row(
             @NonNull
             @Schema(description = "어드민 ID", type = "integer", format = "int32", requiredMode = RequiredMode.REQUIRED, example = "2") MemberId id,
-            @NonNull
-            @Schema(description = "이메일", requiredMode = RequiredMode.REQUIRED, example = "jordan.jung@groundx.xyz")
+            @Schema(description = "이메일", example = "jordan.jung@groundx.xyz")
             String email,
             @NonNull
             @Schema(description = "추가 일시", requiredMode = RequiredMode.REQUIRED, example = "2023-07-24T15:38:24.005795+09:00")
@@ -60,8 +59,7 @@ public class AdminDto {
     public record Detail(
             @NonNull
             @Schema(description = "어드민 ID", type = "integer", format = "int32", requiredMode = RequiredMode.REQUIRED, example = "2") MemberId id,
-            @NonNull
-            @Schema(description = "이메일", requiredMode = RequiredMode.REQUIRED, example = "jordan.jung@groundx.xyz")
+            @Schema(description = "이메일", example = "jordan.jung@groundx.xyz")
             String email,
             @NonNull
             @Schema(description = "이름", requiredMode = RequiredMode.REQUIRED, example = "jordan.jung")

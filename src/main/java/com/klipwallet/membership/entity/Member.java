@@ -31,7 +31,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Member extends BaseEntity<Member> {
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     String email;
     /**
      * oAuthId
