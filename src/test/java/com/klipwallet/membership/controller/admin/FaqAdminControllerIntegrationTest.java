@@ -19,11 +19,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.faq.FaqSummary;
+import com.klipwallet.membership.entity.Faq;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.exception.ErrorCode;
 import com.klipwallet.membership.repository.FaqRepository;
 
-import static com.klipwallet.membership.entity.ArticleStatus.DRAFT;
-import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
+import static com.klipwallet.membership.entity.ArticleStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -244,6 +245,30 @@ class FaqAdminControllerIntegrationTest {
     }
 
     @WithAdminUser(memberId = 24)
+    @DisplayName("관리자 FAQ 조회: status = delete > 404")
+    @Test
+    void getFaqOnDelete(@Autowired MockMvc mvc) throws Exception {
+        Integer faqId = createDeletedFaq();
+
+        mvc.perform(get("/admin/v1/faqs/{0}", faqId)
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_005))
+           .andExpect(jsonPath("$.err").value("FAQ를 찾을 수 없습니다. ID: %s".formatted(faqId)));
+    }
+
+    private Integer createDeletedFaq() {
+        MemberId adminId = new MemberId(1);
+        Faq entity = new Faq("삭제될 FAQ", "1", adminId);
+        Faq persisted = faqRepository.save(entity);
+
+        persisted.deleteBy(adminId);
+        faqRepository.save(persisted);
+        faqRepository.flush();
+        return persisted.getId();
+    }
+
+    @WithAdminUser(memberId = 24)
     @DisplayName("관리자 FAQ 조회 > 존재하지 않는 FAQ 조회 시도 404")
     @Test
     void getNotExistFaq(@Autowired MockMvc mvc) throws Exception {
@@ -300,7 +325,8 @@ class FaqAdminControllerIntegrationTest {
         changeStatus(mvc);
         // create draft faq
         create(mvc);
-        mvc.perform(get("/admin/v1/faqs?status=live")
+        mvc.perform(get("/admin/v1/faqs")
+                            .param("status", LIVE.toDisplay())
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.totalElements").isNotEmpty())
@@ -316,6 +342,18 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updater.id").value(24))
            .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
+    }
+
+    @WithAdminUser(memberId = 24)
+    @DisplayName("관리자 FAQ 목록 조회 (default (page, size) status = 'delete') > 200")
+    @Test
+    void listFaqWithDelete(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/admin/v1/faqs")
+                            .param("status", DELETE.toDisplay())
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value(400_000))
+           .andExpect(jsonPath("$.err").value("Failed to convert 'status' with value: 'delete'"));
     }
 
     @WithAdminUser(memberId = 24)

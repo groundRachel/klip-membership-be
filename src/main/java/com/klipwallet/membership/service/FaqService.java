@@ -89,6 +89,7 @@ public class FaqService {
 
     private Faq tryGetFaq(Integer faqId) {
         return faqRepository.findById(faqId)
+                            .filter(Faq::isEnabled)
                             .orElseThrow(() -> new FaqNotFoundException(faqId));
     }
 

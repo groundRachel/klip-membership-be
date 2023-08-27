@@ -7,6 +7,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -114,9 +117,10 @@ class FaqToolControllerIntegrationTest {
 
     @WithPartnerUser
     @DisplayName("파트너 FAQ 조회 > live 상태가 아닌 FAQ 조회 시도 404")
-    @Test
-    void getNotLiveFaq(@Autowired MockMvc mvc) throws Exception {
-        Faq faq = faqRepository.save(new Faq("[안내] 월렛커넥트 연동 지원 안내", "1", new MemberId(1)));
+    @ParameterizedTest
+    @EnumSource(value = ArticleStatus.class, names = "LIVE", mode = Mode.EXCLUDE)
+    void getNotLiveFaq(ArticleStatus status, @Autowired MockMvc mvc) throws Exception {
+        Faq faq = createFaq("적절한 FAQ 제목", status);
         Integer faqId = faq.getId();
 
         mvc.perform(get("/tool/v1/faqs/{0}", faqId)
@@ -124,6 +128,12 @@ class FaqToolControllerIntegrationTest {
            .andExpect(status().isNotFound())
            .andExpect(jsonPath("$.code").value(ErrorCode.FAQ_NOT_FOUND.getCode()))
            .andExpect(jsonPath("$.err").value("FAQ를 찾을 수 없습니다. ID: %d".formatted(faqId)));
+    }
+
+    private Faq createFaq(String title, ArticleStatus status) {
+        Faq entity = new Faq(title, "<p>blah, blah</p>", new MemberId(1));
+        entity.changeStatus(status, new MemberId(2));
+        return faqRepository.save(entity);
     }
 
     @WithPartnerUser
