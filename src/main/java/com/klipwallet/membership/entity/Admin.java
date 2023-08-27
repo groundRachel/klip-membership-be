@@ -1,5 +1,6 @@
 package com.klipwallet.membership.entity;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
  * 어드민 Entity
  */
 @Entity
+@DiscriminatorValue("A")
 @Getter
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)

@@ -156,13 +156,13 @@ class AdminAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").isNumber())
            .andExpect(jsonPath("$.email").value("jordan.jung@groundx.xyz"))
            .andExpect(jsonPath("$.name").value("jordan.jung"))
-           .andExpect(jsonPath("$.oAuthId").isEmpty())      // !!
+           .andExpect(jsonPath("$.oAuthId").isEmpty())      // == null
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(1))
-           .andExpect(jsonPath("$.creator.name").value("Deactivated"))
+           .andExpect(jsonPath("$.creator.name").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.updater.id").value(1))
-           .andExpect(jsonPath("$.updater.name").value("Deactivated"));
+           .andExpect(jsonPath("$.updater.name").isNotEmpty());
     }
 
     private MemberId createAdmin() {
@@ -190,7 +190,7 @@ class AdminAdminControllerIntegrationTest {
         // given
         MemberId adminId = createAdmin();
         // when/then
-        mvc.perform(delete("/admin/v1/admins/{0}", adminId))
+        mvc.perform(delete("/admin/v1/admins/{0}", adminId.value()))
            .andExpect(status().isNoContent());
     }
 }

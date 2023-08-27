@@ -6,11 +6,14 @@ import java.util.stream.Stream;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -34,11 +37,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @see com.klipwallet.membership.entity.Partner
  * @see com.klipwallet.membership.entity.Admin
  */
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "type")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
 public abstract class Member extends BaseEntity<Member> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -75,6 +80,7 @@ public abstract class Member extends BaseEntity<Member> {
      * </p>
      */
     @Setter(AccessLevel.PACKAGE)
+    @Column(nullable = false)
     private Status status;
 
     @JsonIgnore
