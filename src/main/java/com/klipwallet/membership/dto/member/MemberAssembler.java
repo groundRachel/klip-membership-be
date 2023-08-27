@@ -1,4 +1,4 @@
-package com.klipwallet.membership.service;
+package com.klipwallet.membership.dto.member;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.AccessorIdsGettable;
 import com.klipwallet.membership.entity.MemberId;
 

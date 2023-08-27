@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.klipwallet.membership.dto.notice.NoticeAssembler;
 import com.klipwallet.membership.dto.notice.NoticeDto;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.dto.notice.NoticeDto.Summary;

@@ -31,9 +31,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Member extends BaseEntity<Member> {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    private Integer id;
     @Column(nullable = false, unique = true)
     String email;
     /**
@@ -44,6 +41,18 @@ public abstract class Member extends BaseEntity<Member> {
      */
     @Column(unique = true)
     String oAuthId;
+    /**
+     * 표시 이름
+     * <p>
+     * - partner: 회사명<br/>
+     * - admin: 이메일 LocalPart<br/>
+     * </p>
+     */
+    @Column(nullable = false)
+    String name;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Integer id;
     @JsonIgnore
     @Transient
     private MemberId memberId;

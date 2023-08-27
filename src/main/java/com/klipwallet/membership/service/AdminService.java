@@ -7,11 +7,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.klipwallet.membership.dto.admin.AdminDto.Register;
-import com.klipwallet.membership.dto.admin.AdminDto.Row;
-import com.klipwallet.membership.dto.admin.AdminDto.Summary;
+import com.klipwallet.membership.dto.admin.AdminAssembler;
+import com.klipwallet.membership.dto.admin.AdminDto;
 import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.exception.member.AdminNotFoundException;
 import com.klipwallet.membership.repository.AdminRepository;
 
 /**
@@ -34,10 +34,10 @@ public class AdminService {
      * @return 등록된 어드민 요약 DTO
      */
     @Transactional
-    public Summary register(Register command, AuthenticatedUser user) {
+    public AdminDto.Summary register(AdminDto.Register command, AuthenticatedUser user) {
         Admin entity = command.toAdmin(user);
         Admin persisted = adminRepository.save(entity);
-        return new Summary(persisted);
+        return new AdminDto.Summary(persisted);
     }
 
     /**
@@ -49,10 +49,27 @@ public class AdminService {
      * @return 전체 어드민 목록
      */
     @Transactional(readOnly = true)
-    public List<Row> getList() {
+    public List<AdminDto.Row> getList() {
         // order by id desc
         Sort listSort = Sort.sort(Admin.class).by(Admin::getId).descending();
         List<Admin> admins = adminRepository.findAll(listSort);
         return adminAssembler.toRows(admins);
+    }
+
+    /**
+     * 어드민 상세
+     *
+     * @param adminId 조회할 어드민 ID
+     * @return 어드민 상세 DTO
+     */
+    @Transactional(readOnly = true)
+    public AdminDto.Detail getDetail(Integer adminId) {
+        Admin admin = tryGetAdmin(adminId);
+        return adminAssembler.toDetail(admin);
+    }
+
+    private Admin tryGetAdmin(Integer adminId) {
+        return adminRepository.findById(adminId)
+                              .orElseThrow(() -> new AdminNotFoundException(adminId));
     }
 }

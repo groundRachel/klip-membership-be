@@ -13,8 +13,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class Partner extends Member {
     @Column(nullable = false)
-    private String name;
-    @Column(nullable = false)
     private String phoneNumber;
     @Column(nullable = false)
     private String businessRegistrationNumber;

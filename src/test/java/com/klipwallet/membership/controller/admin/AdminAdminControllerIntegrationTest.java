@@ -114,7 +114,7 @@ class AdminAdminControllerIntegrationTest {
     }
 
     @WithSuperAdminUser(memberId = 1)
-    @DisplayName("Admin 어드민 목록 > 200")
+    @DisplayName("Admin 어드민 목록 조회 > 200")
     @Test
     void list(@Autowired MockMvc mvc) throws Exception {
         // given
@@ -143,5 +143,44 @@ class AdminAdminControllerIntegrationTest {
         );
         adminRepository.saveAll(admins);
         adminRepository.flush();
+    }
+
+    @WithSuperAdminUser
+    @DisplayName("Admin 어드민 상세 조회 > 200")
+    @Test
+    void detail(@Autowired MockMvc mvc) throws Exception {
+        // given
+        MemberId adminId = createAdmin();
+        // when/then
+        mvc.perform(get("/admin/v1/admins/{0}", adminId.value()))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").isNumber())
+           .andExpect(jsonPath("$.email").value("jordan.jung@groundx.xyz"))
+           .andExpect(jsonPath("$.name").value("jordan.jung"))
+           .andExpect(jsonPath("$.oAuthId").isEmpty())      // !!
+           .andExpect(jsonPath("$.createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.creator.id").value(1))
+           .andExpect(jsonPath("$.creator.name").value("Deactivated"))
+           .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.updater.id").value(1))
+           .andExpect(jsonPath("$.updater.name").value("Deactivated"));
+    }
+
+    private MemberId createAdmin() {
+        Admin admin = new Admin("jordan.jung@groundx.xyz", new MemberId(1));
+        Admin persisted = adminRepository.save(admin);
+        adminRepository.flush();
+        return persisted.getMemberId();
+    }
+
+    @WithSuperAdminUser
+    @DisplayName("Admin 어드민 상세 조회 > 404")
+    @Test
+    void detailNotExists(@Autowired MockMvc mvc) throws Exception {
+        // when/then
+        mvc.perform(get("/admin/v1/admins/{0}", Integer.MAX_VALUE))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_006))
+           .andExpect(jsonPath("$.err").value("어드민을 찾을 수 없습니다. ID: %d".formatted(Integer.MAX_VALUE)));
     }
 }

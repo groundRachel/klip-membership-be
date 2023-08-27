@@ -11,10 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
+import com.klipwallet.membership.dto.member.MemberAssembler;
 import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.Faq;
 import com.klipwallet.membership.entity.MemberId;
-import com.klipwallet.membership.service.MemberAssembler;
 
 @Component
 @RequiredArgsConstructor
