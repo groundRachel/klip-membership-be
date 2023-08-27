@@ -21,21 +21,29 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * - 파트너사
  * - 관리자
  * </pre>
+ *
+ * @see com.klipwallet.membership.entity.Partner
+ * @see com.klipwallet.membership.entity.Admin
  */
-
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public class Member extends BaseEntity<Member> {
-    @Column(unique = true)
-    String email;
-    @Column(unique = true)
-    String oAuthId;
+public abstract class Member extends BaseEntity<Member> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer id;
+    @Column(nullable = false, unique = true)
+    String email;
+    /**
+     * oAuthId
+     * <p>
+     * 구글 oauth2 id(sub)
+     * </p>
+     */
+    @Column(unique = true)
+    String oAuthId;
     @JsonIgnore
     @Transient
     private MemberId memberId;

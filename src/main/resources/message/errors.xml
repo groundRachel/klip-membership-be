@@ -40,4 +40,7 @@
     <!-- 503 -->
     <entry key="problemDetail.code.503000">서비스를 사용할 수 없습니다.</entry>
     <entry key="problemDetail.code.503001">Service Unavailable Due to async timeout.</entry>
+
+    <!-- Custom Validation -->
+    <entry key="com.klipwallet.membership.dto.admin.AdminDto.Register.email.message">GroundX 임직원 이메일만 사용할 수 있습니다.</entry>
 </properties>
