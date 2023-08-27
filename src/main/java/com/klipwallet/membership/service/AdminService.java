@@ -2,6 +2,7 @@ package com.klipwallet.membership.service;
 
 import java.util.List;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -71,5 +72,25 @@ public class AdminService {
     private Admin tryGetAdmin(Integer adminId) {
         return adminRepository.findById(adminId)
                               .orElseThrow(() -> new AdminNotFoundException(adminId));
+    }
+
+    /**
+     * 어드민 인증
+     * <p>
+     * 최초 인증 시 회원가입을 완료 시킴
+     * </p>
+     *
+     * @param oauth2User 인증
+     */
+    @Transactional
+    public Admin signIn(@NonNull AuthenticatedUser oauth2User) {
+        String email = oauth2User.getEmail();
+        Admin admin = adminRepository.findByEmail(email)
+                                     .orElseThrow(() -> new AdminNotFoundException(email));
+        if (admin.isSignUp()) {
+            return admin;
+        }
+        admin.signUp(oauth2User.getName());
+        return adminRepository.save(admin);
     }
 }

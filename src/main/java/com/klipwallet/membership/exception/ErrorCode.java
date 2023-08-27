@@ -43,6 +43,7 @@ public enum ErrorCode {
 
     // Admin
     ADMIN_NOT_FOUND(404_006),
+    ADMIN_NOT_FOUND_BY_EMAIL(404_007),
 
     // Partner_*,
     PARTNER_NOT_FOUND(404_003),

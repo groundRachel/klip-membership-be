@@ -30,4 +30,22 @@ public class Admin extends Member {
     private String toLocalPart(String email) {
         return StringUtils.substringBefore(email, "@");
     }
+
+    public boolean isSignUp() {
+        return oAuthId != null;
+    }
+
+    /**
+     * 회원가입
+     * <p>
+     * 어드민은 최초 추가만 되어 있는 상태이며, 최초 인증을 한 번 해야지 회원가입이 완료됨.
+     * </p>
+     *
+     * @param oAuth2Id OAuth2 ID
+     */
+    @SuppressWarnings("DataFlowIssue")
+    public void signUp(String oAuth2Id) {
+        this.oAuthId = oAuth2Id;
+        updateBy(getMemberId());    // 나 자신이 접근한 것이므로 내가 updater
+    }
 }

@@ -15,4 +15,8 @@ public class AdminNotFoundException extends NotFoundException {
     public AdminNotFoundException(@NonNull Integer adminId) {
         super(ErrorCode.ADMIN_NOT_FOUND, adminId);
     }
+
+    public AdminNotFoundException(@NonNull String email) {
+        super(ErrorCode.ADMIN_NOT_FOUND_BY_EMAIL, email);
+    }
 }
