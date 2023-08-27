@@ -128,7 +128,7 @@ public class FaqService {
      */
     public Page<FaqRow> listByStatus(@Nullable ArticleStatus status, Pageable page) {
         Sort sort = toSort(status);
-        Pageable pageable = PageRequest.of(page.getPageNumber() - 1, page.getPageSize(), sort);
+        Pageable pageable = PageRequest.of(page.getPageNumber(), page.getPageSize(), sort);
         Page<Faq> faqs = getResult(status, pageable);
         List<FaqRow> rows = faqAssembler.toRows(faqs.toList());
         return new PageImpl<>(rows, pageable, faqs.getTotalElements());

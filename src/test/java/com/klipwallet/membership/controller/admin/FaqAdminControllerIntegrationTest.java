@@ -1,6 +1,7 @@
 package com.klipwallet.membership.controller.admin;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -158,7 +159,7 @@ class FaqAdminControllerIntegrationTest {
                             .content(body))
            .andExpect(status().isBadRequest())
            .andExpect(jsonPath("$.code").value(400001))
-           .andExpect(jsonPath("$.err").value("요청 본문이 유효하지 않습니다. errors를 참고하세요."));
+           .andExpect(jsonPath("$.err").value("body: 'must not be blank'"));
     }
 
     @WithAdminUser(memberId = 24)
@@ -321,12 +322,14 @@ class FaqAdminControllerIntegrationTest {
     @DisplayName("관리자 FAQ 목록 조회 (default (status null), size = 1, page = 2 > 200")
     @Test
     void listFaqWithPageSize(@Autowired MockMvc mvc) throws Exception {
-        // create live faq
+        // create live faq(2 page: order by updatedAt desc)
         changeStatus(mvc);
-        // create draft faq
+        TimeUnit.MILLISECONDS.sleep(100);  // 0.1초 wait
+        // create draft faq(1 page: order by updatedAt desc)
         create(mvc);
-        mvc.perform(get("/admin/v1/faqs?size=1&page=2")
-                            .contentType(APPLICATION_JSON))
+        mvc.perform(get("/admin/v1/faqs")
+                            .param("page", "2")
+                            .param("size", "1"))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.totalElements").isNotEmpty())
            .andExpect(jsonPath("$.totalPages").isNotEmpty())
@@ -334,12 +337,12 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].id").isNotEmpty())
            .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.content[0].body").doesNotExist())
-           .andExpect(jsonPath("$.content[0].status").value(DRAFT.toDisplay()))
-           .andExpect(jsonPath("$.content[0].livedAt").isEmpty())
+           .andExpect(jsonPath("$.content[0].status").value(LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].creator.id").value(24))
            .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updater.id").value(24))
            .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
     }
