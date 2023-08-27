@@ -36,7 +36,7 @@ class FaqAdminControllerIntegrationTest {
     FaqRepository faqRepository;
     @Autowired
     ObjectMapper om;
-    private Integer lastNoticeId;
+    private Integer lastFaqId;
 
     @BeforeEach
     void setUp() {
@@ -68,13 +68,13 @@ class FaqAdminControllerIntegrationTest {
                                      .content(body))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").isNumber());
-        setLastNoticeId(ra);
+        setLastFaqId(ra);
     }
 
-    private void setLastNoticeId(ResultActions ra) throws IOException {
+    private void setLastFaqId(ResultActions ra) throws IOException {
         MvcResult mvcResult = ra.andReturn();
         FaqSummary summary = om.readValue(mvcResult.getResponse().getContentAsString(), FaqSummary.class);
-        lastNoticeId = summary.id();
+        lastFaqId = summary.id();
     }
 
     @WithPartnerUser
@@ -119,7 +119,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void update(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "title": "멤버십 툴은 어떻게 사용하나요?",
@@ -147,7 +147,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void updateEmptyBodyAndStatus(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "title": "멤버십 툴은 어떻게 사용하나요?",
@@ -167,7 +167,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void changeStatus(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "status": "live"
@@ -185,7 +185,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void updateOnNoAuth(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "title": "클립 멤버십 툴 1.1.0이 릴리즈 되었습니다.",
@@ -226,7 +226,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void getFaq(@Autowired MockMvc mvc) throws Exception {
         changeStatus(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         mvc.perform(get("/admin/v1/faqs/{0}", faqId)
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
@@ -259,7 +259,7 @@ class FaqAdminControllerIntegrationTest {
     @DisplayName("관리자 FAQ 조회: 파트너 권한으로 시도 > 403")
     @Test
     void getOntPartner(@Autowired MockMvc mvc) throws Exception {
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         mvc.perform(get("/admin/v1/faqs/{0}", faqId)
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isForbidden());
@@ -345,5 +345,37 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updater.id").value(24))
            .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 FAQ 삭제: FAQ 2번 삭제(멱등성) > 204 X 2")
+    @Test
+    void delete2Times(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer faqId = lastFaqId;
+        // 1 times
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isNoContent());
+        // 2 times
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isNoContent());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 FAQ 삭제: 존재하지 않는 FAQ 삭제 > 204")
+    @Test
+    void deleteNotExists(@Autowired MockMvc mvc) throws Exception {
+        Integer faqId = -1;
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isNoContent());
+    }
+
+    @WithPartnerUser
+    @DisplayName("관리자 FAQ 삭제: 파트너 권한 > 403")
+    @Test
+    void deleteOnPartner(@Autowired MockMvc mvc) throws Exception {
+        Integer faqId = 1;
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isForbidden());
     }
 }

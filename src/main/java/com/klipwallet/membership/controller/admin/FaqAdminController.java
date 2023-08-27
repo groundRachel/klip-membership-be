@@ -15,6 +15,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.FaqService;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Tag(name = "Admin.FAQ", description = "Admin FAQ API")
 @RestController
@@ -106,5 +108,18 @@ public class FaqAdminController {
             @Parameter(description = "필터링 할 FAQ 상태", example = "live") @RequestParam(value = "status", required = false) ArticleStatus status,
             @ParameterObject Pageable pageable) {
         return faqService.listByStatus(status, pageable);
+    }
+
+    @Operation(summary = "FAQ 삭제", description = "논리적 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "FAQ 삭제됨"),
+            @ApiResponse(responseCode = "400", description = "Invalid Query", content = @Content(schema = @Schema(ref = "Error400")))
+    })
+    @DeleteMapping("/{faqId}")
+    @ResponseStatus(NO_CONTENT)
+    public void delete(
+            @Parameter(description = "faq id", required = true, example = "2") @PathVariable Integer faqId,
+            @AuthenticationPrincipal AuthenticatedUser user) {
+        faqService.delete(faqId, user);
     }
 }

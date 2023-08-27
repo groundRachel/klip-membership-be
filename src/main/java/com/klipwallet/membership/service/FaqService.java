@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.annotation.Nullable;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +32,7 @@ import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FaqService {
     private final FaqRepository faqRepository;
     private final FaqAssembler faqAssembler;
@@ -61,7 +63,7 @@ public class FaqService {
     @Transactional
     public FaqDetail update(Integer faqId, FaqUpdate command, AuthenticatedUser user) {
         FaqUpdatable updatable = command.toUpdatable(user);
-        Faq faq = tryGetNotice(faqId);
+        Faq faq = tryGetFaq(faqId);
 
         faq.update(updatable);
         Faq saved = faqRepository.save(faq);
@@ -79,13 +81,13 @@ public class FaqService {
      */
     @Transactional
     public FaqStatus changeStatus(Integer faqId, FaqStatus command, AuthenticatedUser user) {
-        Faq faq = tryGetNotice(faqId);
+        Faq faq = tryGetFaq(faqId);
         faq.changeStatus(command.status(), user.getMemberId());
         Faq saved = faqRepository.save(faq);
         return new FaqStatus(saved.getStatus());
     }
 
-    private Faq tryGetNotice(Integer faqId) {
+    private Faq tryGetFaq(Integer faqId) {
         return faqRepository.findById(faqId)
                             .orElseThrow(() -> new FaqNotFoundException(faqId));
     }
@@ -97,7 +99,7 @@ public class FaqService {
      * @return FAQ 상세
      */
     public FaqDetail getDetail(Integer faqId) {
-        Faq faq = tryGetNotice(faqId);
+        Faq faq = tryGetFaq(faqId);
         return faqAssembler.toDetail(faq);
     }
 
@@ -152,5 +154,23 @@ public class FaqService {
 
     private Sort sortLivedAtDesc() {
         return Sort.sort(Faq.class).by(Faq::getLivedAt).descending();
+    }
+
+    /**
+     * FAQ 논리적 삭제
+     *
+     * @param faqId   삭제할 FAQ 아이디
+     * @param deleter 삭제 관리자
+     */
+    @Transactional
+    public void delete(Integer faqId, AuthenticatedUser deleter) {
+        try {
+            Faq faq = tryGetFaq(faqId);
+            faq.deleteBy(deleter.getMemberId());
+            faqRepository.save(faq);
+        } catch (FaqNotFoundException cause) {
+            // Ignore: 존재하지 않는 것은 이미 삭제된 것이라서 멱등하게 처리
+            log.warn("Faq is already deleted: {}", faqId, cause);
+        }
     }
 }
