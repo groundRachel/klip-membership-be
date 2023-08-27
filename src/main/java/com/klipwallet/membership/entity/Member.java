@@ -67,10 +67,19 @@ public abstract class Member extends BaseEntity<Member> {
     @Column(nullable = false)
     private String name;
 
+    /**
+     * 멤버 상태
+     * <p>
+     * - activated<br/>
+     * - withdrawal<br/>
+     * </p>
+     */
+    @Setter(AccessLevel.PACKAGE)
+    private Status status;
+
     @JsonIgnore
     @Transient
     private MemberId memberId;
-    private Status status;
 
     @Nullable
     @JsonIgnore

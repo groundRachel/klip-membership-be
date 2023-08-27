@@ -70,15 +70,15 @@ public class AdminAdminController {
         return adminService.getDetail(adminId);
     }
 
-    @Operation(summary = "Admin 어드민 삭제", description = "논리적 삭제")
+    @Operation(summary = "Admin 어드민 탈퇴", description = "논리적 삭제")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "어드민 삭제됨")
+            @ApiResponse(responseCode = "204", description = "어드민 탈퇴됨")
     })
     @DeleteMapping("/{adminId}")
     @ResponseStatus(NO_CONTENT)
     public void delete(
             @Parameter(description = "어드민 id", required = true, example = "2") @PathVariable Integer adminId,
             @AuthenticationPrincipal AuthenticatedUser user) {
-        adminService.delete(adminId, user);
+        adminService.withdraw(adminId, user);
     }
 }

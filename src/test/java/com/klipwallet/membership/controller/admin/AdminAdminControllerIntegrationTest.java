@@ -19,8 +19,7 @@ import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.repository.AdminRepository;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -182,5 +181,16 @@ class AdminAdminControllerIntegrationTest {
            .andExpect(status().isNotFound())
            .andExpect(jsonPath("$.code").value(404_006))
            .andExpect(jsonPath("$.err").value("어드민을 찾을 수 없습니다. ID: %d".formatted(Integer.MAX_VALUE)));
+    }
+
+    @WithSuperAdminUser
+    @DisplayName("Admin 어드민 탈퇴 > 204")
+    @Test
+    void withdraw(@Autowired MockMvc mvc) throws Exception {
+        // given
+        MemberId adminId = createAdmin();
+        // when/then
+        mvc.perform(delete("/admin/v1/admins/{0}", adminId))
+           .andExpect(status().isNoContent());
     }
 }

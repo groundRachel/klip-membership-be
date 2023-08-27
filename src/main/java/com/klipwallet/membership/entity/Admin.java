@@ -24,6 +24,7 @@ public class Admin extends Member {
     public Admin(String email, MemberId creator) {
         setEmail(email);
         setName(toLocalPart(email));
+        setStatus(Status.ACTIVATED);
         createBy(creator);
     }
 

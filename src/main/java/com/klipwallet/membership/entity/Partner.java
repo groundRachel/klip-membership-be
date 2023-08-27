@@ -14,6 +14,7 @@ import lombok.ToString;
 public class Partner extends Member {
     @Column(nullable = false)
     private String phoneNumber;
+
     @Column(nullable = false)
     private String businessRegistrationNumber;
 
@@ -23,10 +24,10 @@ public class Partner extends Member {
         this.businessRegistrationNumber = businessRegistrationNumber;
         setEmail(email);
         setOAuthId(oAuthId);
+        setStatus(Status.ACTIVATED);
         createBy(creator);
     }
 
     public Partner() {
-
     }
 }
