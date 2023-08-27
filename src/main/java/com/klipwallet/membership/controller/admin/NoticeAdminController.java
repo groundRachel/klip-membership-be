@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.notice.NoticeDto;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
-import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.service.NoticeService;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -60,7 +60,7 @@ public class NoticeAdminController {
     })
     @GetMapping
     public List<Row> list(
-            @Parameter(description = "필터링 할 공지 상태", required = true, example = "draft") @RequestParam("status") Notice.Status status) {
+            @Parameter(description = "필터링 할 공지 상태", required = true, example = "draft") @RequestParam("status") ArticleStatus status) {
         return noticeService.getListByStatus(status);
     }
 

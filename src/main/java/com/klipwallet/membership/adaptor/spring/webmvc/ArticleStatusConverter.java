@@ -5,14 +5,13 @@ import jakarta.annotation.Nonnull;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import com.klipwallet.membership.entity.Notice;
-import com.klipwallet.membership.entity.Notice.Status;
+import com.klipwallet.membership.entity.ArticleStatus;
 
 @Component
-public class NoticeStatusConverter implements Converter<String, Notice.Status> {
+public class ArticleStatusConverter implements Converter<String, ArticleStatus> {
     @Override
-    public Status convert(@Nonnull String source) {
-        Status result = Status.fromDisplay(source);
+    public ArticleStatus convert(@Nonnull String source) {
+        ArticleStatus result = ArticleStatus.fromDisplay(source);
         if (result == null) {
             return null;
         }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.notice.NoticeDto;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;
-import com.klipwallet.membership.entity.Notice.Status;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.service.NoticeService;
 
 @Tag(name = "Tool.Notice", description = "Tool 공지사항 API")
@@ -31,7 +31,7 @@ public class NoticeToolController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "공지사항 목록 조회 성공"))
     @GetMapping
     public List<Row> list() {
-        return noticeService.getListByStatus(Status.LIVE);
+        return noticeService.getListByStatus(ArticleStatus.LIVE);
     }
 
     @Operation(summary = "Tool 공지사항 상세 조회")

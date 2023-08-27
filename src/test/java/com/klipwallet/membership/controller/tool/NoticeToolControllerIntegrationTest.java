@@ -18,11 +18,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.config.security.WithPartnerUser;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Notice;
-import com.klipwallet.membership.entity.Notice.Status;
 import com.klipwallet.membership.repository.NoticeRepository;
 
+import static com.klipwallet.membership.entity.ArticleStatus.INACTIVE;
+import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -91,14 +93,14 @@ class NoticeToolControllerIntegrationTest {
                 new Notice("BeanFactory id=f7ff75ef-e558-3499-bc4a-1f50f170b10d", "11", new MemberId(2)));
         List<Notice> results = noticeRepository.saveAll(notices);
 
-        results.get(3).changeStatus(Status.LIVE, new MemberId(3));
-        results.get(4).changeStatus(Status.LIVE, new MemberId(4));
-        results.get(5).changeStatus(Status.LIVE, new MemberId(3));
-        results.get(6).changeStatus(Status.LIVE, new MemberId(4));
+        results.get(3).changeStatus(LIVE, new MemberId(3));
+        results.get(4).changeStatus(LIVE, new MemberId(4));
+        results.get(5).changeStatus(LIVE, new MemberId(3));
+        results.get(6).changeStatus(LIVE, new MemberId(4));
 
-        results.get(7).changeStatus(Status.INACTIVE, new MemberId(5));
-        results.get(8).changeStatus(Status.INACTIVE, new MemberId(6));
-        results.get(9).changeStatus(Status.INACTIVE, new MemberId(5));
+        results.get(7).changeStatus(INACTIVE, new MemberId(5));
+        results.get(8).changeStatus(INACTIVE, new MemberId(6));
+        results.get(9).changeStatus(INACTIVE, new MemberId(5));
 
         results.get(10).deleteBy(new MemberId(6));
         results.get(11).deleteBy(new MemberId(5));
@@ -123,7 +125,7 @@ class NoticeToolControllerIntegrationTest {
     @Test
     void detail(@Autowired MockMvc mvc) throws Exception {
         // given
-        Notice notice = createNotice("[안내] app2app 클립 호출 가이드 변경 안내", Status.LIVE);
+        Notice notice = createNotice("[안내] app2app 클립 호출 가이드 변경 안내", LIVE);
         Integer noticeId = notice.getId();
         // when/then
         mvc.perform(get("/tool/v1/notices/{0}", noticeId))
@@ -132,7 +134,7 @@ class NoticeToolControllerIntegrationTest {
            .andExpect(jsonPath("$.title").value("[안내] app2app 클립 호출 가이드 변경 안내"))
            .andExpect(jsonPath("$.body").value(notice.getBody()))
            .andExpect(jsonPath("$.primary").value(false))
-           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.livedAt").isNotEmpty())
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
@@ -143,12 +145,12 @@ class NoticeToolControllerIntegrationTest {
     }
 
 
-    private Notice createNotice(String title, Status status) throws IllegalAccessException {
+    private Notice createNotice(String title, ArticleStatus status) throws IllegalAccessException {
         return createNotice(title, status, false);
     }
 
     @SuppressWarnings("ConstantValue")
-    private Notice createNotice(String title, Status status, boolean isPrimary) throws IllegalAccessException {
+    private Notice createNotice(String title, ArticleStatus status, boolean isPrimary) throws IllegalAccessException {
         Notice notice = new Notice(title, "<p>blah, blah</p>", new MemberId(1));
         if (isPrimary) {
             FieldUtils.writeField(notice, "primary", isPrimary, true);
@@ -173,8 +175,8 @@ class NoticeToolControllerIntegrationTest {
     @WithPartnerUser
     @DisplayName("Tool 공지사항 상세 조회: 공지사항이 존재하지만 LIVE가 아니면 > 404")
     @ParameterizedTest
-    @EnumSource(value = Notice.Status.class, names = "LIVE", mode = Mode.EXCLUDE)
-    void detailInactivated(Status status, @Autowired MockMvc mvc) throws Exception {
+    @EnumSource(value = ArticleStatus.class, names = "LIVE", mode = Mode.EXCLUDE)
+    void detailInactivated(ArticleStatus status, @Autowired MockMvc mvc) throws Exception {
         // given
         Notice notice = createNotice("[안내] App2App 멀티체인 확장 안내 - 폴리곤", status);
         Integer noticeId = notice.getId();
@@ -190,7 +192,7 @@ class NoticeToolControllerIntegrationTest {
     @Test
     void primary(@Autowired MockMvc mvc) throws Exception {
         // given
-        Notice notice = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", Status.LIVE, true);
+        Notice notice = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", LIVE, true);
         Integer primaryNoticeId = notice.getId();
         // when/then
         mvc.perform(get("/tool/v1/notices/primary"))
@@ -205,8 +207,8 @@ class NoticeToolControllerIntegrationTest {
     @Test
     void primary2(@Autowired MockMvc mvc) throws Exception {
         // given
-        Notice notice1 = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", Status.LIVE, true);
-        Notice notice2 = createNotice("[안내] app2app 클립 호출 가이드 변경 안내", Status.LIVE, true);   // 최신 live
+        Notice notice1 = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내", LIVE, true);
+        Notice notice2 = createNotice("[안내] app2app 클립 호출 가이드 변경 안내", LIVE, true);   // 최신 live
         // when/then
         mvc.perform(get("/tool/v1/notices/primary"))
            .andExpect(status().isOk())
@@ -227,8 +229,8 @@ class NoticeToolControllerIntegrationTest {
     @WithPartnerUser
     @DisplayName("Tool 고정 공지 조회: 고정 공지는 있으나 Live 상태 아님. > 404")
     @ParameterizedTest
-    @EnumSource(value = Notice.Status.class, names = "LIVE", mode = Mode.EXCLUDE)
-    void primaryNotLive(Status status, @Autowired MockMvc mvc) throws Exception {
+    @EnumSource(value = ArticleStatus.class, names = "LIVE", mode = Mode.EXCLUDE)
+    void primaryNotLive(ArticleStatus status, @Autowired MockMvc mvc) throws Exception {
         // given
         createNotice("[안내] App2App 멀티체인 확장 안내 - 폴리곤", status, true);
         // when/then

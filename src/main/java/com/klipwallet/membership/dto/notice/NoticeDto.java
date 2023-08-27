@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.NonNull;
 
 import com.klipwallet.membership.dto.member.MemberSummary;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Notice;
@@ -105,7 +106,7 @@ public class NoticeDto {
             String body,
             @Schema(description = "고정 공지 여부", example = "false")
             boolean primary,
-            Notice.Status status,
+            ArticleStatus status,
             @Schema(description = "최근Live일시", example = "2023-07-24T15:38:24.005795+09:00")
             OffsetDateTime livedAt,
             @Schema(description = "생성일시", example = "2023-07-24T15:38:24.005795+09:00")
@@ -119,7 +120,7 @@ public class NoticeDto {
     }
 
     @Schema(description = "공지사항 상태 DTO", accessMode = AccessMode.READ_WRITE)
-    public record Status(@NonNull @NotNull @JsonProperty("value") Notice.Status value) {
+    public record Status(@NonNull @NotNull @JsonProperty("value") ArticleStatus value) {
     }
 
     @Schema(description = "공지사항 목록의 Row DTO", accessMode = AccessMode.READ_ONLY)
