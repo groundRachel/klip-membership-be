@@ -298,6 +298,8 @@ class FaqAdminControllerIntegrationTest {
         create(mvc);
         // create live faq
         changeStatus(mvc);
+        // create delete faq
+        createDeletedFaq();
         mvc.perform(get("/admin/v1/faqs")
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())

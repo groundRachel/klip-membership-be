@@ -9,6 +9,15 @@ import com.klipwallet.membership.entity.Faq;
 public interface FaqRepository extends AbstractArticleRepository<Faq> {
 
     /**
+     * 특정 상태를 제외한 정렬된 FAQ 목록 조회
+     *
+     * @param status   검색에서 제외할 상태
+     * @param pageable page, size, sort
+     * @return 특정 상태를 제외하여 검색한 정렬된 FAQ 목록
+     */
+    Page<Faq> findByStatusNot(ArticleStatus status, Pageable pageable);
+
+    /**
      * 상태 검색한 정렬된 FAQ 목록 조회
      *
      * @param status   검색 상태
