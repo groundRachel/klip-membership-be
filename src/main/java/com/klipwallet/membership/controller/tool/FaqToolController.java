@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.faq.FaqDetail;
 import com.klipwallet.membership.dto.faq.FaqRow;
-import com.klipwallet.membership.entity.Faq.Status;
 import com.klipwallet.membership.service.FaqService;
+
+import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 
 @Tag(name = "Tool.FAQ", description = "Tool FAQ API")
 @RestController
@@ -29,17 +30,19 @@ public class FaqToolController {
     private final FaqService faqService;
 
     @Operation(summary = "FAQ 상세 조회")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "FAQ 조회 성공"),
-                   @ApiResponse(responseCode = "404", description = "존재하지 않는 FAQ", content = @Content(schema = @Schema(ref = "Error404")))})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "FAQ 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 FAQ", content = @Content(schema = @Schema(ref = "Error404")))
+    })
     @GetMapping("/{faqId}")
     public FaqDetail detail(@Parameter(description = "faq id", required = true, example = "2") @PathVariable Integer faqId) {
         return faqService.getLivedDetail(faqId);
     }
 
     @Operation(summary = "FAQ 목록 조회")
-    @ApiResponses({@ApiResponse(responseCode = "200", description = "FAQ 조회 성공"),})
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "FAQ 조회 성공"))
     @GetMapping
     public Page<FaqRow> list(@ParameterObject Pageable pageable) {
-        return faqService.listByStatus(Status.LIVE, pageable);
+        return faqService.listByStatus(LIVE, pageable);
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import com.klipwallet.membership.dto.notice.NoticeDto;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.dto.notice.NoticeDto.Summary;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.entity.NoticeUpdatable;
@@ -22,8 +23,8 @@ import com.klipwallet.membership.exception.NoticeNotFoundException;
 import com.klipwallet.membership.exception.PrimaryNoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
 
-import static com.klipwallet.membership.entity.Notice.Status.DELETE;
-import static com.klipwallet.membership.entity.Notice.Status.LIVE;
+import static com.klipwallet.membership.entity.ArticleStatus.DELETE;
+import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 
 @Service
 @Slf4j
@@ -176,7 +177,7 @@ public class NoticeService {
      * @return 공지사항 DTO 목록
      */
     @Transactional(readOnly = true)
-    public List<Row> getListByStatus(Notice.Status status) {
+    public List<Row> getListByStatus(ArticleStatus status) {
         if (status == DELETE) {
             throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
         }
@@ -185,7 +186,7 @@ public class NoticeService {
         return noticeAssembler.toRows(notices);
     }
 
-    private Sort toSort(Notice.Status status) {
+    private Sort toSort(ArticleStatus status) {
         if (status == LIVE) {
             // order by livedAt desc
             return sortLivedAtDesc();

@@ -23,9 +23,9 @@ import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.notice.NoticeDto.Summary;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Notice;
-import com.klipwallet.membership.entity.Notice.Status;
 import com.klipwallet.membership.repository.NoticeRepository;
 
+import static com.klipwallet.membership.entity.ArticleStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.nullValue;
@@ -150,7 +150,7 @@ class NoticeAdminControllerIntegrationTest {
         createSampleNotices();
 
         mvc.perform(get("/admin/v1/notices")
-                            .param("status", Status.DRAFT.toDisplay()))
+                            .param("status", DRAFT.toDisplay()))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].id").isNotEmpty())
@@ -171,7 +171,7 @@ class NoticeAdminControllerIntegrationTest {
         createSampleNotices();
 
         mvc.perform(get("/admin/v1/notices")
-                            .param("status", Status.LIVE.toDisplay()))
+                            .param("status", LIVE.toDisplay()))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(4L))
            .andExpect(jsonPath("$[0].id").isNotEmpty())
@@ -192,7 +192,7 @@ class NoticeAdminControllerIntegrationTest {
         createSampleNotices();
 
         mvc.perform(get("/admin/v1/notices")
-                            .param("status", Status.INACTIVE.toDisplay()))
+                            .param("status", INACTIVE.toDisplay()))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].id").isNotEmpty())
@@ -213,7 +213,7 @@ class NoticeAdminControllerIntegrationTest {
         createSampleNotices();
 
         mvc.perform(get("/admin/v1/notices")
-                            .param("status", Status.DELETE.toDisplay()))
+                            .param("status", DELETE.toDisplay()))
            .andExpect(status().isBadRequest())
            .andExpect(jsonPath("$.code").value(400_000))
            .andExpect(jsonPath("$.err").value("Failed to convert 'status' with value: 'delete'"));
@@ -251,14 +251,14 @@ class NoticeAdminControllerIntegrationTest {
                 new Notice("BeanFactory id=f7ff75ef-e558-3499-bc4a-1f50f170b10d", "11", new MemberId(2)));
         List<Notice> results = noticeRepository.saveAll(notices);
 
-        results.get(3).changeStatus(Status.LIVE, new MemberId(3));
-        results.get(4).changeStatus(Status.LIVE, new MemberId(4));
-        results.get(5).changeStatus(Status.LIVE, new MemberId(3));
-        results.get(6).changeStatus(Status.LIVE, new MemberId(4));
+        results.get(3).changeStatus(LIVE, new MemberId(3));
+        results.get(4).changeStatus(LIVE, new MemberId(4));
+        results.get(5).changeStatus(LIVE, new MemberId(3));
+        results.get(6).changeStatus(LIVE, new MemberId(4));
 
-        results.get(7).changeStatus(Status.INACTIVE, new MemberId(5));
-        results.get(8).changeStatus(Status.INACTIVE, new MemberId(6));
-        results.get(9).changeStatus(Status.INACTIVE, new MemberId(5));
+        results.get(7).changeStatus(INACTIVE, new MemberId(5));
+        results.get(8).changeStatus(INACTIVE, new MemberId(6));
+        results.get(9).changeStatus(INACTIVE, new MemberId(5));
 
         results.get(10).deleteBy(new MemberId(6));
         results.get(11).deleteBy(new MemberId(5));
@@ -279,7 +279,7 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.title").value("클립 멤버십 툴이 공식 오픈하였습니다."))
            .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>"))
            .andExpect(jsonPath("$.primary").value(false))
-           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.status").value(DRAFT.toDisplay()))
            .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
@@ -331,7 +331,7 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.title").value("클립 멤버십 툴 1.1.0이 릴리즈 되었습니다."))
            .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다. KlipDrops에 이이서 KlipPartners 까지 지원합니다.</p>"))
            .andExpect(jsonPath("$.primary").value(false))
-           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.status").value(DRAFT.toDisplay()))
            .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
@@ -366,7 +366,7 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.title").value("클립 멤버십 툴 1.1.0이 릴리즈 되었습니다."))
            .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다. KlipDrops에 이이서 KlipPartners 까지 지원합니다.</p>"))
            .andExpect(jsonPath("$.primary").value(true))
-           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.status").value(DRAFT.toDisplay()))
            .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
@@ -429,13 +429,13 @@ class NoticeAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.value").value(Status.LIVE.toDisplay()));
+           .andExpect(jsonPath("$.value").value(LIVE.toDisplay()));
 
         // status = live & livedAt exists & change updatedAt/updatedBy
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.id").value(noticeId))
-           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.livedAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.updater.id").value(27))
@@ -455,13 +455,13 @@ class NoticeAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.value").value(Status.INACTIVE.toDisplay()));
+           .andExpect(jsonPath("$.value").value(INACTIVE.toDisplay()));
 
         // status = live & livedAt exists & change updatedAt/updatedBy
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.id").value(noticeId))
-           .andExpect(jsonPath("$.status").value(Status.INACTIVE.toDisplay()))
+           .andExpect(jsonPath("$.status").value(INACTIVE.toDisplay()))
            .andExpect(jsonPath("$.livedAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.updater.id").value(27))

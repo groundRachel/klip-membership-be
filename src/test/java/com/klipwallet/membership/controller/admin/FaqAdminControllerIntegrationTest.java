@@ -1,6 +1,7 @@
 package com.klipwallet.membership.controller.admin;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -18,10 +19,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.faq.FaqSummary;
-import com.klipwallet.membership.entity.Faq.Status;
+import com.klipwallet.membership.entity.Faq;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.exception.ErrorCode;
 import com.klipwallet.membership.repository.FaqRepository;
 
+import static com.klipwallet.membership.entity.ArticleStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,7 +37,7 @@ class FaqAdminControllerIntegrationTest {
     FaqRepository faqRepository;
     @Autowired
     ObjectMapper om;
-    private Integer lastNoticeId;
+    private Integer lastFaqId;
 
     @BeforeEach
     void setUp() {
@@ -66,13 +69,13 @@ class FaqAdminControllerIntegrationTest {
                                      .content(body))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").isNumber());
-        setLastNoticeId(ra);
+        setLastFaqId(ra);
     }
 
-    private void setLastNoticeId(ResultActions ra) throws IOException {
+    private void setLastFaqId(ResultActions ra) throws IOException {
         MvcResult mvcResult = ra.andReturn();
         FaqSummary summary = om.readValue(mvcResult.getResponse().getContentAsString(), FaqSummary.class);
-        lastNoticeId = summary.id();
+        lastFaqId = summary.id();
     }
 
     @WithPartnerUser
@@ -117,7 +120,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void update(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "title": "멤버십 툴은 어떻게 사용하나요?",
@@ -131,7 +134,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").value(faqId))
            .andExpect(jsonPath("$.title").value("멤버십 툴은 어떻게 사용하나요?"))
            .andExpect(jsonPath("$.body").value("<p>아래 링크를 통해 확인하실 수 있습니다.</p>"))
-           .andExpect(jsonPath("$.status").value(Status.DRAFT.toDisplay()))
+           .andExpect(jsonPath("$.status").value(DRAFT.toDisplay()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(24))
@@ -145,7 +148,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void updateEmptyBodyAndStatus(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "title": "멤버십 툴은 어떻게 사용하나요?",
@@ -157,7 +160,7 @@ class FaqAdminControllerIntegrationTest {
                             .content(body))
            .andExpect(status().isBadRequest())
            .andExpect(jsonPath("$.code").value(400001))
-           .andExpect(jsonPath("$.err").value("요청 본문이 유효하지 않습니다. errors를 참고하세요."));
+           .andExpect(jsonPath("$.err").value("body: 'must not be blank'"));
     }
 
     @WithAdminUser(memberId = 24)
@@ -165,7 +168,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void changeStatus(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "status": "live"
@@ -175,7 +178,7 @@ class FaqAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()));
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()));
     }
 
     @Disabled("/oauth2/authorization/google 으로 redirect 되고 있어서 수정이 요구됨.")
@@ -183,7 +186,7 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void updateOnNoAuth(@Autowired MockMvc mvc) throws Exception {
         create(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         String body = """
                       {
                         "title": "클립 멤버십 툴 1.1.0이 릴리즈 되었습니다.",
@@ -224,14 +227,14 @@ class FaqAdminControllerIntegrationTest {
     @Test
     void getFaq(@Autowired MockMvc mvc) throws Exception {
         changeStatus(mvc);
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         mvc.perform(get("/admin/v1/faqs/{0}", faqId)
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.id").value(faqId))
            .andExpect(jsonPath("$.title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.body").value("<p>GX 파트너는 누구나 가입할 수 있습니다.</p>"))
-           .andExpect(jsonPath("$.status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.livedAt").isNotEmpty())
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
@@ -239,6 +242,30 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.creator.name").isNotEmpty())
            .andExpect(jsonPath("$.updater.id").value(24))
            .andExpect(jsonPath("$.updater.name").isNotEmpty());
+    }
+
+    @WithAdminUser(memberId = 24)
+    @DisplayName("관리자 FAQ 조회: status = delete > 404")
+    @Test
+    void getFaqOnDelete(@Autowired MockMvc mvc) throws Exception {
+        Integer faqId = createDeletedFaq();
+
+        mvc.perform(get("/admin/v1/faqs/{0}", faqId)
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_005))
+           .andExpect(jsonPath("$.err").value("FAQ를 찾을 수 없습니다. ID: %s".formatted(faqId)));
+    }
+
+    private Integer createDeletedFaq() {
+        MemberId adminId = new MemberId(1);
+        Faq entity = new Faq("삭제될 FAQ", "1", adminId);
+        Faq persisted = faqRepository.save(entity);
+
+        persisted.deleteBy(adminId);
+        faqRepository.save(persisted);
+        faqRepository.flush();
+        return persisted.getId();
     }
 
     @WithAdminUser(memberId = 24)
@@ -257,7 +284,7 @@ class FaqAdminControllerIntegrationTest {
     @DisplayName("관리자 FAQ 조회: 파트너 권한으로 시도 > 403")
     @Test
     void getOntPartner(@Autowired MockMvc mvc) throws Exception {
-        Integer faqId = lastNoticeId;
+        Integer faqId = lastFaqId;
         mvc.perform(get("/admin/v1/faqs/{0}", faqId)
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isForbidden());
@@ -279,7 +306,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].id").isNotEmpty())
            .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.content[0].body").doesNotExist())
-           .andExpect(jsonPath("$.content[0].status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
@@ -287,7 +314,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updater.id").value(24))
            .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty())
-           .andExpect(jsonPath("$.content[1].status").value(Status.DRAFT.toDisplay()));
+           .andExpect(jsonPath("$.content[1].status").value(DRAFT.toDisplay()));
     }
 
     @WithAdminUser(memberId = 24)
@@ -298,7 +325,8 @@ class FaqAdminControllerIntegrationTest {
         changeStatus(mvc);
         // create draft faq
         create(mvc);
-        mvc.perform(get("/admin/v1/faqs?status=live")
+        mvc.perform(get("/admin/v1/faqs")
+                            .param("status", LIVE.toDisplay())
                             .contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.totalElements").isNotEmpty())
@@ -306,7 +334,7 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].id").isNotEmpty())
            .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.content[0].body").doesNotExist())
-           .andExpect(jsonPath("$.content[0].status").value(Status.LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].status").value(LIVE.toDisplay()))
            .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
@@ -317,15 +345,29 @@ class FaqAdminControllerIntegrationTest {
     }
 
     @WithAdminUser(memberId = 24)
+    @DisplayName("관리자 FAQ 목록 조회 (default (page, size) status = 'delete') > 400")
+    @Test
+    void listFaqWithDelete(@Autowired MockMvc mvc) throws Exception {
+        mvc.perform(get("/admin/v1/faqs")
+                            .param("status", DELETE.toDisplay())
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value(400_000))
+           .andExpect(jsonPath("$.err").value("Failed to convert 'status' with value: 'delete'"));
+    }
+
+    @WithAdminUser(memberId = 24)
     @DisplayName("관리자 FAQ 목록 조회 (default (status null), size = 1, page = 2 > 200")
     @Test
     void listFaqWithPageSize(@Autowired MockMvc mvc) throws Exception {
-        // create live faq
+        // create live faq(2 page: order by updatedAt desc)
         changeStatus(mvc);
-        // create draft faq
+        TimeUnit.MILLISECONDS.sleep(100);  // 0.1초 wait
+        // create draft faq(1 page: order by updatedAt desc)
         create(mvc);
-        mvc.perform(get("/admin/v1/faqs?size=1&page=2")
-                            .contentType(APPLICATION_JSON))
+        mvc.perform(get("/admin/v1/faqs")
+                            .param("page", "2")
+                            .param("size", "1"))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.totalElements").isNotEmpty())
            .andExpect(jsonPath("$.totalPages").isNotEmpty())
@@ -333,13 +375,45 @@ class FaqAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.content[0].id").isNotEmpty())
            .andExpect(jsonPath("$.content[0].title").value("멤버십 툴에 어떻게 가입하나요?"))
            .andExpect(jsonPath("$.content[0].body").doesNotExist())
-           .andExpect(jsonPath("$.content[0].status").value(Status.DRAFT.toDisplay()))
-           .andExpect(jsonPath("$.content[0].livedAt").isEmpty())
+           .andExpect(jsonPath("$.content[0].status").value(LIVE.toDisplay()))
+           .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].creator.id").value(24))
            .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
            .andExpect(jsonPath("$.content[0].updater.id").value(24))
            .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 FAQ 삭제: FAQ 2번 삭제(멱등성) > 204 X 2")
+    @Test
+    void delete2Times(@Autowired MockMvc mvc) throws Exception {
+        create(mvc);
+        Integer faqId = lastFaqId;
+        // 1 times
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isNoContent());
+        // 2 times
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isNoContent());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 FAQ 삭제: 존재하지 않는 FAQ 삭제 > 204")
+    @Test
+    void deleteNotExists(@Autowired MockMvc mvc) throws Exception {
+        Integer faqId = -1;
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isNoContent());
+    }
+
+    @WithPartnerUser
+    @DisplayName("관리자 FAQ 삭제: 파트너 권한 > 403")
+    @Test
+    void deleteOnPartner(@Autowired MockMvc mvc) throws Exception {
+        Integer faqId = 1;
+        mvc.perform(delete("/admin/v1/faqs/{0}", faqId))
+           .andExpect(status().isForbidden());
     }
 }

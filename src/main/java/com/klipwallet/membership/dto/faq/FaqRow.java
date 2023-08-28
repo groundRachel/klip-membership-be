@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 
 import com.klipwallet.membership.dto.member.MemberSummary;
-import com.klipwallet.membership.entity.Faq.Status;
+import com.klipwallet.membership.entity.ArticleStatus;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.NOT_REQUIRED;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
@@ -18,7 +18,7 @@ public record FaqRow(
         @Schema(description = "제목", requiredMode = REQUIRED, minLength = 1, maxLength = 200, example = "멤버십 툴에 어떻게 가입하나요?")
         String title,
         @Schema(description = "상태", requiredMode = REQUIRED, example = "live")
-        Status status,
+        ArticleStatus status,
         @Schema(description = "최근 Live 일시", requiredMode = NOT_REQUIRED, example = "2023-07-24T15:38:24.005795+09:00")
         OffsetDateTime livedAt,
         @Schema(description = "생성일시", requiredMode = REQUIRED, example = "2023-07-24T15:38:24.005795+09:00")
@@ -29,5 +29,5 @@ public record FaqRow(
         MemberSummary creator,
         @Schema(description = "마지막 수정자", requiredMode = REQUIRED)
         MemberSummary updater
-){
+) {
 }

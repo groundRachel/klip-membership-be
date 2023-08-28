@@ -27,7 +27,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.klipwallet.membership.dto.notice.NoticeDto;
-import com.klipwallet.membership.entity.Notice;
+import com.klipwallet.membership.entity.ArticleStatus;
 
 @RestController
 @RequestMapping("/error/raise")
@@ -89,8 +89,8 @@ public class ErrorRaiseController {
     @GetMapping("/10")
     public void raiseConversionNotSupportedException() {
         throw new ConversionNotSupportedException(
-                "lived", Notice.Status.class,
-                new IllegalArgumentException("No enum constant " + Notice.Status.class.getCanonicalName() + "." + "lived"));
+                "lived", ArticleStatus.class,
+                new IllegalArgumentException("No enum constant " + ArticleStatus.class.getCanonicalName() + "." + "lived"));
     }
 
     @GetMapping("/11")
