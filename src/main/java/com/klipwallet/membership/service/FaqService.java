@@ -28,6 +28,7 @@ import com.klipwallet.membership.entity.FaqUpdatable;
 import com.klipwallet.membership.exception.FaqNotFoundException;
 import com.klipwallet.membership.repository.FaqRepository;
 
+import static com.klipwallet.membership.entity.ArticleStatus.DELETE;
 import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 
 @Service
@@ -139,7 +140,7 @@ public class FaqService {
 
     private Page<Faq> getResult(ArticleStatus status, Pageable pageable) {
         if (status == null) {
-            return faqRepository.findAll(pageable);
+            return faqRepository.findByStatusNot(DELETE, pageable);
         }
         return faqRepository.findByStatus(status, pageable);
     }
