@@ -40,7 +40,7 @@ public class PartnerApplicationDto {
             Integer PartnerId, // TODO fetch info from drops
             OffsetDateTime createdAt,
             OffsetDateTime processedAt,
-            String processorNickname
+            String processorName
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)

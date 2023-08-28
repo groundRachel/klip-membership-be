@@ -9,6 +9,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
+import com.klipwallet.membership.dto.member.MemberAssembler;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.ApplyResult;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.entity.PartnerApplication;
@@ -17,6 +18,7 @@ import com.klipwallet.membership.entity.PartnerApplication;
 @RequiredArgsConstructor
 public class PartnerApplicationAssembler {
     private final DateTimeAssembler dateTimeAssembler;
+    private final MemberAssembler memberAssembler;
 
     @NonNull
     public ApplyResult toApplyResult(@NonNull PartnerApplication partnerApplication) {
@@ -26,13 +28,13 @@ public class PartnerApplicationAssembler {
 
     @NonNull
     public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull Page<PartnerApplication> partnerApplications) {
+
         return partnerApplications.stream()
                                   .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(),
                                                                       -1,  // TODO fetch info from drops
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
-                                                                      // TODO change to admin nickname (current : applicant's nickname)
-                                                                      p.getEmail().split("@")[0]))
+                                                                      memberAssembler.toMemberName(p.getProcessorId())))
                                   .collect(Collectors.toList());
     }
 }

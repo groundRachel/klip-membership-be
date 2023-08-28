@@ -13,10 +13,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.klipwallet.membership.config.security.WithAdminUser;
+import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
+import com.klipwallet.membership.repository.AdminRepository;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
 
@@ -39,6 +41,8 @@ class PartnerApplicationAdminControllerTest {
     PartnerApplicationRepository partnerApplicationRepository;
     @Autowired
     PartnerRepository partnerRepository;
+    @Autowired
+    AdminRepository adminRepository;
 
     @AfterEach
     void afterEach() {
@@ -46,6 +50,8 @@ class PartnerApplicationAdminControllerTest {
         partnerApplicationRepository.flush();
         partnerRepository.deleteAll();
         partnerRepository.flush();
+        adminRepository.deleteAll();
+        adminRepository.flush();
     }
 
     @WithAdminUser
@@ -159,28 +165,48 @@ class PartnerApplicationAdminControllerTest {
                          .ifPresent(p -> {throw new RuntimeException();});
     }
 
-    MemberId processor = new MemberId(23);
-    List<PartnerApplication> applications = Arrays.asList(
-            new PartnerApplication("(주) 그라운드엑스0", "010-1234-5678", "000-00-00001", "example1@groundx.xyz", "192085223830"),
-            new PartnerApplication("(주) 그라운드엑스1", "010-1234-5678", "00-00002", "example2@groundx.xyz", "292085223830"),
-            new PartnerApplication("(주) 그라운드엑스2", "010-1234-5678", "000-00-00003", "example3@groundx.xyz", "392085223830"),
+    private MemberId createAdmin() {
+        Admin admin = new Admin("jordan.jung@groundx.xyz", new MemberId(1));
+        Admin persisted = adminRepository.save(admin);
+        adminRepository.flush();
+        return persisted.getMemberId();
+    }
 
-            new PartnerApplication("(주) 그라운드엑스3", "010-1234-5678", "000-00-00004", "example4@groundx.xyz", "492085223830").approve(processor),
-            new PartnerApplication("(주) 그라운드엑스4", "010-1234-5678", "000-00-00005", "example5@groundx.xyz", "592085223830").approve(processor),
-            new PartnerApplication("(주) 그라운드엑스5", "010-1234-5678", "000-00-00006", "example6@groundx.xyz", "692085223830").approve(processor),
+    void createApplications() {
+        MemberId processorId = createAdmin();
 
-            new PartnerApplication("(주) 그라운드엑스6", "010-1234-5678", "000-00-00007", "example7@groundx.xyz", "792085223830").reject("", processor),
-            new PartnerApplication("(주) 그라운드엑스7", "010-1234-5678", "000-00-00008", "example8@groundx.xyz", "892085223830").reject("", processor),
-            new PartnerApplication("(주) 그라운드엑스8", "010-1234-5678", "000-00-00009", "example9@groundx.xyz", "992085223830").reject("", processor)
-    );
+        List<PartnerApplication> applications = Arrays.asList(
+                new PartnerApplication("(주) 그라운드엑스0", "010-1234-5678", "000-00-00001", "example1@groundx.xyz", "192085223830"),
+                new PartnerApplication("(주) 그라운드엑스1", "010-1234-5678", "00-00002", "example2@groundx.xyz", "292085223830"),
+                new PartnerApplication("(주) 그라운드엑스2", "010-1234-5678", "000-00-00003", "example3@groundx.xyz", "392085223830"),
 
-    @WithAdminUser
+                new PartnerApplication("(주) 그라운드엑스3", "010-1234-5678", "000-00-00004", "example4@groundx.xyz", "492085223830"),
+                new PartnerApplication("(주) 그라운드엑스4", "010-1234-5678", "000-00-00005", "example5@groundx.xyz", "592085223830"),
+                new PartnerApplication("(주) 그라운드엑스5", "010-1234-5678", "000-00-00006", "example6@groundx.xyz", "692085223830"),
+
+                new PartnerApplication("(주) 그라운드엑스6", "010-1234-5678", "000-00-00007", "example7@groundx.xyz", "792085223830"),
+                new PartnerApplication("(주) 그라운드엑스7", "010-1234-5678", "000-00-00008", "example8@groundx.xyz", "892085223830"),
+                new PartnerApplication("(주) 그라운드엑스8", "010-1234-5678", "000-00-00009", "example9@groundx.xyz", "992085223830")
+        );
+
+        for (PartnerApplication application : applications.subList(3, 6)) {
+            application.approve(processorId);
+        }
+        for (PartnerApplication application : applications.subList(6, 9)) {
+            application.reject("", processorId);
+        }
+        partnerApplicationRepository.saveAll(applications);
+
+        partnerApplicationRepository.flush();
+        partnerRepository.flush();
+    }
+
+    @WithAdminUser(memberId = 1)
     @DisplayName("파트너 가입 요청 목록 조회: 요청 상태 > 200")
     @Test
     void getPartnerApplications_APPLIED(@Autowired MockMvc mvc) throws Exception {
         // given
-        partnerApplicationRepository.saveAll(applications);
-        partnerApplicationRepository.flush();
+        createApplications();
 
         // when, then
         mvc.perform(get("/admin/v1/partner-applications").
@@ -190,21 +216,23 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스2"))
            .andExpect(jsonPath("$[0].processedAt").isEmpty())
+           .andExpect(jsonPath("$[0].processorName").isEmpty())
 
            .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스1"))
            .andExpect(jsonPath("$[1].processedAt").isEmpty())
+           .andExpect(jsonPath("$[1].processorName").isEmpty())
 
            .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스0"))
-           .andExpect(jsonPath("$[2].processedAt").isEmpty());
+           .andExpect(jsonPath("$[2].processedAt").isEmpty())
+           .andExpect(jsonPath("$[2].processorName").isEmpty());
     }
 
-    @WithAdminUser
+    @WithAdminUser(memberId = 1)
     @DisplayName("파트너 가입 요청 목록 조회: 거절 상태 > 200")
     @Test
     void getPartnerApplications_REJECTED(@Autowired MockMvc mvc) throws Exception {
         // given
-        partnerApplicationRepository.saveAll(applications);
-        partnerApplicationRepository.flush();
+        createApplications();
 
         // when, then
         mvc.perform(get("/admin/v1/partner-applications").
@@ -214,19 +242,21 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스8"))
            .andExpect(jsonPath("$[0].processedAt").isNotEmpty())
-           //           .andExpect(jsonPath("$[0].processorNickname").value("jordan.jung"))  // TODO change to admin nickname (current : applicant's nickname)
+           .andExpect(jsonPath("$[0].processorName").value("jordan.jung"))
            .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스7"))
-           .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스6"));
+           .andExpect(jsonPath("$[1].processedAt").isNotEmpty())
+           .andExpect(jsonPath("$[1].processorName").value("jordan.jung"))
+           .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스6"))
+           .andExpect(jsonPath("$[2].processedAt").isNotEmpty())
+           .andExpect(jsonPath("$[2].processorName").value("jordan.jung"));
     }
 
-    @WithAdminUser
+    @WithAdminUser(memberId = 1)
     @DisplayName("파트너 가입 요청 목록 조회: 비정상 입력 > 400")
     @Test
     void getPartnerApplications_UNDEFINED(@Autowired MockMvc mvc) throws Exception {
         // given
-        partnerApplicationRepository.saveAll(applications);
-        partnerApplicationRepository.flush();
-
+        createApplications();
         // when, then
         mvc.perform(get("/admin/v1/partner-applications").
                             param("status", "UNDEFINED").
@@ -234,13 +264,12 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(status().isBadRequest());
     }
 
-    @WithAdminUser
+    @WithAdminUser(memberId = 1)
     @DisplayName("파트너 가입 요청 목록 조회: 미입력 > 400")
     @Test
     void getPartnerApplications_NoStatus(@Autowired MockMvc mvc) throws Exception {
         // given
-        partnerApplicationRepository.saveAll(applications);
-        partnerApplicationRepository.flush();
+        createApplications();
 
         // when, then
         mvc.perform(get("/admin/v1/partner-applications").

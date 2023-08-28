@@ -42,7 +42,7 @@ public class Partner extends Member {
 
         LocalDateTime getProcessedAt();
 
-        MemberId getProcessorId(); // TODO change to admin nickname
+        MemberId getProcessorId();
 
         // TODO 오픈채팅 운영 여부 정보 포함하기
     }

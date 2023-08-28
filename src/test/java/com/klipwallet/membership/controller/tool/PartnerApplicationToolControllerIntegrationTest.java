@@ -27,7 +27,6 @@ import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import static com.klipwallet.membership.config.SecurityConfig.OAUTH2_USER;
 import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_DUPLICATED;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -94,7 +93,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
                             .content(defaultRequestJson))
            .andExpect(status().isConflict())
            .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_DUPLICATED.getCode()))
-           .andExpect(jsonPath("$.err", startsWith("해당 이메일로 진행 중인 요청이 있습니다. ID: %d,".formatted(applicationId))));
+           .andExpect(jsonPath("$.err").value("해당 이메일로 진행 중인 요청이 있습니다."));
     }
 
     @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016", authorities = OAUTH2_USER)
@@ -102,9 +101,9 @@ public class PartnerApplicationToolControllerIntegrationTest {
     void apply_duplicated_status_APPROVED(@Autowired MockMvc mvc) throws Exception {
         Integer applicationId = postApplication(mvc);
 
-        PartnerApplication approvedApplication = partnerApplicationRepository.findById(applicationId)
-                                                                             .map(p -> p.approve(new MemberId(2)))
-                                                                             .orElseThrow();
+        PartnerApplication approvedApplication = partnerApplicationRepository.findById(applicationId).orElseThrow();
+        approvedApplication.approve(new MemberId(2));
+
         partnerApplicationRepository.save(approvedApplication);
         partnerApplicationRepository.flush();
 
@@ -113,7 +112,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
                             .content(defaultRequestJson))
            .andExpect(status().isConflict())
            .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_DUPLICATED.getCode()))
-           .andExpect(jsonPath("$.err", startsWith("해당 이메일로 진행 중인 요청이 있습니다. ID: %d,".formatted(applicationId))));
+           .andExpect(jsonPath("$.err").value("해당 이메일로 진행 중인 요청이 있습니다."));
     }
 
     @NotNull

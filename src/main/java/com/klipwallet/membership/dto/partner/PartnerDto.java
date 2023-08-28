@@ -17,7 +17,7 @@ public class PartnerDto {
             @NonNull String name,
 
             OffsetDateTime processedAt,
-            MemberId processorId
+            String processorName
 
             // TODO 오픈채팅 운영 여부 정보 포함하기
     ) {}

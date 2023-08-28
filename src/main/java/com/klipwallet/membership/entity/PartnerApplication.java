@@ -15,14 +15,19 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+
+import com.klipwallet.membership.exception.member.PartnerApplicationAlreadyProcessedException;
+
+import static com.klipwallet.membership.entity.PartnerApplication.Status.*;
 
 @Entity
 @Getter
 @ToString
-@EqualsAndHashCode(of = "id")
-public class PartnerApplication {
+@EqualsAndHashCode(of = "id", callSuper = false)
+public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -96,16 +101,51 @@ public class PartnerApplication {
         this.processedAt = LocalDateTime.now();
     }
 
-    public PartnerApplication approve(MemberId processor) {
+    /**
+     * 파트너 신청 승인됨 -> 파트너 생성
+     *
+     * @param processorId 처리자 ID
+     * @see com.klipwallet.membership.entity.PartnerApplicationApproved
+     */
+    public void approve(MemberId processorId) {
+        if (canSkipRequest(getStatus(), APPROVED,
+                           getProcessorId(), processorId)) {
+            return;
+        }
+        checkProcessable();
+
         this.status = Status.APPROVED;
-        processedBy(processor);
-        return this;
+        processedBy(processorId);
+        registerEvent(new PartnerApplicationApproved(this, this.processorId));
     }
 
-    public PartnerApplication reject(String rejectReason, MemberId processor) {
+    /**
+     * @param rejectReason
+     * @param processorId  처리자 ID
+     * @see com.klipwallet.membership.entity.PartnerApplicationRejected
+     */
+    public void reject(String rejectReason, MemberId processorId) {
+        if (canSkipRequest(getStatus(), REJECTED,
+                           getProcessorId(), processorId)) {
+            return;
+        }
+        checkProcessable();
+
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
-        processedBy(processor);
-        return this;
+        processedBy(processorId);
+        registerEvent(new PartnerApplicationRejected(this, this.processorId));
+    }
+
+    private boolean canSkipRequest(Status currentStatus, Status expectedStatus,
+                                   MemberId currentUpdatedId, MemberId expectedUpdatedId) {
+        // TODO WINNIE testcode
+        return currentStatus == expectedStatus && currentUpdatedId == expectedUpdatedId;
+    }
+
+    private void checkProcessable() {
+        if (getStatus() != APPLIED) {
+            throw new PartnerApplicationAlreadyProcessedException(this);
+        }
     }
 }

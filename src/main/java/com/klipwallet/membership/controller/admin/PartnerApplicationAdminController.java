@@ -12,8 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,8 +43,8 @@ public class PartnerApplicationAdminController {
             @ApiResponse(responseCode = "403", description = "파트너 요청 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @GetMapping
-    public List<PartnerApplicationRow> getPartnerApplications(@RequestParam @PageableDefault(page = 0, size = 20) Pageable page,
-                                                              @RequestParam(defaultValue = "applied") Status status) {
+    public List<PartnerApplicationRow> getPartnerApplications(@ParameterObject Pageable page,
+                                                              @RequestParam Status status) {
         if (status.getCode() == 0) {
             throw new InvalidRequestException();
         }

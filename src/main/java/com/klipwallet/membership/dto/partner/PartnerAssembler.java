@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
+import com.klipwallet.membership.dto.member.MemberAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
 import com.klipwallet.membership.entity.Partner.PartnerSummary;
 
@@ -14,9 +15,11 @@ import com.klipwallet.membership.entity.Partner.PartnerSummary;
 @RequiredArgsConstructor
 public class PartnerAssembler {
     private final DateTimeAssembler dateTimeAssembler;
+    private final MemberAssembler memberAssembler;
 
     public List<ApprovedPartnerDto> toPartnerDto(Page<PartnerSummary> partners) {
         return partners.stream().map(p -> new ApprovedPartnerDto(p.getMemberId(), p.getName(), dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
-                                                                 p.getProcessorId())).toList();
+                                                                 memberAssembler.toMemberName(p.getProcessorId()))).toList();
+
     }
 }

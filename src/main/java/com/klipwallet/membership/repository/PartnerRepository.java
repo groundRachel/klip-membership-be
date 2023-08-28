@@ -17,7 +17,7 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
     Optional<Partner> findByBusinessRegistrationNumber(String businessRegistrationNumber);
 
     @Query("""
-           select p.id as id, p.name as name, a.processedAt as processedAt, a.processorId as processorId
+           select new com.klipwallet.membership.entity.MemberId(p.id) as memberId, p.name as name, a.processedAt as processedAt, a.processorId as processorId
            from Partner p left join PartnerApplication a on p.businessRegistrationNumber = a.businessRegistrationNumber
            where a.status = :status""")
     Page<PartnerSummary> findAllPartners(PartnerApplication.Status status, Pageable pageable);
