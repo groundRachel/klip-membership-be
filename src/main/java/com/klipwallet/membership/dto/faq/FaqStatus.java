@@ -9,6 +9,8 @@ import lombok.NonNull;
 
 import com.klipwallet.membership.entity.Faq;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema(description = "FAQ 상태 DTO", accessMode = AccessMode.READ_WRITE)
-public record FaqStatus(@NonNull @NotNull @JsonProperty("status") Faq.Status status) {
+public record FaqStatus(@NonNull @NotNull @JsonProperty("status") @Schema(requiredMode = REQUIRED) Faq.Status status) {
 }
