@@ -74,11 +74,10 @@ public class AdminService {
 
     private Admin tryGetAdmin(@NonNull Integer adminId) {
         return adminRepository.findById(adminId)
-                              .filter(Member::isEnabled)
                               .orElseThrow(() -> new AdminNotFoundException(adminId));
     }
 
-    private Admin tryGetAdmin(@NonNull String email) {
+    private Admin tryGetEnabledAdmin(@NonNull String email) {
         return adminRepository.findByEmail(email)
                               .filter(Member::isEnabled)
                               .orElseThrow(() -> new AdminNotFoundException(email));
@@ -95,7 +94,7 @@ public class AdminService {
     @Transactional
     public Admin signIn(@NonNull AuthenticatedUser oauth2User) {
         String email = oauth2User.getEmail();
-        Admin admin = tryGetAdmin(email);
+        Admin admin = tryGetEnabledAdmin(email);
         if (admin.isSignUp()) {
             return admin;
         }
