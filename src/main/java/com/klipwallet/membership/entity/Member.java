@@ -124,7 +124,7 @@ public abstract class Member extends BaseEntity<Member> {
     }
 
     @Getter
-    @Schema(name = "Notice.Status", description = "공지사항 상태", example = "live")
+    @Schema(name = "Member.Status", description = "멤버 상태", example = "activated")
     public enum Status implements Statusable {
         /**
          * 유효한 상태
