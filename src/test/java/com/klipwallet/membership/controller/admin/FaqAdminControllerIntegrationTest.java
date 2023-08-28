@@ -345,7 +345,7 @@ class FaqAdminControllerIntegrationTest {
     }
 
     @WithAdminUser(memberId = 24)
-    @DisplayName("관리자 FAQ 목록 조회 (default (page, size) status = 'delete') > 200")
+    @DisplayName("관리자 FAQ 목록 조회 (default (page, size) status = 'delete') > 400")
     @Test
     void listFaqWithDelete(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/admin/v1/faqs")
