@@ -1,4 +1,4 @@
-package com.klipwallet.membership.service;
+package com.klipwallet.membership.dto.notice;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
+import com.klipwallet.membership.dto.member.MemberAssembler;
 import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.dto.notice.NoticeDto.Detail;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;

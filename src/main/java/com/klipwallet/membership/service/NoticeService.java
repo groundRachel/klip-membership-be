@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.klipwallet.membership.dto.notice.NoticeAssembler;
 import com.klipwallet.membership.dto.notice.NoticeDto;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.dto.notice.NoticeDto.Summary;
@@ -208,8 +209,8 @@ public class NoticeService {
             notice.deleteBy(deleter.getMemberId());
             noticeRepository.save(notice);
         } catch (NoticeNotFoundException cause) {
-            // Ignored: 존재하지 않는 것은 이미 삭제된 것이라서 멱등하게 처리
-            log.warn("Notice is already deleted: {}", noticeId, cause);
+            // Ignore: 존재하지 않는 것은 이미 삭제된 것이라서 멱등하게 처리
+            log.warn("Notice is already deleted: {}", noticeId);
         }
     }
 }

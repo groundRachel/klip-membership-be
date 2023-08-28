@@ -83,5 +83,4 @@ public class Notice extends AbstractArticle<Notice> {
     public boolean equalId(Integer otherNoticeId) {
         return Objects.equals(this.getId(), otherNoticeId);
     }
-
 }

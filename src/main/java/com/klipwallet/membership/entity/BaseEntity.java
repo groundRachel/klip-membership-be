@@ -81,7 +81,7 @@ public abstract class BaseEntity<E extends BaseEntity<E>> extends CreateBaseEnti
      * </p>
      *
      * @return 생성자, 최근 수정자 아이디 Set
-     * @see com.klipwallet.membership.service.MemberAssembler
+     * @see com.klipwallet.membership.dto.member.MemberAssembler
      */
     @Override
     public Set<MemberId> getAccessorIds() {
