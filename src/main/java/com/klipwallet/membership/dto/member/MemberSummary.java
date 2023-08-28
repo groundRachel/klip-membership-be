@@ -10,6 +10,8 @@ import lombok.NonNull;
 import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.entity.MemberId;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
+
 @Schema(description = "멤버 요약 정보", accessMode = AccessMode.READ_ONLY)
 public record MemberSummary(
         @Schema(description = "멤버 아이디", type = "integer", format = "int32", requiredMode = RequiredMode.REQUIRED, example = "1")
