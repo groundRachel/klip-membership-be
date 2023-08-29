@@ -17,10 +17,10 @@ import com.klipwallet.membership.dto.partner.PartnerAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
-import com.klipwallet.membership.entity.Partner.PartnerSummaryView;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerApplicationApproved;
+import com.klipwallet.membership.entity.PartnerSummaryView;
 import com.klipwallet.membership.repository.PartnerRepository;
 
 @Service

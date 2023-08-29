@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.klipwallet.membership.entity.Partner;
-import com.klipwallet.membership.entity.Partner.PartnerSummaryView;
 import com.klipwallet.membership.entity.PartnerApplication;
+import com.klipwallet.membership.entity.PartnerSummaryView;
 
 public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaSpecificationExecutor<Partner> {
 

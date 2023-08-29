@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
 import com.klipwallet.membership.dto.member.MemberAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
-import com.klipwallet.membership.entity.Partner.PartnerSummaryView;
+import com.klipwallet.membership.entity.PartnerSummaryView;
 
 @Component
 @RequiredArgsConstructor

@@ -24,16 +24,12 @@ public class MemberAssembler {
     private final MemberRepository memberRepository;
 
     public MemberSummary getMemberSummary(MemberId memberId) {
-        return memberRepository.findById(memberId.value())
-                               .map(MemberSummary::new)
-                               .orElseGet(() -> MemberSummary.deactivated(memberId));
-    }
-
-    public MemberSummary toMemberSummary(MemberId memberId) {
         if (memberId == null) {
             return null;
         }
-        return getMemberSummary(memberId);
+        return memberRepository.findById(memberId.value())
+                               .map(MemberSummary::new)
+                               .orElseGet(() -> MemberSummary.deactivated(memberId));
     }
 
     public Map<MemberId, MemberSummary> getMemberSummaryMap(Collection<MemberId> memberIds) {

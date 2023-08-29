@@ -34,7 +34,7 @@ public class PartnerApplicationAssembler {
                                                                       -1,  // TODO fetch info from drops
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
-                                                                      memberAssembler.toMemberSummary(p.getProcessorId())))
+                                                                      memberAssembler.getMemberSummary(p.getProcessorId())))
                                   .collect(Collectors.toList());
     }
 }

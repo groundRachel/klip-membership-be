@@ -13,7 +13,7 @@ import lombok.Value;
 @EqualsAndHashCode(callSuper = false)
 public class PartnerApplicationApproved extends DomainEvent {
     Integer partnerApplicationId;
-    PartnerApplication partnerApplication;
+    PartnerApplication partnerApplication; // TODO use only partnerApplicationId instead of partnerApplication
     MemberId occurrerId;
 
     // TODO KLDV-3069 send result by email
