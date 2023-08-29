@@ -24,6 +24,9 @@ public class MemberAssembler {
     private final MemberRepository memberRepository;
 
     public MemberSummary getMemberSummary(MemberId memberId) {
+        if (memberId == null) {
+            return null;
+        }
         return memberRepository.findById(memberId.value())
                                .map(MemberSummary::new)
                                .orElseGet(() -> MemberSummary.deactivated(memberId));

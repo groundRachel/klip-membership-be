@@ -12,17 +12,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
 @Tag(name = "Admin.PartnerApplication", description = "Admin의 파트너 가입 요청 관리 API")
@@ -32,22 +36,22 @@ import com.klipwallet.membership.service.PartnerApplicationService;
 public class PartnerApplicationAdminController {
     private final PartnerApplicationService partnerApplicationService;
 
-    @Operation(summary = "가입 요청한 파트너 목록 조회")
+    @Operation(summary = "파트너 가입 요청 목록 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "403", description = "파트너 요청 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @GetMapping
-    public List<PartnerApplicationRow> getPartnerApplications() {
-        return partnerApplicationService.getPartnerApplications();
+    public List<PartnerApplicationRow> getPartnerApplications(@ParameterObject Pageable page,
+                                                              @RequestParam Status status) {
+        return partnerApplicationService.getPartnerApplications(page, status);
     }
 
     @Operation(summary = "요청한 파트너 승인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "승인 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "403", description = "파트너 승인 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404"))),
+            @ApiResponse(responseCode = "409", description = "서버 상태와 충돌", content = @Content(schema = @Schema(ref = "Error409")))
     })
     @PostMapping("/{applicationId}/approve")
     public void approvePartner(
@@ -60,7 +64,6 @@ public class PartnerApplicationAdminController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "거절 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "403", description = "파트너 거절 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PostMapping("/{applicationId}/reject")

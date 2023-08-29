@@ -33,7 +33,7 @@ public class PartnerApplicationToolController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "요청 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "403", description = "파트너 가입 요청 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
+            @ApiResponse(responseCode = "409", description = "서버 상태와 충돌", content = @Content(schema = @Schema(ref = "Error409")))
     })
     @PostMapping
     @ResponseStatus(CREATED)
