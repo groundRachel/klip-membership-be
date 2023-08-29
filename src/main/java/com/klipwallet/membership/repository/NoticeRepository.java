@@ -18,4 +18,6 @@ public interface NoticeRepository extends AbstractArticleRepository<Notice> {
     List<Notice> findAllByPrimary(boolean isPrimary);
 
     Optional<Notice> findTopByPrimaryAndStatus(boolean isPrimary, ArticleStatus status, Sort sort);
+
+    Optional<Notice> findTopByStatus(ArticleStatus articleStatus, Sort sort);
 }

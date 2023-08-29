@@ -36,7 +36,7 @@ class AttachFileAdminControllerIntegrationTest {
                                           .file(sampleFile))
            .andExpect(status().isCreated())
            .andExpect(jsonPath("$.attachFileId").isNotEmpty())
-           .andExpect(jsonPath("$.linkUrl").value(Matchers.startsWith("https://klip-media.dev.klaytn.com/")))
+           .andExpect(jsonPath("$.linkUrl").value(Matchers.startsWith("http://localhost:8080/common/v1/temp-files/")))
            .andExpect(jsonPath("$.contentType").value(MediaType.IMAGE_PNG_VALUE))
            .andExpect(jsonPath("$.contentLength").value(116_465));
     }

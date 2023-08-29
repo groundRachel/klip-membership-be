@@ -1,13 +1,12 @@
 package com.klipwallet.membership.dto.notice;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.Nonnull;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
@@ -35,11 +34,9 @@ public class NoticeAssembler {
                           members.getOrDefault(notice.getUpdaterId(), MemberSummary.deactivated(notice.getUpdaterId())));
     }
 
-    public List<Row> toRows(List<Notice> notices) {
-        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(notices);
-        return notices.stream()
-                      .map(n -> toRow(n, members))
-                      .collect(Collectors.toList());
+    public Page<Row> toRows(Page<Notice> page) {
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(page.getContent());
+        return page.map(n -> toRow(n, members));
     }
 
     private Row toRow(Notice entity, Map<MemberId, MemberSummary> members) {
@@ -51,5 +48,10 @@ public class NoticeAssembler {
                        members.getOrDefault(creatorId, MemberSummary.deactivated(creatorId)),
                        dtAssembler.toOffsetDateTime(entity.getUpdatedAt()),
                        members.getOrDefault(updaterId, MemberSummary.deactivated(updaterId)));
+    }
+
+    public Row toRow(Notice entity) {
+        Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(entity);
+        return toRow(entity, members);
     }
 }

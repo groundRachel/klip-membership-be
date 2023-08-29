@@ -188,6 +188,7 @@ class PartnerApplicationAdminControllerTest {
                 new PartnerApplication("(주) 그라운드엑스7", "010-1234-5678", "000-00-00008", "example8@groundx.xyz", "892085223830"),
                 new PartnerApplication("(주) 그라운드엑스8", "010-1234-5678", "000-00-00009", "example9@groundx.xyz", "992085223830")
         );
+        applications = partnerApplicationRepository.saveAll(applications);
 
         for (PartnerApplication application : applications.subList(3, 6)) {
             application.approve(processorId);
