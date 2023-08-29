@@ -66,7 +66,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.err").value("파트너 신청 정보를 조회할 수 없습니다. ID: %d".formatted(999)));
     }
 
-    @WithAdminUser(memberId = 23)
+    @WithAdminUser
     @DisplayName("파트너 가입 승인: 이미 승인 처리한 ID > 400")
     @Test
     void approveResult_throwAlreadyProcessedToBadRequest(@Autowired MockMvc mvc) throws Exception {
