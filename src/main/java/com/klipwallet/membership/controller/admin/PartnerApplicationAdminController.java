@@ -56,7 +56,8 @@ public class PartnerApplicationAdminController {
             @ApiResponse(responseCode = "200", description = "승인 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
             @ApiResponse(responseCode = "403", description = "파트너 승인 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404"))),
+            @ApiResponse(responseCode = "409", description = "서버 상태와 충돌", content = @Content(schema = @Schema(ref = "Error409")))
     })
     @PostMapping("/{applicationId}/approve")
     public void approvePartner(

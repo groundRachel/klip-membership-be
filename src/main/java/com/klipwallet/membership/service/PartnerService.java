@@ -17,7 +17,7 @@ import com.klipwallet.membership.dto.partner.PartnerAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
-import com.klipwallet.membership.entity.Partner.PartnerSummary;
+import com.klipwallet.membership.entity.Partner.PartnerSummaryView;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerApplicationApproved;
@@ -34,7 +34,7 @@ public class PartnerService {
     public List<ApprovedPartnerDto> getPartners(Pageable page) {
         Pageable pageable = PageRequest.of(page.getPageNumber(), page.getPageSize(), getSort());
 
-        Page<PartnerSummary> partners = partnerRepository.findAllPartners(Status.APPROVED, pageable);
+        Page<PartnerSummaryView> partners = partnerRepository.findAllPartners(Status.APPROVED, pageable);
         return partnerAssembler.toPartnerDto(partners);
     }
 
@@ -48,6 +48,6 @@ public class PartnerService {
     }
 
     private Sort getSort() {
-        return Sort.sort(PartnerSummary.class).by(PartnerSummary::getProcessedAt).descending();
+        return Sort.sort(PartnerSummaryView.class).by(PartnerSummaryView::getProcessedAt).descending();
     }
 }

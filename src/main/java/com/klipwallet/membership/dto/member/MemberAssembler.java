@@ -29,11 +29,11 @@ public class MemberAssembler {
                                .orElseGet(() -> MemberSummary.deactivated(memberId));
     }
 
-    public String toMemberName(MemberId memberId) {
+    public MemberSummary toMemberSummary(MemberId memberId) {
         if (memberId == null) {
             return null;
         }
-        return getMemberSummary(memberId).name();
+        return getMemberSummary(memberId);
     }
 
     public Map<MemberId, MemberSummary> getMemberSummaryMap(Collection<MemberId> memberIds) {

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication;
 
@@ -37,10 +38,10 @@ public class PartnerApplicationDto {
     public record PartnerApplicationRow(
             @NonNull Integer id,
             @NonNull String businessName,
-            Integer PartnerId, // TODO fetch info from drops
+            Integer partnerId, // TODO fetch info from drops
             OffsetDateTime createdAt,
             OffsetDateTime processedAt,
-            String processorName
+            MemberSummary processor
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)

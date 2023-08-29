@@ -97,7 +97,7 @@ public class PartnerServiceTest {
             assertThat(actual.id()).isNotNull();
             assertThat(actual.name()).isEqualTo(expected.name());
             assertThat(actual.processedAt()).isBefore(OffsetDateTime.now());
-            assertThat(actual.processorName()).isEqualTo("jordan.jung");
+            assertThat(actual.processor().name()).isEqualTo("jordan.jung");
         }
     }
 

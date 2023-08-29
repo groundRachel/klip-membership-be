@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.MemberId;
 
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class PartnerDto {
             @NonNull String name,
 
             OffsetDateTime processedAt,
-            String processorName
+            MemberSummary processor
 
             // TODO 오픈채팅 운영 여부 정보 포함하기
     ) {}

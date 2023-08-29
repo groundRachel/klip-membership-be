@@ -35,7 +35,7 @@ public class Partner extends Member {
     public Partner() {
     }
 
-    public interface PartnerSummary {
+    public interface PartnerSummaryView {
         MemberId getMemberId();
 
         String getName();

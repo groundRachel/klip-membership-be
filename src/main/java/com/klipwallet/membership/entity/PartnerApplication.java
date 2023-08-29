@@ -108,15 +108,14 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
      * @see com.klipwallet.membership.entity.PartnerApplicationApproved
      */
     public void approve(MemberId processorId) {
-        if (canSkipRequest(getStatus(), APPROVED,
-                           getProcessorId(), processorId)) {
+        if (canSkipRequest(APPROVED, processorId)) {
             return;
         }
         checkProcessable();
 
         this.status = Status.APPROVED;
         processedBy(processorId);
-        registerEvent(new PartnerApplicationApproved(this, this.processorId));
+        registerEvent(new PartnerApplicationApproved(this.id, this, this.processorId));
     }
 
     /**
@@ -125,8 +124,7 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
      * @see com.klipwallet.membership.entity.PartnerApplicationRejected
      */
     public void reject(String rejectReason, MemberId processorId) {
-        if (canSkipRequest(getStatus(), REJECTED,
-                           getProcessorId(), processorId)) {
+        if (canSkipRequest(REJECTED, processorId)) {
             return;
         }
         checkProcessable();
@@ -134,13 +132,12 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
         processedBy(processorId);
-        registerEvent(new PartnerApplicationRejected(this, this.processorId));
+        registerEvent(new PartnerApplicationRejected(this.id, this, this.processorId));
     }
 
-    private boolean canSkipRequest(Status currentStatus, Status expectedStatus,
-                                   MemberId currentUpdatedId, MemberId expectedUpdatedId) {
+    private boolean canSkipRequest(Status expectedStatus, MemberId expectedUpdatedId) {
         // TODO WINNIE testcode
-        return currentStatus == expectedStatus && currentUpdatedId == expectedUpdatedId;
+        return getStatus() == expectedStatus && getProcessorId() == expectedUpdatedId;
     }
 
     private void checkProcessable() {

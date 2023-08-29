@@ -216,15 +216,15 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스2"))
            .andExpect(jsonPath("$[0].processedAt").isEmpty())
-           .andExpect(jsonPath("$[0].processorName").isEmpty())
+           .andExpect(jsonPath("$[0].processor").isEmpty())
 
            .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스1"))
            .andExpect(jsonPath("$[1].processedAt").isEmpty())
-           .andExpect(jsonPath("$[1].processorName").isEmpty())
+           .andExpect(jsonPath("$[1].processor").isEmpty())
 
            .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스0"))
            .andExpect(jsonPath("$[2].processedAt").isEmpty())
-           .andExpect(jsonPath("$[2].processorName").isEmpty());
+           .andExpect(jsonPath("$[2].processor").isEmpty());
     }
 
     @WithAdminUser(memberId = 1)
@@ -242,13 +242,13 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스8"))
            .andExpect(jsonPath("$[0].processedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].processorName").value("jordan.jung"))
+           .andExpect(jsonPath("$[0].processor.name").value("jordan.jung"))
            .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스7"))
            .andExpect(jsonPath("$[1].processedAt").isNotEmpty())
-           .andExpect(jsonPath("$[1].processorName").value("jordan.jung"))
+           .andExpect(jsonPath("$[1].processor.name").value("jordan.jung"))
            .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스6"))
            .andExpect(jsonPath("$[2].processedAt").isNotEmpty())
-           .andExpect(jsonPath("$[2].processorName").value("jordan.jung"));
+           .andExpect(jsonPath("$[2].processor.name").value("jordan.jung"));
     }
 
     @WithAdminUser(memberId = 1)

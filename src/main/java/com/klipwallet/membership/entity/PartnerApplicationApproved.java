@@ -12,6 +12,7 @@ import lombok.Value;
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class PartnerApplicationApproved extends DomainEvent {
+    Integer partnerApplicationId;
     PartnerApplication partnerApplication;
     MemberId occurrerId;
 
