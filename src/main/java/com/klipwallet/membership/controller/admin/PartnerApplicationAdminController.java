@@ -27,7 +27,6 @@ import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Pa
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
-import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
 @Tag(name = "Admin.PartnerApplication", description = "Admin의 파트너 가입 요청 관리 API")
@@ -40,14 +39,10 @@ public class PartnerApplicationAdminController {
     @Operation(summary = "파트너 가입 요청 목록 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "403", description = "파트너 요청 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
     })
     @GetMapping
     public List<PartnerApplicationRow> getPartnerApplications(@ParameterObject Pageable page,
                                                               @RequestParam Status status) {
-        if (status.getCode() == 0) {
-            throw new InvalidRequestException();
-        }
         return partnerApplicationService.getPartnerApplications(page, status);
     }
 
@@ -55,7 +50,6 @@ public class PartnerApplicationAdminController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "승인 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "403", description = "파트너 승인 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404"))),
             @ApiResponse(responseCode = "409", description = "서버 상태와 충돌", content = @Content(schema = @Schema(ref = "Error409")))
     })
@@ -70,7 +64,6 @@ public class PartnerApplicationAdminController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "거절 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "403", description = "파트너 거절 권한 없음", content = @Content(schema = @Schema(ref = "Error403"))),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PostMapping("/{applicationId}/reject")
