@@ -278,6 +278,7 @@ class NoticeAdminControllerIntegrationTest {
         noticeRepository.flush();
     }
 
+    @SuppressWarnings("SameParameterValue")
     private Integer createNotice(String title, String body, ArticleStatus status) throws IllegalAccessException {
         return createNotice(title, body, status, false);
     }
@@ -344,14 +345,14 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void primary(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.primary",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE, true);
         // when/then
         mvc.perform(get("/admin/v1/notices/primary", noticeId))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.id").value(noticeId))
-           .andExpect(jsonPath("$.title").value("클립 멤버십 툴이 공식 오픈하였습니다."))
+           .andExpect(jsonPath("$.title").value("클립 멤버십 툴이 공식 오픈하였습니다.primary"))
            .andExpect(jsonPath("$.primary").value(true))
            .andExpect(jsonPath("$.livedAt").isNotEmpty())
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
@@ -367,7 +368,7 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void primaryNotExists(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.primaryNotExists",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         // when/then
@@ -415,7 +416,7 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void updateWithPrimaryOn(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.updateWithPrimaryOn",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         // when/then
@@ -496,7 +497,7 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void changeStatusDraftToLive(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.changeStatusDraftToLive",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         DRAFT);
         String body = """
@@ -524,7 +525,7 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void changeStatusLiveToInactive(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.changeStatusLiveToInactive",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         String body = """
@@ -552,7 +553,7 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void changeStatusDraftToSomething(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.changeStatusDraftToSomething",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         String body = """
@@ -571,7 +572,7 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void deleteApi(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.deleteApi",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         // when/then
@@ -584,7 +585,7 @@ class NoticeAdminControllerIntegrationTest {
     @Test
     void delete2Times(@Autowired MockMvc mvc) throws Exception {
         // given
-        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.delete2Times",
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         // 1 times
