@@ -23,6 +23,7 @@ import com.klipwallet.membership.entity.KlipAccount;
 import com.klipwallet.membership.repository.ChatRoomMemberRepository;
 import com.klipwallet.membership.service.KlipAccountService;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Disabled("ChatRoomMember entity 를 올려야 해서 일시적으로 disabled") // TODO: @Ian
-class ChatRoomMemberManageControllerTest {
+class ChatRoomMemberToolControllerTest {
 
     @Autowired
     ChatRoomMemberRepository chatRoomMemberRepository;
@@ -59,7 +60,7 @@ class ChatRoomMemberManageControllerTest {
     @DisplayName("오픈채팅방 관리자 생성 > 201")
     @Test
     void createChatRoomMember(@Autowired MockMvc mvc) throws Exception {
-        given(klipAccountService.getKlipId())
+        given(klipAccountService.getKlipUser(any()))
                 .willReturn(new KlipAccount(1L, "2538023320", "testemail@test.com", "010-1234-5678"));
         String body = """
                       {
@@ -82,7 +83,7 @@ class ChatRoomMemberManageControllerTest {
     @DisplayName("오픈채팅방 관리자 생성: request body 값이 유효하지 않음 > 400")
     @Test
     void createEmptyFields(@Autowired MockMvc mvc) throws Exception {
-        given(klipAccountService.getKlipId())
+        given(klipAccountService.getKlipUser(any()))
                 .willReturn(new KlipAccount(1L, "2538023320", "testemail@test.com", "010-1234-5678"));
         String body = """
                       {

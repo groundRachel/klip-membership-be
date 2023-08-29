@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.klipwallet.membership.dto.chatroom.ChatRoomMemberCreate;
 import com.klipwallet.membership.dto.chatroom.ChatRoomMemberSummary;
+import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.ChatRoomMember;
 import com.klipwallet.membership.entity.ChatRoomMember.Role;
@@ -27,7 +28,7 @@ public class ChatRoomMemberService {
         }
         ChatRoom chatRoom = getChatRoom(command.chatRoomId());
 
-        KlipUser klipUser = klipAccountService.getKlipId();
+        KlipUser klipUser = klipAccountService.getKlipUser(new Address(""));
 
         ChatRoomMember entity = command.toChatRoomMember(klipUser, chatRoom);
         ChatRoomMember saved = chatRoomMemberRepository.save(entity);

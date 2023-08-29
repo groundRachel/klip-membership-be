@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.chatroom;
+package com.klipwallet.membership.dto.operator;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;

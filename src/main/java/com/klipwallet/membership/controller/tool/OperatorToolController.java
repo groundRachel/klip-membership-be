@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.klipwallet.membership.dto.chatroom.OperatorSummary;
+import com.klipwallet.membership.dto.operator.OperatorSummary;
 import com.klipwallet.membership.dto.operator.OperatorCreate;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.OperatorService;
@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/tool/v1/operator")
 @RequiredArgsConstructor
-public class OperatorController {
+public class OperatorToolController {
     private final OperatorService operatorService;
 
     @Operation(summary = "운영자 생성")

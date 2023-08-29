@@ -28,6 +28,8 @@ public record ChatRoomMemberCreate(
         @Schema(description = "오픈 채팅방 멤버 역할")
         @NotNull
         Role role
+
+        // TODO: Add Operator Id (Optional)
 ) {
     @JsonIgnore
     public ChatRoomMember toChatRoomMember(KlipUser klipUser, ChatRoom chatRoom) {

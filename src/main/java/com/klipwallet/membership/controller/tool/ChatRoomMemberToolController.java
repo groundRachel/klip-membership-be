@@ -1,4 +1,4 @@
-package com.klipwallet.membership.controller.manage;
+package com.klipwallet.membership.controller.tool;
 
 import jakarta.validation.Valid;
 
@@ -30,7 +30,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/tool/v1/chat-room-members")
 @RequiredArgsConstructor
 @Slf4j
-public class ChatRoomMemberManageController {
+public class ChatRoomMemberToolController {
     private final ChatRoomMemberService chatRoomMemberService;
 
     @Operation(summary = "채팅방 멤버 생성")
@@ -38,8 +38,6 @@ public class ChatRoomMemberManageController {
             @ApiResponse(responseCode = "201", description = "생성 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body",
                          content = @Content(schema = @Schema(implementation = ProblemDetail.class))),
-            @ApiResponse(responseCode = "403", description = "멤버 생성 권한 없음 or 클립 연동 안됨",
-                         content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
     @PostMapping
     @ResponseStatus(CREATED)

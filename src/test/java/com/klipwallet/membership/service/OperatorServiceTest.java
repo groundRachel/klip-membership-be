@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.klipwallet.membership.config.security.WithPartnerUser;
-import com.klipwallet.membership.dto.chatroom.OperatorSummary;
+import com.klipwallet.membership.dto.operator.OperatorSummary;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.repository.OperatorRepository;
 import com.klipwallet.membership.repository.PartnerRepository;

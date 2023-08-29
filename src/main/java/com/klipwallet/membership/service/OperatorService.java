@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.klipwallet.membership.dto.chatroom.OperatorSummary;
+import com.klipwallet.membership.dto.operator.OperatorSummary;
 import com.klipwallet.membership.dto.operator.OperatorCreate;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
