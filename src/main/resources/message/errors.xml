@@ -22,6 +22,7 @@
     <entry key="problemDetail.code.404005">FAQ를 찾을 수 없습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.404006">어드민을 찾을 수 없습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.404007">어드민을 찾을 수 없습니다. Email: {0}</entry>
+    <entry key="problemDetail.code.404008">운영자를 찾을 수 없습니다. ID: {0}</entry>
 
     <!-- 409 -->
     <entry key="problemDetail.code.409000">서버의 현재 상태와 요청이 충돌했습니다.</entry>

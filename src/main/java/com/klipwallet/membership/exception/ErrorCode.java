@@ -48,6 +48,9 @@ public enum ErrorCode {
     // Partner_*,
     PARTNER_NOT_FOUND(404_003),
 
+    // Operator_*,
+    OPERATOR_NOT_FOUND(404_008),
+
     // FAQ_*
     FAQ_NOT_FOUND(404_005),
 

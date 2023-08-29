@@ -2,54 +2,63 @@ package com.klipwallet.membership.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.ToString;
 import org.springframework.lang.Nullable;
 
+import com.klipwallet.membership.adaptor.jpa.ForJpa;
 import com.klipwallet.membership.entity.ChatRoom.Source;
 
-import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
-
-/**
- * 채팅방 멤버 Entity
- * <p>
- * 채팅방 하나에 최대 1500 명이 참여할 수 있음
- * 채팅방 방장은 채팅방을 생성하면서 같이 만들어 준다. 최대 4명의 부방장을 만들 수 있다.
- * 고로 나머지 일반 멤버는 총 {@literal 1500 - 5 = 1495}명이 된다.
- * </p>
- */
 @Entity
-@Value
-@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode(of = "id", callSuper = false)
+@ToString
 public class ChatRoomMember {
+    @ManyToOne
+    @JoinColumn(name = "chatRoomId", nullable = false)
+    ChatRoom chatRoom;
+    @Column(nullable = false)
+    Long klipId;
+    @Column(nullable = false)
+    String kakaoSocialId;
+    @Column(nullable = false)
+    String email;
+    @Column(nullable = false)
+    String phone;
+    @Column(nullable = false)
+    String nickname;
+    @Column(nullable = false)
+    String profileImageUrl;
+    @Column(nullable = false)
+    Role role;
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    Long id;
-    @Column(name = "nickname")
-    String nickname;
-    @Column(name = "profile_image")
-    String profileImage;
-    @Column(name = "role")
-    Role role;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    ChatRoom chatRoom;
+    private Long id;
 
-    public ChatRoomMember() {
-        id = null;
-        nickname = null;
-        profileImage = null;
-        chatRoom = null;
-        role = null;
+    @ForJpa
+    protected ChatRoomMember() {
+    }
+
+    public ChatRoomMember(ChatRoom chatRoom, Long klipId, String kakaoSocialId, String email, String phone, String nickname, String profileImageUrl,
+                          Role role) {
+        this.chatRoom = chatRoom;
+        this.klipId = klipId;
+        this.kakaoSocialId = kakaoSocialId;
+        this.email = email;
+        this.phone = phone;
+        this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
+        this.role = role;
     }
 
     @Getter
@@ -61,7 +70,7 @@ public class ChatRoomMember {
         private final byte code;
 
         Role(int code) {
-            this.code = requireVerifiedCode(code);
+            this.code = Statusable.requireVerifiedCode(code);
         }
 
         @JsonCreator
@@ -77,3 +86,4 @@ public class ChatRoomMember {
         }
     }
 }
+
