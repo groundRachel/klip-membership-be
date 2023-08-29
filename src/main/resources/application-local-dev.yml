@@ -8,6 +8,8 @@ application:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev
     password: ${bgms_pw}  # from Vault /klip/common
+  klip-drops:
+    url: http://127.0.0.1:3100 # run Klip Drops BE to run on local
 
 logging:
   level:

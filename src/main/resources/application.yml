@@ -2,6 +2,9 @@
 application:
   version: ${G_APPLICATION_VERSION}  # from build.gradle.kts
 
+  klip-drops:
+    url: https://klip-drops.klip-drops-\${spring.profiles.default}.svc.cluster.local:3100
+
 logging:
   group:
     openfeign:
