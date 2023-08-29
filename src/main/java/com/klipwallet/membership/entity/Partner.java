@@ -32,4 +32,5 @@ public class Partner extends Member {
 
     public Partner() {
     }
+
 }

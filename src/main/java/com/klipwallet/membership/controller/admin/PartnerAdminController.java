@@ -3,12 +3,12 @@ package com.klipwallet.membership.controller.admin;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,11 +25,10 @@ public class PartnerAdminController {
 
     @Operation(summary = "가입한 파트너 목록 조회")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "403", description = "파트너 목록 조회 권한 없음", content = @Content(schema = @Schema(ref = "Error403")))
+            @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping
-    public List<ApprovedPartnerDto> getPartners() {
-        return partnerService.getPartners();
+    public List<ApprovedPartnerDto> getPartners(@ParameterObject Pageable page) {
+        return partnerService.getPartners(page);
     }
 }

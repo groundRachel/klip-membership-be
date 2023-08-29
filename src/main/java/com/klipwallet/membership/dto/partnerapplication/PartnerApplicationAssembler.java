@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
+import com.klipwallet.membership.dto.member.MemberAssembler;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.ApplyResult;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.entity.PartnerApplication;
@@ -16,6 +18,7 @@ import com.klipwallet.membership.entity.PartnerApplication;
 @RequiredArgsConstructor
 public class PartnerApplicationAssembler {
     private final DateTimeAssembler dateTimeAssembler;
+    private final MemberAssembler memberAssembler;
 
     @NonNull
     public ApplyResult toApplyResult(@NonNull PartnerApplication partnerApplication) {
@@ -24,11 +27,14 @@ public class PartnerApplicationAssembler {
     }
 
     @NonNull
-    public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull List<PartnerApplication> partnerApplications) {
+    public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull Page<PartnerApplication> partnerApplications) {
+
         return partnerApplications.stream()
                                   .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(),
+                                                                      -1,  // TODO fetch info from drops
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
-                                                                      p.getStatus(), p.getRejectReason()))
+                                                                      dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
+                                                                      memberAssembler.getMemberSummary(p.getProcessorId())))
                                   .collect(Collectors.toList());
     }
 }
