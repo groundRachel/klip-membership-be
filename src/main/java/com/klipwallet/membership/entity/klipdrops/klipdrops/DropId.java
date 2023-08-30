@@ -1,4 +1,4 @@
-package com.klipwallet.membership.adaptor.klipdrops;
+package com.klipwallet.membership.entity.klipdrops.klipdrops;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
