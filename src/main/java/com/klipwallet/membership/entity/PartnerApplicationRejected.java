@@ -7,12 +7,11 @@ import lombok.Value;
  * 파트너 신청 거절됨 DomainEvent
  *
  * @see com.klipwallet.membership.entity.PartnerApplication#reject(String, MemberId)
+ * @see com.klipwallet.membership.service.ApplicationResultEmailService#notifyRejectResult(PartnerApplicationRejected)
  */
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class PartnerApplicationRejected extends DomainEvent {
     String email;
     String rejectReason;
-
-    // TODO KLDV-3069 send result by email
 }
