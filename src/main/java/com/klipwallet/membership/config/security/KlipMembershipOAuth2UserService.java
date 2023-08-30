@@ -53,7 +53,7 @@ public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2
                 return signInToAdmin(oauth2User);
             }
             // Klip Membership Tool 인증
-            return signInToPartner(oauth2User);
+            return signInToTool(oauth2User);
         } catch (NotFoundException cause) { // 멤버가 존재하지 않으면 비회원으로 인증
             return KlipMembershipOAuth2User.notMemberOnGoogle(oauth2User);
         }
@@ -68,7 +68,7 @@ public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2
     }
 
     @NonNull
-    private KlipMembershipOAuth2User signInToPartner(OAuth2User oauth2User) {
+    private KlipMembershipOAuth2User signInToTool(OAuth2User oauth2User) {
         String oauthId = oauth2User.getName();
         Partner partner = partnerService.signIn(oauthId);
         return KlipMembershipOAuth2User.partnerOnGoogle(partner, oauth2User);
