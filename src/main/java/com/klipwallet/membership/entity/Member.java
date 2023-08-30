@@ -39,6 +39,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @see com.klipwallet.membership.entity.Partner
  * @see com.klipwallet.membership.entity.Admin
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(uniqueConstraints = {
         @UniqueConstraint(name = "member_type_email_unique", columnNames = {"type", "email"}),

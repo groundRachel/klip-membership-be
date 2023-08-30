@@ -54,7 +54,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
         partnerApplicationRepository.flush();
     }
 
-    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016", authorities = OAUTH2_USER)
+    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", authorities = OAUTH2_USER)
     @DisplayName("파트너 가입 요청 성공")
     @Test
     void apply(@Autowired MockMvc mvc) throws Exception {
@@ -83,10 +83,10 @@ public class PartnerApplicationToolControllerIntegrationTest {
         return getId(ra);
     }
 
-    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016", authorities = OAUTH2_USER)
+    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", authorities = OAUTH2_USER)
     @Test
     void apply_duplicated_status_APPLIED(@Autowired MockMvc mvc) throws Exception {
-        Integer applicationId = postApplication(mvc);
+        postApplication(mvc);
 
         mvc.perform(post("/tool/v1/partner-applications")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -96,7 +96,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
            .andExpect(jsonPath("$.err").value("해당 이메일로 진행 중인 요청이 있습니다."));
     }
 
-    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", name = "115419318504487812016", authorities = OAUTH2_USER)
+    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", authorities = OAUTH2_USER)
     @Test
     void apply_duplicated_status_APPROVED(@Autowired MockMvc mvc) throws Exception {
         Integer applicationId = postApplication(mvc);
