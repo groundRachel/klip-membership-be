@@ -93,7 +93,7 @@ class ChatRoomMemberToolControllerTest {
                         "role": 1
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/chat-room-members")
+        var ra = mvc.perform(post("/tool/v1/chat-room/1/members")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body)
                     )
