@@ -43,7 +43,7 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
     @Column(nullable = false)
     String email;
     @Column(nullable = false)
-    String oAuthId;
+    String oauthId;
 
     private Status status;
     private String rejectReason;
@@ -54,19 +54,20 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
     private LocalDateTime processedAt;
     private MemberId processorId;
 
-    public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId) {
+    public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, String oauthId) {
         this.businessName = businessName;
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
         this.status = Status.APPLIED;
         this.email = email;
-        this.oAuthId = oAuthId;
+        this.oauthId = oauthId;
         this.createdAt = LocalDateTime.now();
     }
 
     public PartnerApplication() {
     }
 
+    @Getter
     @Schema(name = "PartnerApplication.Status", description = "파트너 가입 요청 상태", example = "approved")
     public enum Status implements Statusable {
         APPLIED(1),
@@ -83,10 +84,6 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
         @Nullable
         public static Status fromDisplay(String display) {
             return Statusable.fromDisplay(Status.class, display);
-        }
-
-        public byte getCode() {
-            return this.code;
         }
 
         @JsonValue

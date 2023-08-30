@@ -3,21 +3,25 @@ package com.klipwallet.membership.config.security;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
 import jakarta.annotation.Nonnull;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.Partner;
 
-import static com.klipwallet.membership.config.SecurityConfig.ROLE_ADMIN;
+import static com.klipwallet.membership.config.SecurityConfig.*;
 
 @SuppressWarnings("ClassCanBeRecord")
 @RequiredArgsConstructor
@@ -35,19 +39,40 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     @SuppressWarnings("unused")
     static KlipMembershipOAuth2User notMemberOnGoogle(OAuth2User googleUser) {
         return new KlipMembershipOAuth2User(null, googleUser.getAttributes(), googleUser.getAuthorities(), googleUser.getName(),
-                                            getGoogleEmail(googleUser.getAttributes()));
-    }
-
-    // FIXME @Jordan Add Partner arg. Processing ADMIN, SUPER_ADMIN
-    static KlipMembershipOAuth2User memberOnGoogle(OAuth2User googleUser) {
-        return new KlipMembershipOAuth2User(new MemberId(2), googleUser.getAttributes(),
-                                            AuthorityUtils.createAuthorityList(ROLE_ADMIN),
-                                            googleUser.getName(),
-                                            getGoogleEmail(googleUser.getAttributes()));
+                                            getGoogleEmail(googleUser));
     }
 
     private static String getGoogleEmail(Map<String, Object> attributes) {
         return (String) attributes.getOrDefault("email", null);
+    }
+
+    public static String getGoogleEmail(OAuth2User oAuth2User) {
+        return getGoogleEmail(oAuth2User.getAttributes());
+    }
+
+    public static KlipMembershipOAuth2User partnerOnGoogle(Partner partner, OAuth2User googleUser) {
+        return new KlipMembershipOAuth2User(partner.getMemberId(), googleUser.getAttributes(),
+                                            AuthorityUtils.createAuthorityList(ROLE_PARTNER),
+                                            googleUser.getName(),
+                                            getGoogleEmail(googleUser));
+    }
+
+    public static KlipMembershipOAuth2User adminOnGoogle(Admin admin, OAuth2User googleUser) {
+        List<GrantedAuthority> authorities = getAuthorities(admin);
+        return new KlipMembershipOAuth2User(admin.getMemberId(), googleUser.getAttributes(),
+
+                                            authorities,
+                                            googleUser.getName(),
+                                            getGoogleEmail(googleUser));
+    }
+
+    @NonNull
+    private static List<GrantedAuthority> getAuthorities(Admin admin) {
+        if (admin.isSuper()) {  // 슈퍼 어드민
+            return AuthorityUtils.createAuthorityList(ROLE_SUPER_ADMIN, ROLE_ADMIN);
+        }
+        // 일반 어드민
+        return AuthorityUtils.createAuthorityList(ROLE_ADMIN);
     }
 
     @Nonnull

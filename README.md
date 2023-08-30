@@ -11,11 +11,31 @@ NFT 홀더를 위한 카카오 오픈 채팅을 개설하고 관리하는 기능
 
 Or IDE Run: IntelliJ Keymap(⌃⌥R)
 
+### Local 개발을 위한 hosts 설정
+
+```
+127.0.0.1	membership-api.local.com membership-admin-api.local.com
+127.0.0.1	membership.local.com membership-admin.local.com
+```
+
+| Origin                                      | Description                       |
+|---------------------------------------------|-----------------------------------|
+| http://membership.local.com:3000            | Klip Membership Tool Front@local  |
+| http://membership-api.local.com:8080        | Klip Membership Tool API@local    |
+| https://membership-admin.local.com:3000     | Klip Membership Admin Front@local |
+| https://membership-admin-api.local.com:8080 | Klip Membership Admin API@local   |
+
+> Hosts 변조 유틸리티 for macOS
+> * [Gas Mask](https://github.com/2ndalpha/gasmask)
+> * [SwitchHosts](https://switchhosts.vercel.app/)
+
 ### Local 개발을 위한 추가 속성 설정
 
-`spring.profiles.active=local`(default)
+기본으로 local 환경이 활성화 되어 있음. (`spring.profiles.default=local`)
 
-Local에서 개발할 시 Vault 정보를 아래 파일에 속성으로 지정해야함.
+`spring.profiles.active=local`
+
+Local에서 개발할 시 Vault 정보를 아래 파일에 속성으로 정의해둬야함
 
 `/src/main/resources/local.properties`
 
@@ -43,7 +63,13 @@ VAULT_TOKEN=??????????????????????????
 
 ### Swagger-UI
 
-[http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui)
+* local: http://localhost:8080/swagger-ui
+  * http://membership-api.local.com:8080
+  * http://membership-admin-api.local.com:8080
+* dev
+  * [https://membership-api.dev.klipwallet.com/swagger-ui](http://membership-api.klipwallet.com/swagger-ui)
+  * [https://membership-admin-api.dev.klipwallet.com/swagger-ui](https://membership-admin-api.dev.klipwallet.com/swagger-ui)
+    * 현재 방화벽 설정으로 인해 접근 안됨
 
 ## Test
 
@@ -52,7 +78,7 @@ VAULT_TOKEN=??????????????????????????
 ./gradlew clean test
 # 통합 테스트(현재 미존재)
 ./gradlew clean integrationTest
-# 둘 다
+# Test All + jacoco(coverage) + Checkstyle + Sonarqube
 ./gradlew clean check
 ```
 
@@ -149,12 +175,18 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 
 ## 주요 모델
 
+* `PartnerApplication`: 파트너 신청(이용자 등록 요청)
 * `Partner`: 파트너(이용자)
-* `MemberApplication`: 파트너 신청(이용자 등록 요청)
+* `Operator`: 채팅방 운영진
 * `Admin`: 관리자(GX담당자)
 * `ChatRoom`: 채팅방
-* `ChatRoomMember`: 채팅방 참여자(방장/부방장 포함?)
+* `ChatRoomMember`: 채팅방 참여자
+* `ChatRoomNft`: 채팅방에 입장할 수 있는 NFT 정보
 * `KakaoService`: 카카오 연동 서비스
+* `KlipAccountService`: Klip 계정 조회 서비스
+* `KlipDropService`: KlipDrops 연동 서비스
+* `Notice`: 공지사항
+* `Faq`: FAQ
 
 # 협업
 

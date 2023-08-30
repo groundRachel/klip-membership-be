@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.klipwallet.membership.dto.admin.AdminAssembler;
 import com.klipwallet.membership.dto.admin.AdminDto;
+import com.klipwallet.membership.dto.admin.AdminDto.Register;
 import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.Member;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.exception.member.AdminNotFoundException;
 import com.klipwallet.membership.repository.AdminRepository;
 
@@ -33,13 +35,13 @@ public class AdminService {
      * 우선 GroundX 임직원의 이메일을 등록한다.
      * </p>
      *
-     * @param command 등록을 위한 인자 DTO
-     * @param user    등록자(슈퍼어드민)
+     * @param command      등록을 위한 인자 DTO
+     * @param registrantId 등록자 ID
      * @return 등록된 어드민 요약 DTO
      */
     @Transactional
-    public AdminDto.Summary register(AdminDto.Register command, AuthenticatedUser user) {
-        Admin entity = command.toAdmin(user);
+    public AdminDto.Summary register(Register command, MemberId registrantId) {
+        Admin entity = command.toAdmin(registrantId);
         Admin persisted = adminRepository.save(entity);
         return new AdminDto.Summary(persisted);
     }
@@ -88,17 +90,14 @@ public class AdminService {
      * <p>
      * 최초 인증 시 회원가입을 완료 시킴
      * </p>
-     *
-     * @param oauth2User 인증
      */
     @Transactional
-    public Admin signIn(@NonNull AuthenticatedUser oauth2User) {
-        String email = oauth2User.getEmail();
+    public Admin signIn(String email, String oauthId) {
         Admin admin = tryGetEnabledAdmin(email);
         if (admin.isSignUp()) {
             return admin;
         }
-        admin.signUp(oauth2User.getName());
+        admin.signUp(oauthId);
         return adminRepository.save(admin);
     }
 

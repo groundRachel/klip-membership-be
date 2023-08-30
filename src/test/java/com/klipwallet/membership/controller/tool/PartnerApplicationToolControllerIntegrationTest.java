@@ -64,7 +64,7 @@ public class PartnerApplicationToolControllerIntegrationTest {
         assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partnerApplication.getEmail()).isEqualTo("example@groundx.xyz");
-        assertThat(partnerApplication.getOAuthId()).isEqualTo("115419318504487812016");
+        assertThat(partnerApplication.getOauthId()).isEqualTo("115419318504487812016");
         assertThat(partnerApplication.getCreatedAt()).isBefore(LocalDateTime.now());
         assertThat(partnerApplication.getProcessedAt()).isNull();
         assertThat(partnerApplication.getProcessorId()).isNull();

@@ -13,6 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2UserService;
 import com.klipwallet.membership.config.security.ProblemDetailEntryPoint;
+import com.klipwallet.membership.service.AdminService;
+import com.klipwallet.membership.service.PartnerService;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -99,8 +101,8 @@ public class SecurityConfig {
      * Implementation of OAuth2UserService
      */
     @Bean
-    KlipMembershipOAuth2UserService oauth2UserService() {
-        return new KlipMembershipOAuth2UserService();
+    KlipMembershipOAuth2UserService oauth2UserService(PartnerService partnerService, AdminService adminService) {
+        return new KlipMembershipOAuth2UserService(partnerService, adminService);
     }
 
     @Bean

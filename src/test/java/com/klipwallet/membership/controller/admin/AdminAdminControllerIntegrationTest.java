@@ -156,7 +156,7 @@ class AdminAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.id").isNumber())
            .andExpect(jsonPath("$.email").value("jordan.jung@groundx.xyz"))
            .andExpect(jsonPath("$.name").value("jordan.jung"))
-           .andExpect(jsonPath("$.oAuthId").isEmpty())      // == null
+           .andExpect(jsonPath("$.oauthId").isEmpty())      // == null
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.creator.id").value(1))
            .andExpect(jsonPath("$.creator.name").isNotEmpty())

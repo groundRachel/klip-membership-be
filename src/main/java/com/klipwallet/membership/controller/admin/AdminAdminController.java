@@ -47,7 +47,7 @@ public class AdminAdminController {
     public AdminDto.Summary register(
             @Valid @RequestBody AdminDto.Register command,
             @AuthenticationPrincipal AuthenticatedUser user) {
-        return adminService.register(command, user);
+        return adminService.register(command, user.getMemberId());
     }
 
     @Operation(summary = "Admin 어드민 목록 조회")

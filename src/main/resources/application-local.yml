@@ -8,6 +8,16 @@ application:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev
     password: ${bgms_pw}  # from local.properties
+  developer:
+    super-admin: gene.goh@groundx.xyz
+    emails:
+      - jordan.jung@groundx.xyz
+      - ian.han@groundx.xyz
+      - winnie.byun@groundx.xyz
+      - rachel.lee@groundx.xyz
+      - ted.jeong@groundx.xyz
+      - twinsen.kim@groundx.xyz
+      - sello.lee@groundx.xyz
 
 logging:
   level:
@@ -61,8 +71,8 @@ spring:
         registration:
           google:
             provider: google
-            client-id: 69090294389-2pnugpnhjdm5odpk89kdjc318860pb9b.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 245508089677-ne4im3tniucl2sqar65kefn3fakecqdp.apps.googleusercontent.com
+            client-secret: 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
             scope: profile, email
 
 springdoc:
