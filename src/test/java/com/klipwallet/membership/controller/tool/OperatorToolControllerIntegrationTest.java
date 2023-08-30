@@ -18,14 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.klipwallet.membership.adaptor.klip.KlipAccount;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.operator.OperatorSummary;
-import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.repository.OperatorRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
-import com.klipwallet.membership.service.KlipAccountService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -42,10 +39,9 @@ class OperatorToolControllerIntegrationTest {
     OperatorRepository operatorRepository;
     @Autowired
     ObjectMapper om;
+
     @MockBean
     PartnerRepository partnerRepository;
-    @MockBean
-    KlipAccountService klipAccountService;
 
     private Long lastOperatorId;
 
@@ -71,12 +67,9 @@ class OperatorToolControllerIntegrationTest {
         Partner partner = new Partner();
         FieldUtils.writeField(partner, "id", 23, true);
         given(partnerRepository.findById(any())).willReturn(Optional.of(partner));
-        given(klipAccountService.getKlaytnAddress(any())).willReturn(new Address("0x1dD60F6Bc03e986aD2a07298DB096d6122178587"));
-        given(klipAccountService.getKlipUser(any())).willReturn(new KlipAccount(1L, "2538023920", "testemail@test.com", "010-1234-5678"));
         String body = """
                       {
-                        "klipId": 1,
-                        "klipRequestKey": "84cdc4cc-da8a-42ab-ae11-eb988c3b3f42"
+                        "klipId": 1
                       }
                       """;
         var ra = mvc.perform(post("/tool/v1/operators")
