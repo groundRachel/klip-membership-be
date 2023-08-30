@@ -15,11 +15,13 @@ import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Application;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
 import com.klipwallet.membership.exception.member.PartnerApplicationNotFoundException;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
+import com.klipwallet.membership.repository.PartnerRepository;
 
 import static com.klipwallet.membership.entity.PartnerApplication.Status.APPLIED;
 import static com.klipwallet.membership.entity.PartnerApplication.Status.APPROVED;
@@ -30,6 +32,7 @@ public class PartnerApplicationService {
     private final PartnerApplicationRepository partnerApplicationRepository;
 
     private final PartnerApplicationAssembler partnerApplicationAssembler;
+    private final PartnerRepository partnerRepository;
 
 
     private void verifyApply(AuthenticatedUser user) {
@@ -75,17 +78,26 @@ public class PartnerApplicationService {
     public void approve(Integer applicationId, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
 
-        partnerApplication.approve(user.getMemberId());
-        partnerApplicationRepository.save(partnerApplication);
+        boolean canSkipRequest = partnerApplication.approve(user.getMemberId());
+        if (canSkipRequest) {
+            return;
+        }
 
+        partnerApplicationRepository.save(partnerApplication);
+        partnerRepository.save(new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
+                                           partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
+                                           partnerApplication.getOAuthId(), user.getMemberId()));
     }
 
     @Transactional
     public void reject(Integer applicationId, RejectRequest body, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
 
+        boolean canSkipRequest = partnerApplication.reject(body.rejectReason(), user.getMemberId());
+        if (canSkipRequest) {
+            return;
+        }
 
-        partnerApplication.reject(body.rejectReason(), user.getMemberId());
         partnerApplicationRepository.save(partnerApplication);
     }
 }

@@ -105,34 +105,40 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
      * 파트너 신청 승인됨 -> 파트너 생성
      *
      * @param processorId 처리자 ID
+     * @return canSkipRequest
      * @see com.klipwallet.membership.entity.PartnerApplicationApproved
      */
-    public void approve(MemberId processorId) {
+    public boolean approve(MemberId processorId) {
         if (canSkipRequest(APPROVED, processorId)) {
-            return;
+            return true;
         }
         checkProcessable();
 
         this.status = Status.APPROVED;
         processedBy(processorId);
-        registerEvent(new PartnerApplicationApproved(this.id, this, this.processorId));
+        registerEvent(new PartnerApplicationApproved(this.email));
+
+        return false;
     }
 
     /**
      * @param rejectReason
      * @param processorId  처리자 ID
+     * @return canSkipRequest
      * @see com.klipwallet.membership.entity.PartnerApplicationRejected
      */
-    public void reject(String rejectReason, MemberId processorId) {
+    public boolean reject(String rejectReason, MemberId processorId) {
         if (canSkipRequest(REJECTED, processorId)) {
-            return;
+            return true;
         }
         checkProcessable();
 
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
         processedBy(processorId);
-        registerEvent(new PartnerApplicationRejected(this.id, this, this.processorId));
+        registerEvent(new PartnerApplicationRejected(this.email, rejectReason));
+
+        return false;
     }
 
     private boolean canSkipRequest(Status expectedStatus, MemberId expectedUpdatedId) {

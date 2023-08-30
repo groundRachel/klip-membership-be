@@ -16,6 +16,7 @@ import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
 import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.repository.AdminRepository;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
@@ -72,6 +73,7 @@ public class PartnerServiceTest {
             PartnerApplication partnerApplication = new PartnerApplication(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oAuthId);
             partnerApplication.approve(processorId);
             partnerApplicationRepository.save(partnerApplication);
+            partnerRepository.save(new Partner(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oAuthId, processorId));
         }
         partnerApplicationRepository.flush();
         partnerRepository.flush();

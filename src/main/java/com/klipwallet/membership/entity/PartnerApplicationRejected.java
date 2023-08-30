@@ -11,9 +11,8 @@ import lombok.Value;
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class PartnerApplicationRejected extends DomainEvent {
-    Integer partnerApplicationId;
-    PartnerApplication partnerApplication; // TODO use only partnerApplicationId instead of partnerApplication
-    MemberId occurrerId;
+    String email;
+    String rejectReason;
 
     // TODO KLDV-3069 send result by email
 }
