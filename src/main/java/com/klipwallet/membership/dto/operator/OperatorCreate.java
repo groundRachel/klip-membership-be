@@ -13,10 +13,10 @@ import com.klipwallet.membership.entity.Operator;
 public record OperatorCreate(
         @Schema(description = "클립 회원 Id")
         @NotNull
-        Long klipId
+        String klipRequestKey
 ) {
     @JsonIgnore
-    public Operator toOperator(Long klipId, Integer parterId, MemberId memberId) {
-        return new Operator(klipId, parterId, memberId);
+    public Operator toOperator(Long klipId, String kakaoUserId, Integer parterId, MemberId memberId) {
+        return new Operator(klipId, kakaoUserId, parterId, memberId);
     }
 }

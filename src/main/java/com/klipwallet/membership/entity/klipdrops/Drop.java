@@ -1,4 +1,4 @@
-package com.klipwallet.membership.entity.klipdrops.klipdrops;
+package com.klipwallet.membership.entity.klipdrops;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -9,11 +9,11 @@ import lombok.Value;
 @Embeddable
 @Value
 @RequiredArgsConstructor
-public class DropId {
+public class Drop {
     @Column(name = "drop_id")
     Long id;
 
-    public DropId() {
+    public Drop() {
         id = null;
     }
 }

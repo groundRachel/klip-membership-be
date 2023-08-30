@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ProblemDetail;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +45,6 @@ public class ChatRoomToolController {
             @ApiResponse(responseCode = "403", description = "채팅방 개설 권한 없음 or 카카오 연동 안됨",
                          content = @Content(schema = @Schema(implementation = ProblemDetail.class)))
     })
-    @Secured("ROLE_PARTNER")
     @PostMapping
     @ResponseStatus(CREATED)
     public ChatRoomSummary createChatRoom(
@@ -59,7 +57,6 @@ public class ChatRoomToolController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
-    @Secured("ROLE_PARTNER")
     @GetMapping
     public List<ChatRoomRow> chatRoomList() {
         return chatRoomService.getAllChatRooms();

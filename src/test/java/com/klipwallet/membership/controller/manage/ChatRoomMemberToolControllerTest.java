@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Disabled("ChatRoomMember entity 를 올려야 해서 일시적으로 disabled") // TODO: @Ian
+@Disabled("관리자가 아닌 일반 멤버 사용시에만 CREATE API 사용, 이후 구현 완료후 Enabled") // TODO: @Ian
 class ChatRoomMemberToolControllerTest {
 
     @Autowired
@@ -57,7 +57,7 @@ class ChatRoomMemberToolControllerTest {
     }
 
     @WithPartnerUser
-    @DisplayName("오픈채팅방 관리자 생성 > 201")
+    @DisplayName("오픈채팅방 멤버 생성 > 201")
     @Test
     void createChatRoomMember(@Autowired MockMvc mvc) throws Exception {
         given(klipAccountService.getKlipUser(any()))
@@ -70,7 +70,7 @@ class ChatRoomMemberToolControllerTest {
                         "role": 1
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/chat-room-members")
+        var ra = mvc.perform(post("/tool/v1/chat-room/1/members")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isCreated())

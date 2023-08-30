@@ -23,19 +23,17 @@ import com.klipwallet.membership.entity.ChatRoom.Source;
 @ToString
 public class ChatRoomMember {
     @Column(nullable = false)
-    Long klipId;
+    private Long klipId;
     @Column(nullable = false)
-    String kakaoUserId;
+    private String kakaoUserId;
+    @Column
+    private Long operatorId;
     @Column(nullable = false)
-    String email;
+    private String nickname;
     @Column(nullable = false)
-    String phone;
+    private String profileImageUrl;
     @Column(nullable = false)
-    String nickname;
-    @Column(nullable = false)
-    String profileImageUrl;
-    @Column(nullable = false)
-    Role role;
+    private Role role;
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -44,12 +42,11 @@ public class ChatRoomMember {
     protected ChatRoomMember() {
     }
 
-    public ChatRoomMember(Long klipId, String kakaoUserId, String email, String phone, String nickname, String profileImageUrl,
+    public ChatRoomMember(Long klipId, String kakaoUserId, Long operatorId, String nickname, String profileImageUrl,
                           Role role) {
         this.klipId = klipId;
         this.kakaoUserId = kakaoUserId;
-        this.email = email;
-        this.phone = phone;
+        this.operatorId = operatorId;
         this.nickname = nickname;
         this.profileImageUrl = profileImageUrl;
         this.role = role;
