@@ -51,24 +51,24 @@ public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2
         String oauthId = oauth2User.getName();
         try {
             if (isAdmin()) {  // Klip Membership Admin 인증
-                return toAdmin(oauth2User, oauthId);
+                return signInToAdmin(oauth2User, oauthId);
             }
             // Klip Membership Tool 인증
-            return toPartner(oauthId, oauth2User);
+            return signInToPartner(oauthId, oauth2User);
         } catch (NotFoundException cause) { // 멤버가 존재하지 않으면 비회원으로 인증
             return KlipMembershipOAuth2User.notMemberOnGoogle(oauth2User);
         }
     }
 
     @NonNull
-    private KlipMembershipOAuth2User toAdmin(OAuth2User oauth2User, String oauthId) {
+    private KlipMembershipOAuth2User signInToAdmin(OAuth2User oauth2User, String oauthId) {
         String email = KlipMembershipOAuth2User.getGoogleEmail(oauth2User);
         Admin admin = adminService.signIn(email, oauthId);
         return KlipMembershipOAuth2User.adminOnGoogle(admin, oauth2User);
     }
 
     @NonNull
-    private KlipMembershipOAuth2User toPartner(String oauthId, OAuth2User oauth2User) {
+    private KlipMembershipOAuth2User signInToPartner(String oauthId, OAuth2User oauth2User) {
         Partner partner = partnerService.signIn(oauthId);
         return KlipMembershipOAuth2User.partnerOnGoogle(partner, oauth2User);
     }
