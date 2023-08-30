@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.klipwallet.membership.dto.operator.OperatorSummary;
 import com.klipwallet.membership.dto.operator.OperatorCreate;
+import com.klipwallet.membership.dto.operator.OperatorSummary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
@@ -22,13 +22,13 @@ public class OperatorService {
 
     @Transactional
     public OperatorSummary create(OperatorCreate command, AuthenticatedUser user) {
-        Partner partner = getPartner(user.getMemberId());
+        Partner partner = tryGetPartner(user.getMemberId());
         Operator entity = command.toOperator(command.klipId(), partner.getId(), user.getMemberId());
         Operator saved = operatorRepository.save(entity);
         return new OperatorSummary(saved);
     }
 
-    public Partner getPartner(MemberId partnerId) {
+    private Partner tryGetPartner(MemberId partnerId) {
         return partnerRepository.findById(partnerId.value()).orElseThrow(() -> new PartnerNotFoundException(partnerId));
     }
 }

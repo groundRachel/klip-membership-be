@@ -32,6 +32,15 @@ public class Operator extends BaseEntity<Operator> {
     Long id;
     @Column(nullable = false)
     Long klipId;
+
+    /**
+     * 파트너 계정 Id
+     * <p>
+     * 파트너 계정 아래 여러 운영자들을 미리 등록하고
+     * 이후 오픈채팅방 생성시에 방장 등록이나 운영진 등록에 사용한다.
+     * {@link com.klipwallet.membership.entity.Partner#getId()}
+     * <p>
+     */
     @Column(nullable = false)
     Integer partnerId;
 

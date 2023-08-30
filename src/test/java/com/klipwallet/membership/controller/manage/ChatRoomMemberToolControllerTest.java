@@ -17,9 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.klipwallet.membership.adaptor.klip.KlipAccount;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.chatroom.ChatRoomMemberSummary;
-import com.klipwallet.membership.entity.KlipAccount;
 import com.klipwallet.membership.repository.ChatRoomMemberRepository;
 import com.klipwallet.membership.service.KlipAccountService;
 

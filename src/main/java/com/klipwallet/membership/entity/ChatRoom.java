@@ -38,7 +38,7 @@ public class ChatRoom extends BaseEntity<ChatRoom> {
      * 채팅방을 생성했다고, 무조건 방장이 되지 않는다. 방장은 {@link Operator} 에서 방장 타입으로 조회한다.
      * </p>
      */
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany
     Set<ChatRoomMember> chatRoomMembers;
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

@@ -33,7 +33,7 @@ public record ChatRoomMemberCreate(
 ) {
     @JsonIgnore
     public ChatRoomMember toChatRoomMember(KlipUser klipUser, ChatRoom chatRoom) {
-        return new ChatRoomMember(chatRoom, klipUser.getKlipAccountId(), klipUser.getKakaoUserId(), klipUser.getEmail(), klipUser.getPhone(),
+        return new ChatRoomMember(klipUser.getKlipAccountId(), klipUser.getKakaoUserId(), klipUser.getEmail(), klipUser.getPhone(),
                                   nickname, profileImageUrl, role);
     }
 }

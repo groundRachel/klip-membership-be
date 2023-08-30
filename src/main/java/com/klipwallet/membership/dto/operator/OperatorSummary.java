@@ -12,7 +12,7 @@ public record OperatorSummary(
         @Schema(description = "운영자 ID", type = "string", requiredMode = RequiredMode.REQUIRED, example = "1")
         @NonNull
         Long id,
-        @Schema(description = "운영자 Klip ID", type = "string", requiredMode = RequiredMode.REQUIRED, example = "1")
+        @Schema(description = "운영자 Klip ID", type = "string", requiredMode = RequiredMode.REQUIRED, example = "2430023721")
         @NonNull
         Long klipId
 ) {

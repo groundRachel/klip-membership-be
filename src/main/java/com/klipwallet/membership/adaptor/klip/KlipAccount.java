@@ -1,8 +1,10 @@
-package com.klipwallet.membership.entity;
+package com.klipwallet.membership.adaptor.klip;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.NonNull;
+
+import com.klipwallet.membership.entity.KlipUser;
 
 public record KlipAccount(
         @JsonValue @NonNull Long id,
