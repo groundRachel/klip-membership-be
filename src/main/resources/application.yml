@@ -2,9 +2,6 @@
 application:
   version: ${G_APPLICATION_VERSION}  # from build.gradle.kts
 
-  klip-drops:
-    url: https://klip-drops.klip-drops-\${spring.profiles.default}.svc.cluster.local:3100
-
 logging:
   group:
     openfeign:
@@ -51,6 +48,8 @@ spring:
             url: \${application.bgms.api-url}
           kakao:
             url: \${application.kakao-api.openlink-url}
+          klip-drops-internal:
+            url: \${application.klip-drops-internal.api-url}
       compression:
         request:
           enabled: true
