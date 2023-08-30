@@ -18,12 +18,12 @@ Or IDE Run: IntelliJ Keymap(⌃⌥R)
 127.0.0.1	membership.local.com membership-admin.local.com
 ```
 
-| Origin                                      | Description                       |
-|---------------------------------------------|-----------------------------------|
-| http://membership.local.com:3000            | Klip Membership Tool Front@local  |
-| http://membership-api.local.com:8080        | Klip Membership Tool API@local    |
-| https://membership-admin.local.com:3000     | Klip Membership Admin Front@local |
-| https://membership-admin-api.local.com:8080 | Klip Membership Admin API@local   |
+| Origin                                     | Description                       |
+|--------------------------------------------|-----------------------------------|
+| http://membership.local.com:3000           | Klip Membership Tool Front@local  |
+| http://membership-api.local.com:8080       | Klip Membership Tool API@local    |
+| http://membership-admin.local.com:3000     | Klip Membership Admin Front@local |
+| http://membership-admin-api.local.com:8080 | Klip Membership Admin API@local   |
 
 > Hosts 변조 유틸리티 for macOS
 > * [Gas Mask](https://github.com/2ndalpha/gasmask)
