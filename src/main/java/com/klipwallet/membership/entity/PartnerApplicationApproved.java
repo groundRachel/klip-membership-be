@@ -7,7 +7,7 @@ import lombok.Value;
  * 파트너 신청 승인됨 DomainEvent
  *
  * @see com.klipwallet.membership.entity.PartnerApplication#approve(MemberId)
- * @see com.klipwallet.membership.service.ApplicationResultEmailService#notifyApproveResult(PartnerApplicationApproved)
+ * @see com.klipwallet.membership.service.PartnerApplicationEmailService#notifyApproveResult(PartnerApplicationApproved)
  */
 @Value
 @EqualsAndHashCode(callSuper = false)

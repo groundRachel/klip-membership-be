@@ -12,9 +12,9 @@ import com.klipwallet.membership.entity.PartnerApplicationRejected;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationResultEmailService {
+public class PartnerApplicationEmailService {
     @Autowired
-    private EmailNotifier emailNotifier;
+    private EmailSendable emailSendable;
 
     final String senderEmailAddress = "winnie.byun@groundx.xyz";
     final String subject = "Klip Membership Tool 가입 요청 결과";
@@ -29,7 +29,7 @@ public class ApplicationResultEmailService {
         message.setSubject(subject);
         message.setText(contentApproved);
 
-        emailNotifier.sendEmail(message);
+        emailSendable.sendEmail(message);
     }
 
     @TransactionalEventListener(value = PartnerApplicationRejected.class, phase = TransactionPhase.AFTER_COMMIT)
@@ -40,6 +40,6 @@ public class ApplicationResultEmailService {
         message.setSubject(subject);
         message.setText(contentRejected + event.getRejectReason());
 
-        emailNotifier.sendEmail(message);
+        emailSendable.sendEmail(message);
     }
 }

@@ -7,18 +7,16 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 
-import com.klipwallet.membership.dto.email.EmailResult;
-import com.klipwallet.membership.service.EmailNotifier;
+import com.klipwallet.membership.service.EmailSendable;
 
 @Primary
 @Profile("!local")
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class SesAdaptor implements EmailNotifier {
+public class SesEmailAdaptor implements EmailSendable {
     @Override
-    public EmailResult sendEmail(SimpleMailMessage message) {
+    public void sendEmail(SimpleMailMessage message) {
         // TODO SES
-        return null;
     }
 }

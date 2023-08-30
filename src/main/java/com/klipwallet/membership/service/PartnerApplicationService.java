@@ -78,8 +78,8 @@ public class PartnerApplicationService {
     public void approve(Integer applicationId, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
 
-        boolean canSkipRequest = partnerApplication.approve(user.getMemberId());
-        if (canSkipRequest) {
+        boolean canSkipDuplicatedRequest = partnerApplication.approve(user.getMemberId());
+        if (canSkipDuplicatedRequest) {
             return;
         }
 
@@ -93,8 +93,8 @@ public class PartnerApplicationService {
     public void reject(Integer applicationId, RejectRequest body, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
 
-        boolean canSkipRequest = partnerApplication.reject(body.rejectReason(), user.getMemberId());
-        if (canSkipRequest) {
+        boolean canSkipDuplicatedRequest = partnerApplication.reject(body.rejectReason(), user.getMemberId());
+        if (canSkipDuplicatedRequest) {
             return;
         }
 
