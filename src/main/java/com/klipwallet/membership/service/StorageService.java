@@ -11,5 +11,13 @@ import com.klipwallet.membership.entity.MemberId;
  * </p>
  */
 public interface StorageService {
-    StorageResult store(Attachable command, MemberId memberId);
+    /**
+     * 파일 저장
+     *
+     * @param command  파일 정보와 byte를 제공하는 인터페이스
+     * @param path     추가 경로명
+     * @param memberId 업로더 ID
+     * @return 저장된 파일 메타 정보
+     */
+    StorageResult store(Attachable command, String path, MemberId memberId);
 }

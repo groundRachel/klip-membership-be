@@ -70,10 +70,10 @@ class AttachFileAdminControllerIntegrationTest {
                                           .file(sampleFile))
            .andExpect(status().isBadRequest())
            .andExpect(jsonPath("$.code").value(400_001))
-           .andExpect(jsonPath("$.err").value("이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"))
+           .andExpect(jsonPath("$.err").value("이미지 파일만 업로드 가능합니다.(jpeg, png)"))
            .andExpect(jsonPath("$.errors.length()").value(1))
            .andExpect(jsonPath("$.errors[0].field").value("uploadImage.file"))
-           .andExpect(jsonPath("$.errors[0].message").value("이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"));
+           .andExpect(jsonPath("$.errors[0].message").value("이미지 파일만 업로드 가능합니다.(jpeg, png)"));
     }
 
     @DisplayName("Admin 이미지 파일 업로드: 유효하지 않은 ContentType > 400")
@@ -89,28 +89,46 @@ class AttachFileAdminControllerIntegrationTest {
                                           .file(sampleFile))
            .andExpect(status().isBadRequest())
            .andExpect(jsonPath("$.code").value(400_001))
-           .andExpect(jsonPath("$.err").value("이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"))
+           .andExpect(jsonPath("$.err").value("이미지 파일만 업로드 가능합니다.(jpeg, png)"))
            .andExpect(jsonPath("$.errors.length()").value(1))
            .andExpect(jsonPath("$.errors[0].field").value("uploadImage.file"))
-           .andExpect(jsonPath("$.errors[0].message").value("이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"));
+           .andExpect(jsonPath("$.errors[0].message").value("이미지 파일만 업로드 가능합니다.(jpeg, png)"));
+    }
+
+    @DisplayName("Admin 이미지 파일 업로드: null filename > 200 성공함 !!!")
+    @WithAdminUser
+    @Test
+    void uploadImageNullFilename(@Autowired MockMvc mvc) throws Exception {
+        // given
+        String filename = "klip-sample.png";
+        ClassPathResource resource = new ClassPathResource("/attachFile/%s".formatted(filename));
+        MockMultipartFile sampleFile = new MockMultipartFile("file", null, MediaType.IMAGE_PNG_VALUE, resource.getInputStream());
+        // when/then
+        mvc.perform(MockMvcRequestBuilders.multipart("/admin/v1/files/upload-image")
+                                          .file(sampleFile))
+           .andExpect(status().isCreated())
+           .andExpect(jsonPath("$.attachFileId").isNotEmpty())
+           .andExpect(jsonPath("$.linkUrl").value(Matchers.startsWith("http://localhost:8080/common/v1/temp-files/")))
+           .andExpect(jsonPath("$.contentType").value(MediaType.IMAGE_PNG_VALUE))
+           .andExpect(jsonPath("$.contentLength").value(116_465));
     }
 
     @DisplayName("Admin 이미지 파일 업로드: empty filename and contentType > 400")
     @WithAdminUser
     @Test
-    void uploadImageNullNameAndNullContentType(@Autowired MockMvc mvc) throws Exception {
+    void uploadImageNullContentType(@Autowired MockMvc mvc) throws Exception {
         // given
         String filename = "klip-sample.png";
         ClassPathResource resource = new ClassPathResource("/attachFile/%s".formatted(filename));
-        MockMultipartFile sampleFile = new MockMultipartFile("file", resource.getInputStream());
+        MockMultipartFile sampleFile = new MockMultipartFile("file", filename, null, resource.getInputStream());
         // when/then
         mvc.perform(MockMvcRequestBuilders.multipart("/admin/v1/files/upload-image")
                                           .file(sampleFile))
            .andExpect(status().isBadRequest())
            .andExpect(jsonPath("$.code").value(400_001))
-           .andExpect(jsonPath("$.err").value("이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"))
+           .andExpect(jsonPath("$.err").value("이미지 파일만 업로드 가능합니다.(jpeg, png)"))
            .andExpect(jsonPath("$.errors.length()").value(1))
            .andExpect(jsonPath("$.errors[0].field").value("uploadImage.file"))
-           .andExpect(jsonPath("$.errors[0].message").value("이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"));
+           .andExpect(jsonPath("$.errors[0].message").value("이미지 파일만 업로드 가능합니다.(jpeg, png)"));
     }
 }

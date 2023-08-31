@@ -40,7 +40,7 @@ public class LocalTempStorageService implements StorageService {
     }
 
     @Override
-    public StorageResult store(Attachable command, MemberId memberId) {
+    public StorageResult store(Attachable command, String path, MemberId memberId) {
         try {
             Path tempFile = Files.createTempFile(uploadPath, "", "");
             FileCopyUtils.copy(command.getInputStream(), Files.newOutputStream(tempFile));

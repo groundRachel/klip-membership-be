@@ -10,10 +10,14 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 /**
- * 파일 업로드 시 이미지만 업로드 가능한 Validation Annotation
+ * 파일 업로드 시 이미지만 업로드 가능한 Validation Annotation.
+ * <p>
+ * 현재 jpeg, png만 업로드 가능함.
+ * </p>
+ * 코드 사용 예시
  * <pre>
  *     {@code @PostMapping("/upload-image")}
- *     public AttachFileDto.Meta upload(@OnlyImage @RequestParam("file") MultipartFile file) {
+ *     public AttachFileDto.Meta upload(@ImageFile @RequestParam("file") MultipartFile file) {
  *         ...
  *     }
  * </pre>
@@ -23,7 +27,7 @@ import jakarta.validation.Payload;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {ImageFileValidator.class})
 public @interface ImageFile {
-    String message() default "이미지 파일만 업로드 가능합니다.(jpeg, png, gif)";
+    String message() default "이미지 파일만 업로드 가능합니다.(jpeg, png)";
 
     Class<?>[] groups() default {};
 

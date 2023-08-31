@@ -8,6 +8,7 @@ import jakarta.annotation.Nonnull;
 import lombok.NonNull;
 import lombok.Value;
 import org.springframework.http.MediaType;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.klipwallet.membership.entity.Attachable;
@@ -31,8 +32,8 @@ public class MultipartAttacheFile implements Attachable {
     }
 
     @Override
-    public long getBytesSize() {
-        return file.getSize();
+    public DataSize getSize() {
+        return DataSize.ofBytes(file.getSize());
     }
 
     @Nonnull

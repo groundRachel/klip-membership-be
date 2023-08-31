@@ -3,8 +3,9 @@ package com.klipwallet.membership.dto.attachfile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import org.springframework.http.MediaType;
+import org.springframework.util.unit.DataSize;
 
-import com.klipwallet.membership.repository.AttachFile;
+import com.klipwallet.membership.entity.AttachFile;
 
 public class AttachFileDto {
     @Schema(description = "첨부파일 메타 데이타 DTO", accessMode = AccessMode.READ_ONLY)
@@ -16,7 +17,7 @@ public class AttachFileDto {
             @Schema(description = "Content-Type", type = "string", example = "image/png")
             MediaType contentType,
             @Schema(description = "Byte 사이즈", example = "33102113")
-            Long contentLength
+            DataSize contentLength
     ) {
         public MetaData(AttachFile entity) {
             this(entity.getId(), entity.getLinkUrl(), entity.getContentType(), entity.getContentLength());
