@@ -10,9 +10,10 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.ChatRoomMember;
 import com.klipwallet.membership.entity.ChatRoomMember.Role;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
 import com.klipwallet.membership.exception.OperatorNotFoundException;
-import com.klipwallet.membership.exception.kakao.OperatorNotInPartnerAccountException;
+import com.klipwallet.membership.exception.kakao.OperatorNotInPartnerException;
 import com.klipwallet.membership.repository.ChatRoomMemberRepository;
 import com.klipwallet.membership.repository.ChatRoomRepository;
 import com.klipwallet.membership.repository.OperatorRepository;
@@ -37,7 +38,7 @@ public class ChatRoomMemberService {
 
     public ChatRoomMember createOperator(ChatRoomOperatorCreate command, Role role, AuthenticatedUser user) {
         Operator operator = tryGetOperator(command.operatorId());
-        checkOperatorPartnerId(operator, user.getMemberId().value());
+        checkOperatorPartnerId(operator, user.getMemberId());
 
         ChatRoomMember entity = command.toChatRoomMember(operator, role);
         return chatRoomMemberRepository.save(entity);
@@ -52,9 +53,9 @@ public class ChatRoomMemberService {
 
     }
 
-    private void checkOperatorPartnerId(Operator operator, Integer partnerId) {
-        if (!operator.getPartnerId().equals(partnerId)) {
-            throw new OperatorNotInPartnerAccountException(operator.getId());
+    private void checkOperatorPartnerId(Operator operator, MemberId partnerId) {
+        if (!operator.getPartnerId().equals(partnerId.value())) {
+            throw new OperatorNotInPartnerException(operator.getId(), partnerId);
         }
     }
 }

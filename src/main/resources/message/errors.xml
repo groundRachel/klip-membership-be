@@ -5,6 +5,10 @@
     <!-- 400 -->
     <entry key="problemDetail.code.400000">요청이 유효하지 않습니다.</entry>
     <entry key="problemDetail.code.400001">요청 본문이 유효하지 않습니다. errors를 참고하세요.</entry>
+    <entry key="problemDetail.code.400002">오픈채팅방의 운영자 인원 제한을 초과하였습니다.</entry>
+    <entry key="problemDetail.code.400003">오픈채팅방의 운영자는 방장과 같은 Id를 가질 수 없습니다. ID: {0,number,#}</entry>
+    <entry key="problemDetail.code.400004">이 운영자는 파트너 계정에 속해 있지 않습니다. Operator ID: {0,number,#}, Partner ID:{1,number,#}</entry>
+    <entry key="problemDetail.code.400005">운영자 ID가 중복되었습니다. ID: {0,number,#}</entry>
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>

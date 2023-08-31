@@ -18,8 +18,8 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.ChatRoomMember;
 import com.klipwallet.membership.entity.ChatRoomMember.Role;
-import com.klipwallet.membership.exception.ChatRoomExceedOperatorLimitException;
-import com.klipwallet.membership.exception.kakao.OperatorAndHostHaveSameId;
+import com.klipwallet.membership.exception.kakao.OperatorAlreadyExistsException;
+import com.klipwallet.membership.exception.member.OperatorDuplicatedException;
 import com.klipwallet.membership.repository.ChatRoomRepository;
 import com.klipwallet.membership.repository.OperatorRepository;
 
@@ -27,7 +27,6 @@ import com.klipwallet.membership.repository.OperatorRepository;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatRoomService {
-    private static final int OPERATOR_SIZE_LIMIT = 4;
     private final ChatRoomRepository chatRoomRepository;
     private final KakaoService kakaoService;
     private final ChatRoomAssembler chatRoomAssembler;
@@ -36,11 +35,7 @@ public class ChatRoomService {
 
     @Transactional
     public ChatRoomSummary create(ChatRoomCreate command, AuthenticatedUser user) {
-        try {
-            validateOperators(command.operators(), command.host().operatorId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        checkOperators(command.operators(), command.host().operatorId());
 
         Set<ChatRoomMember> chatRoomMembers = new HashSet<>();
         // save host
@@ -65,13 +60,16 @@ public class ChatRoomService {
         return chatRoomAssembler.toRows(entities);
     }
 
-    private void validateOperators(List<ChatRoomOperatorCreate> operatorsCommand, Long hostOperatorId) throws Exception {
-        if (operatorsCommand.size() > OPERATOR_SIZE_LIMIT) {
-            throw new ChatRoomExceedOperatorLimitException();
-        }
+    private void checkOperators(List<ChatRoomOperatorCreate> operatorsCommand, Long hostOperatorId) {
+        Set<Long> operatorIds = new HashSet<>();
         for (ChatRoomOperatorCreate command : operatorsCommand) {
             if (command.operatorId().equals(hostOperatorId)) {
-                throw new OperatorAndHostHaveSameId(command.operatorId());
+                throw new OperatorAlreadyExistsException(command.operatorId());
+            }
+            if (operatorIds.contains(command.operatorId())) {
+                throw new OperatorDuplicatedException(command.operatorId());
+            } else {
+                operatorIds.add(command.operatorId());
             }
         }
     }

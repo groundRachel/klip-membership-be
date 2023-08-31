@@ -44,7 +44,7 @@ public class OperatorService {
     }
 
     private KlipUser tryGetKlipUser(String requestKey) {
-        Address addr = klipAccountService.getKlaytnAddress(requestKey);
-        return klipAccountService.getKlipUser(addr);
+        // TODO: @Ian get klaytn address by a2a adaptor
+        return klipAccountService.getKlipUser(new Address(""));
     }
 }
