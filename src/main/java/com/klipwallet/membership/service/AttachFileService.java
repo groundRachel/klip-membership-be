@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.klipwallet.membership.dto.attachfile.AttachFileDto.MetaData;
+import com.klipwallet.membership.dto.attachfile.AttachFileDto.Metadata;
 import com.klipwallet.membership.dto.storage.StorageResult;
 import com.klipwallet.membership.entity.AttachFile;
 import com.klipwallet.membership.entity.Attachable;
@@ -31,7 +31,7 @@ public class AttachFileService {
      * @throws AttachFileLimitSizeOverException 업로드 제한 사이즈 초과
      */
     @Transactional
-    public MetaData create(Attachable command, UploadType type, AuthenticatedUser creator) {
+    public Metadata create(Attachable command, UploadType type, AuthenticatedUser creator) {
         // 업로드 초과 확인
         checkLimitSize(command, type);
         // 파일 저장
@@ -39,7 +39,7 @@ public class AttachFileService {
         // entity 생성
         AttachFile entity = toAttachFile(command, creator, objectId);
         AttachFile persistEntity = attachFileRepository.save(entity);
-        return new MetaData(persistEntity);
+        return new Metadata(persistEntity);
     }
 
     private void checkLimitSize(Attachable command, UploadType type) {
