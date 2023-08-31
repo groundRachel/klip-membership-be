@@ -10,16 +10,6 @@ application:
     password: ${bgms_pw}  # from local.properties
   klip-drops-internal:
     api-url: http://localhost:3100 # kubectl port-forward svc/klip-drops 3100:3100
-  developer:
-    super-admin: gene.goh@groundx.xyz
-    emails:
-      - jordan.jung@groundx.xyz
-      - ian.han@groundx.xyz
-      - winnie.byun@groundx.xyz
-      - rachel.lee@groundx.xyz
-      - ted.jeong@groundx.xyz
-      - twinsen.kim@groundx.xyz
-      - sello.lee@groundx.xyz
 
 cloud:
   aws:
