@@ -34,10 +34,14 @@ import com.klipwallet.membership.service.AttachFileService;
 public class AttachFileAdminController {
     private final AttachFileService attachFileService;
 
-    @Operation(summary = "Admin 첨부파일 이미지 업로드")
+    @Operation(summary = "Admin 첨부파일 이미지 업로드",
+               description = """
+                             - Limit-Size: 2MB
+                             - jpeg, png 이미지 파일만 업로드 가능""")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "업로드 성공"),
-            @ApiResponse(responseCode = "400", description = "Invalid Upload File", content = @Content(schema = @Schema(ref = "Error400File"))),
+            @ApiResponse(responseCode = "400", description = "Invalid Upload File(Only jpg,png) or Limit-Size Over",
+                         content = @Content(schema = @Schema(ref = "Error400File"))),
     })
     @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
