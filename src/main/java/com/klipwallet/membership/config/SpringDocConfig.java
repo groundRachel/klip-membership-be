@@ -107,7 +107,7 @@ public class SpringDocConfig {
         Method method = MethodUtils.getAccessibleMethod(AttachFileAdminController.class, "uploadImage", MultipartFile.class, AuthenticatedUser.class);
         MethodParameter methodParameter = new MethodParameter(method, 0);
         BindException create = new BindException(noticeAdminController, "upload");
-        create.addError(new FieldError("upload", "upload.file", "이미지 파일만 업로드 가능합니다.(jpeg, png, gif)"));
+        create.addError(new FieldError("upload", "upload.file", "이미지 파일만 업로드 가능합니다.(jpeg, png)"));
         MethodArgumentNotValidException cause = new MethodArgumentNotValidException(methodParameter, create);
         var pdJson = toJson(globalRestControllerAdvice.toProblemDetail(cause));
         return new Schema<>().type("object").example(pdJson);
