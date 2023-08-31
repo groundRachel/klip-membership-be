@@ -25,7 +25,7 @@ public class Partner extends Member {
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;
         setEmail(email);
-        setOAuthId(oAuthId);
+        setOauthId(oAuthId);
         setStatus(Status.ACTIVATED);
         createBy(creator);
     }

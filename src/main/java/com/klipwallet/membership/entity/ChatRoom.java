@@ -1,13 +1,11 @@
 package com.klipwallet.membership.entity;
 
-import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,6 +32,14 @@ import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
 public class ChatRoom extends BaseEntity<ChatRoom> {
+    /**
+     * 채팅방 생성자 아이디
+     * <p>
+     * 채팅방을 생성했다고, 무조건 방장이 되지 않는다. 방장은 {@link Operator} 에서 방장 타입으로 조회한다.
+     * </p>
+     */
+    @OneToMany
+    Set<ChatRoomMember> chatRoomMembers;
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
@@ -54,14 +60,6 @@ public class ChatRoom extends BaseEntity<ChatRoom> {
     private Address contractAddress;
     private Status status;
     private Source source;
-    /**
-     * 채팅방 생성자 아이디
-     * <p>
-     * 채팅방을 생성했다고, 무조건 방장이 되지 않는다. 방장은 {@link ChatRoomMember} 에서 방장 타입으로 조회한다.
-     * </p>
-     */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ChatRoomMember> chatRoomMembers;
 
     @ForJpa
     protected ChatRoom() {
@@ -70,15 +68,16 @@ public class ChatRoom extends BaseEntity<ChatRoom> {
     /**
      * 채팅방 생성을 위한 기본 생성자.
      */
-    public ChatRoom(String title, String coverImage, OpenChatRoomSummary openChatRoomSummary, Address contractAddress) {
+    public ChatRoom(String title, String coverImage, OpenChatRoomSummary openChatRoomSummary, Address contractAddress, MemberId creatorId) {
         this.title = title;
         this.coverImage = coverImage;
         this.openChatRoomSummary = openChatRoomSummary;
         this.status = Status.ACTIVATED;
         this.source = Source.KLIP_DROPS;
         this.contractAddress = contractAddress;
+        this.createBy(creatorId);
         // 카카오 오픈 채팅방을 바로 삭제하는 경우(Rollback)를 위한 이벤트
-        super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomSummary, getCreatorId()));
+        super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomSummary));
     }
 
     @Getter

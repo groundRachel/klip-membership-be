@@ -1,7 +1,5 @@
 package com.klipwallet.membership.controller.admin;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,9 +60,10 @@ public class NoticeAdminController {
             @ApiResponse(responseCode = "400", description = "Invalid Query", content = @Content(schema = @Schema(ref = "Error400"))),
     })
     @GetMapping
-    public List<Row> list(
-            @Parameter(description = "필터링 할 공지 상태", required = true, example = "draft") @RequestParam("status") ArticleStatus status) {
-        return noticeService.getListByStatus(status);
+    public Page<Row> list(
+            @Parameter(description = "필터링 할 공지 상태", required = true, example = "draft") @RequestParam("status") ArticleStatus status,
+            @ParameterObject Pageable pageable) {
+        return noticeService.getListByStatus(status, pageable);
     }
 
     @Operation(summary = "Admin 공지사항 상세 조회")
@@ -73,6 +75,16 @@ public class NoticeAdminController {
     public NoticeDto.Detail detail(
             @Parameter(description = "공지사항 id", required = true, example = "2") @PathVariable Integer noticeId) {
         return noticeService.getDetail(noticeId);
+    }
+
+    @Operation(summary = "Admin 고정 공지사항 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "고정 공지 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재 하지 않는 고정 공지", content = @Content(schema = @Schema(ref = "Error404")))
+    })
+    @GetMapping("/primary")
+    public NoticeDto.Row primary() {
+        return noticeService.getPrimaryNotice();
     }
 
     @Operation(summary = "Admin 공지사항 수정")

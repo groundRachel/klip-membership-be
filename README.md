@@ -11,11 +11,31 @@ NFT 홀더를 위한 카카오 오픈 채팅을 개설하고 관리하는 기능
 
 Or IDE Run: IntelliJ Keymap(⌃⌥R)
 
+### Local 개발을 위한 hosts 설정
+
+```
+127.0.0.1	membership-api.local.com membership-admin-api.local.com
+127.0.0.1	membership.local.com membership-admin.local.com
+```
+
+| Origin                                     | Description                       |
+|--------------------------------------------|-----------------------------------|
+| http://membership.local.com:3000           | Klip Membership Tool Front@local  |
+| http://membership-api.local.com:8080       | Klip Membership Tool API@local    |
+| http://membership-admin.local.com:3000     | Klip Membership Admin Front@local |
+| http://membership-admin-api.local.com:8080 | Klip Membership Admin API@local   |
+
+> Hosts 변조 유틸리티 for macOS
+> * [Gas Mask](https://github.com/2ndalpha/gasmask)
+> * [SwitchHosts](https://switchhosts.vercel.app/)
+
 ### Local 개발을 위한 추가 속성 설정
 
-`spring.profiles.active=local`(default)
+기본으로 local 환경이 활성화 되어 있음. (`spring.profiles.default=local`)
 
-Local에서 개발할 시 Vault 정보를 아래 파일에 속성으로 지정해야함.
+`spring.profiles.active=local`
+
+Local에서 개발할 시 Vault 정보를 아래 파일에 속성으로 정의해둬야함
 
 `/src/main/resources/local.properties`
 
@@ -25,7 +45,11 @@ application.kakao-api.domain-id=???
 bgms_pw=????????????????????????????????????????
 spring.cloud.vault.enabled=false
 spring.datasource.url=jdbc:h2:mem:local;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
+spring.security.oauth2.client.registration.google.client-id=???????????????????????????????????????????????????????????????????
+spring.security.oauth2.client.registration.google.client-secret=??????????????????????????????????
 ```
+
+> 참고: https://vault.dev.klaytn.com/ (1Password)
 
 ### Local에서 Dev 환경을 참조하는 개발을 위한 추가 속성 설정
 
@@ -33,17 +57,19 @@ spring.datasource.url=jdbc:h2:mem:local;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
 
 Local 개발 시 DB, Redis, Kafka 등 인프라를 dev 환경에 의존함.
 
-`/src/main/resources/local-dev.properties`
-
-```properties
-VAULT_TOKEN=??????????????????????????
-```
+**`~/.vault-token` 파일 설정이 필수로 요구됨.** 파일 안에 Vault Token 문자열이 존재해야함.
 
 > 참고: https://vault.dev.klaytn.com/ (1Password)
 
 ### Swagger-UI
 
-[http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui)
+* local: http://localhost:8080/swagger-ui
+  * http://membership-api.local.com:8080
+  * http://membership-admin-api.local.com:8080
+* dev
+  * [https://membership-api.dev.klipwallet.com/swagger-ui](http://membership-api.klipwallet.com/swagger-ui)
+  * [https://membership-admin-api.dev.klipwallet.com/swagger-ui](https://membership-admin-api.dev.klipwallet.com/swagger-ui)
+    * 현재 방화벽 설정으로 인해 접근 안됨
 
 ## Test
 
@@ -52,7 +78,7 @@ VAULT_TOKEN=??????????????????????????
 ./gradlew clean test
 # 통합 테스트(현재 미존재)
 ./gradlew clean integrationTest
-# 둘 다
+# Test All + jacoco(coverage) + Checkstyle + Sonarqube
 ./gradlew clean check
 ```
 
@@ -149,12 +175,18 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 
 ## 주요 모델
 
+* `PartnerApplication`: 파트너 신청(이용자 등록 요청)
 * `Partner`: 파트너(이용자)
-* `MemberApplication`: 파트너 신청(이용자 등록 요청)
+* `Operator`: 채팅방 운영진
 * `Admin`: 관리자(GX담당자)
 * `ChatRoom`: 채팅방
-* `ChatRoomMember`: 채팅방 참여자(방장/부방장 포함?)
+* `ChatRoomMember`: 채팅방 참여자
+* `ChatRoomNft`: 채팅방에 입장할 수 있는 NFT 정보
 * `KakaoService`: 카카오 연동 서비스
+* `KlipAccountService`: Klip 계정 조회 서비스
+* `KlipDropService`: KlipDrops 연동 서비스
+* `Notice`: 공지사항
+* `Faq`: FAQ
 
 # 협업
 

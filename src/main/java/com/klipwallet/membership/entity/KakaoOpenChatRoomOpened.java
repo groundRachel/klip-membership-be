@@ -19,5 +19,4 @@ import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 @EqualsAndHashCode(callSuper = false)
 public class KakaoOpenChatRoomOpened extends DomainEvent {
     OpenChatRoomSummary openChatRoomSummary;
-    MemberId creatorId;
 }

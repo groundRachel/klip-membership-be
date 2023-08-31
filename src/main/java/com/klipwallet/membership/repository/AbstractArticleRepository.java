@@ -1,8 +1,7 @@
 package com.klipwallet.membership.repository;
 
-import java.util.List;
-
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
@@ -18,5 +17,5 @@ public interface AbstractArticleRepository<T extends AbstractArticle<T>> extends
      * @param sort   정렬
      * @return 상태 검색한 정렬된 게시물 목록
      */
-    List<T> findAllByStatus(ArticleStatus status, Sort sort);
+    Page<T> findAllByStatus(ArticleStatus status, Pageable sort);
 }

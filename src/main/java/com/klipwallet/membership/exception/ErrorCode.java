@@ -41,12 +41,18 @@ public enum ErrorCode {
     PARTNER_APPLICATION_ALREADY_PROCESSED(409_001),
     PARTNER_APPLICATION_DUPLICATED(409_002),
 
+    // Member
+    MEMBER_NOT_FOUND(404_009),
+
     // Admin
     ADMIN_NOT_FOUND(404_006),
     ADMIN_NOT_FOUND_BY_EMAIL(404_007),
 
     // Partner_*,
     PARTNER_NOT_FOUND(404_003),
+
+    // Operator_*,
+    OPERATOR_NOT_FOUND(404_008),
 
     // FAQ_*
     FAQ_NOT_FOUND(404_005),

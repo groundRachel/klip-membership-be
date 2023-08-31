@@ -4,6 +4,9 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +52,49 @@ public class NoticeService {
     }
 
     /**
+     * 공지사항 상태 별 목록 조회(Admin)
+     * <p>
+     * order by updatedAt desc
+     * </p>
+     *
+     * @param status   필터할 상태
+     * @param pageable pageable
+     * @return 공지사항 DTO 목록
+     */
+    @Transactional(readOnly = true)
+    public Page<Row> getListByStatus(ArticleStatus status, Pageable pageable) {
+        if (status == DELETE) {
+            throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
+        }
+        Sort orderByUpdatedAtDesc = Sort.sort(Notice.class).by(Notice::getUpdatedAt).descending();
+        return getPaginationRows(status, pageable, orderByUpdatedAtDesc);
+    }
+
+    private Page<Row> getPaginationRows(ArticleStatus status, Pageable pageable, Sort forceSort) {
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), forceSort);
+        Page<Notice> notices = noticeRepository.findAllByStatus(status, pageRequest);
+        return noticeAssembler.toRows(notices);
+    }
+
+    /**
+     * 공지사항 Live 목록 조회(Tool)
+     * <p>
+     * order by livedAt desc
+     * </p>
+     *
+     * @param pageable pageable
+     * @return 공지사항 DTO 목록
+     */
+    @Transactional(readOnly = true)
+    public Page<Row> getLivedList(Pageable pageable) {
+        return getPaginationRows(LIVE, pageable, sortLivedAtDesc());
+    }
+
+    private Sort sortLivedAtDesc() {
+        return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
+    }
+
+    /**
      * 공지사항 1건 상세 조회
      *
      * @param noticeId 조회할 공지사항 ID
@@ -67,7 +113,7 @@ public class NoticeService {
     }
 
     /**
-     * Live 공지사항 1건 상세 조회
+     * Live 공지사항 1건 상세 조회(Tool)
      *
      * @param noticeId 조회할 공지사항 ID
      * @return 공지사항 상세 DTO
@@ -86,22 +132,44 @@ public class NoticeService {
     }
 
     /**
-     * 고정 공지 조회(1건)
+     * 고정 공지 조회(1건).
+     * <p>
+     * 만약 고정 공지가 없으면 최신 공지가 노출된다.
+     * </p>
      *
-     * @return 고정 공지 요약 DTO
-     * @throws com.klipwallet.membership.exception.NoticeNotFoundException 고정 공지가 존재하지 않는 경우
+     * @return 고정 공지 Row DTO. 만약 고정 공지가 없으면 최근 공지 Row DTO
+     * @throws com.klipwallet.membership.exception.PrimaryNoticeNotFoundException Lived 된 공지가 존재 하지 않는 경우.
+     * @see #getPrimaryNotice()
      */
     @Transactional(readOnly = true)
-    public Summary getPrimaryNotice() {
+    public Row getPrimaryNoticeOrLatest() {
         return noticeRepository.findTopByPrimaryAndStatus(true, LIVE, sortLivedAtDesc())
-                               .map(Summary::new)
+                               .map(this.noticeAssembler::toRow)
+                               .orElseGet(this::getLatestNotice);
+    }
+
+    private Row getLatestNotice() {
+        return noticeRepository.findTopByStatus(LIVE, sortLivedAtDesc())
+                               .map(this.noticeAssembler::toRow)
+                               .orElseThrow(PrimaryNoticeNotFoundException::new);
+    }
+
+    /**
+     * 고정 공지 조회.
+     * <p>fallback 없음.</p>
+     *
+     * @return 고정 공지 Row DTO
+     * @throws com.klipwallet.membership.exception.PrimaryNoticeNotFoundException 고정 공지가 존재 하지 않는 경우
+     * @see #getPrimaryNoticeOrLatest()
+     */
+    @Transactional(readOnly = true)
+    public Row getPrimaryNotice() {
+        return noticeRepository.findTopByPrimaryAndStatus(true, LIVE, sortLivedAtDesc())
+                               .map(this.noticeAssembler::toRow)
                                .orElseThrow(PrimaryNoticeNotFoundException::new);
     }
 
     // order by livedAt desc (from Notice)
-    private Sort sortLivedAtDesc() {
-        return Sort.sort(Notice.class).by(Notice::getLivedAt).descending();
-    }
 
     /**
      * 공지사항 수정
@@ -165,35 +233,6 @@ public class NoticeService {
         notice.changeStatus(command.value(), user.getMemberId());
         Notice saved = noticeRepository.save(notice);
         return new NoticeDto.Status(saved.getStatus());
-    }
-
-    /**
-     * 공지사항 상태 별 목록 조회
-     * <p>
-     * DRAFT/INACTIVE : 최종 수정 일시 최신순 상단 정렬<br/>
-     * LIVE: LIVE 전환 일시 최신 순 상단 정렬<br/>
-     * </p>
-     *
-     * @param status 필터할 상태
-     * @return 공지사항 DTO 목록
-     */
-    @Transactional(readOnly = true)
-    public List<Row> getListByStatus(ArticleStatus status) {
-        if (status == DELETE) {
-            throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
-        }
-        Sort sort = toSort(status);
-        List<Notice> notices = noticeRepository.findAllByStatus(status, sort);
-        return noticeAssembler.toRows(notices);
-    }
-
-    private Sort toSort(ArticleStatus status) {
-        if (status == LIVE) {
-            // order by livedAt desc
-            return sortLivedAtDesc();
-        }
-        // order by updatedAt desc
-        return Sort.sort(Notice.class).by(Notice::getUpdatedAt).descending();
     }
 
     /**

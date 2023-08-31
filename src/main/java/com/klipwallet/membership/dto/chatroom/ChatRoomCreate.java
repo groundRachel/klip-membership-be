@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.NonNull;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.klipwallet.membership.entity.ChatRoom;
@@ -20,8 +21,12 @@ public record ChatRoomCreate(
         @Schema(description = "오픈채팅방 제목", minLength = 1, maxLength = 30)
         @NotBlank @Size(min = 1, max = 30)
         String title,
+        @Schema(description = "오픈채팅방 설명", maxLength = 80, requiredMode = RequiredMode.NOT_REQUIRED)
+        @NotNull @Size(max = 80)
+        String description,
         @Schema(description = "오픈채팅방 커버 이미지", requiredMode = RequiredMode.NOT_REQUIRED)
-        MultipartFile coverImage,
+        @NotNull @URL
+        String coverImageUrl,
         @Schema(description = "오픈채팅방 방장 ID")
         @NotNull
         Integer hostId,
@@ -38,6 +43,7 @@ public record ChatRoomCreate(
 ) {
 
     public ChatRoom toChatRoom(@NonNull ChatRoom chatRoom) {
-        return new ChatRoom(chatRoom.getTitle(), chatRoom.getCoverImage(), chatRoom.getOpenChatRoomSummary(), chatRoom.getContractAddress());
+        return new ChatRoom(chatRoom.getTitle(), chatRoom.getCoverImage(), chatRoom.getOpenChatRoomSummary(), chatRoom.getContractAddress(),
+                            chatRoom.getCreatorId());
     }
 }

@@ -66,7 +66,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.err").value("파트너 신청 정보를 조회할 수 없습니다. ID: %d".formatted(999)));
     }
 
-    @WithAdminUser(memberId = 23)
+    @WithAdminUser
     @DisplayName("파트너 가입 승인: 이미 승인 처리한 ID > 400")
     @Test
     void approveResult_throwAlreadyProcessedToBadRequest(@Autowired MockMvc mvc) throws Exception {
@@ -111,7 +111,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partnerApplication.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
-        assertThat(partnerApplication.getOAuthId()).isEqualTo("292085223831.apps.googleusercontent.com");
+        assertThat(partnerApplication.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(APPROVED);
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
         assertThat(partnerApplication.getProcessorId()).isEqualTo(new MemberId(23));
@@ -121,7 +121,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partner.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partner.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
-        assertThat(partner.getOAuthId()).isEqualTo("292085223831.apps.googleusercontent.com");
+        assertThat(partner.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partner.getCreatedAt()).isBefore(LocalDateTime.now());
         assertThat(partner.getCreatorId()).isEqualTo(new MemberId(23));
         assertThat(partner.getUpdatedAt()).isBefore(LocalDateTime.now());
@@ -155,7 +155,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partnerApplication.getEmail()).isEqualTo("exampl-admin-controller3@groundx.xyz");
-        assertThat(partnerApplication.getOAuthId()).isEqualTo("392085223831.apps.googleusercontent.com");
+        assertThat(partnerApplication.getOauthId()).isEqualTo("392085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(Status.REJECTED);
         assertThat(partnerApplication.getRejectReason()).isEqualTo("정상적이지 않은 사업자번호입니다.");
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
@@ -188,6 +188,7 @@ class PartnerApplicationAdminControllerTest {
                 new PartnerApplication("(주) 그라운드엑스7", "010-1234-5678", "000-00-00008", "example8@groundx.xyz", "892085223830"),
                 new PartnerApplication("(주) 그라운드엑스8", "010-1234-5678", "000-00-00009", "example9@groundx.xyz", "992085223830")
         );
+        applications = partnerApplicationRepository.saveAll(applications);
 
         for (PartnerApplication application : applications.subList(3, 6)) {
             application.approve(processorId);
