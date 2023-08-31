@@ -8,16 +8,6 @@ application:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev
     password: ${bgms_pw}  # from local.properties
-  developer:
-    super-admin: gene.goh@groundx.xyz
-    emails:
-      - jordan.jung@groundx.xyz
-      - ian.han@groundx.xyz
-      - winnie.byun@groundx.xyz
-      - rachel.lee@groundx.xyz
-      - ted.jeong@groundx.xyz
-      - twinsen.kim@groundx.xyz
-      - sello.lee@groundx.xyz
 
 cloud:
   aws:

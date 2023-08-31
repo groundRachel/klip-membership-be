@@ -1,6 +1,16 @@
 # noinspection SpringBootApplicationYaml
 application:
   version: ${G_APPLICATION_VERSION}  # from build.gradle.kts
+  developer:
+    super-admin: gene.goh@groundx.xyz
+    emails:
+      - jordan.jung@groundx.xyz
+      - ian.han@groundx.xyz
+      - winnie.byun@groundx.xyz
+      - rachel.lee@groundx.xyz
+      - ted.jeong@groundx.xyz
+      - twinsen.kim@groundx.xyz
+      - sello.lee@groundx.xyz
 
 logging:
   group:
