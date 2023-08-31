@@ -1,8 +1,8 @@
 # local-dev: local 환경이지만 dev 환경 인프라에 의존하는 환경. w/ vault(local-dev.properties)
 application:
   kakao-api:
-    #   admin-key:   from Value /klip/klip-membership
-    #   domain-id:   from Value /klip/klip-membership
+    #   admin-key:   from Vault /klip/klip-membership
+    #   domain-id:   from Vault /klip/klip-membership
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
   bgms:
     api-url: https://www.biztalk-api.com
@@ -53,8 +53,8 @@ spring:
         registration:
           google:
             provider: google
-            client-id: 245508089677-ne4im3tniucl2sqar65kefn3fakecqdp.apps.googleusercontent.com
-            client-secret: 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
+            #client-id:       from Vault /klip/klip-membership
+            #client-secret:   from Vault /klip/klip-membership
             scope: profile, email
 
 springdoc:
