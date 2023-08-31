@@ -14,12 +14,14 @@ import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationAssemb
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Application;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
+import com.klipwallet.membership.dto.partnerapplication.SignUpStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
 import com.klipwallet.membership.exception.member.PartnerApplicationNotFoundException;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
+import com.klipwallet.membership.repository.PartnerRepository;
 
 import static com.klipwallet.membership.entity.PartnerApplication.Status.APPLIED;
 import static com.klipwallet.membership.entity.PartnerApplication.Status.APPROVED;
@@ -28,9 +30,9 @@ import static com.klipwallet.membership.entity.PartnerApplication.Status.APPROVE
 @RequiredArgsConstructor
 public class PartnerApplicationService {
     private final PartnerApplicationRepository partnerApplicationRepository;
-
     private final PartnerApplicationAssembler partnerApplicationAssembler;
 
+    private final PartnerRepository partnerRepository;
 
     private void verifyApply(AuthenticatedUser user) {
         if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED, APPROVED))) {
@@ -87,5 +89,18 @@ public class PartnerApplicationService {
 
         partnerApplication.reject(body.rejectReason(), user.getMemberId());
         partnerApplicationRepository.save(partnerApplication);
+    }
+
+    @Transactional
+    public SignUpStatus getSignUpStatus(AuthenticatedUser user) {
+        if (partnerRepository.existsByEmail(user.getEmail())) {
+            return SignUpStatus.SIGNED_UP;
+        }
+
+        if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED))) {
+            return SignUpStatus.PENDING;
+        }
+
+        return SignUpStatus.NON_MEMBER;
     }
 }

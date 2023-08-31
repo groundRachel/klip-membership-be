@@ -49,7 +49,7 @@ public class PartnerApplicationToolController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
-    @GetMapping("/status")
+    @GetMapping("/me")
     public SignUpStatus getSignUpStatus(@AuthenticationPrincipal AuthenticatedUser user) {
         return partnerApplicationService.getSignUpStatus(user);
     }

@@ -19,6 +19,8 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
 
     Optional<Partner> findByOauthId(String oauthId);
 
+    Boolean existsByEmail(String email);
+
     @Query("""
            select new com.klipwallet.membership.entity.MemberId(p.id) as memberId, p.name as name, a.processedAt as processedAt,
                   a.processorId as processorId
