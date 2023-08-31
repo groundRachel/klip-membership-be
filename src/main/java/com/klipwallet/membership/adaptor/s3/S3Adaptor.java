@@ -6,6 +6,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -21,6 +23,8 @@ import com.klipwallet.membership.entity.ObjectId;
 import com.klipwallet.membership.exception.storage.StorageStoreException;
 import com.klipwallet.membership.service.StorageService;
 
+@Primary
+@Profile("!local")
 @Component
 @Slf4j
 @RequiredArgsConstructor

@@ -15,12 +15,14 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.klipwallet.membership.dto.partner.PartnerAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
+import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerApplicationApproved;
 import com.klipwallet.membership.entity.PartnerSummaryView;
+import com.klipwallet.membership.exception.MemberNotFoundException;
 import com.klipwallet.membership.repository.PartnerRepository;
 
 @Service
@@ -44,10 +46,23 @@ public class PartnerService {
         MemberId occurrerId = event.getOccurrerId();
         partnerRepository.save(new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
                                            partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
-                                           partnerApplication.getOAuthId(), occurrerId));
+                                           partnerApplication.getOauthId(), occurrerId));
     }
 
     private Sort getSort() {
         return Sort.sort(PartnerSummaryView.class).by(PartnerSummaryView::getProcessedAt).descending();
+    }
+
+    /**
+     * 인증 후 파트너 반환
+     *
+     * @param oauthId 인증한 OAuthID
+     * @throws com.klipwallet.membership.exception.MemberNotFoundException OAuthID에 맞는 파트너가 없는 경우
+     */
+    @Transactional(readOnly = true)
+    public Partner signIn(String oauthId) {
+        return partnerRepository.findByOauthId(oauthId)
+                                .filter(Member::isEnabled)
+                                .orElseThrow(MemberNotFoundException::new);
     }
 }

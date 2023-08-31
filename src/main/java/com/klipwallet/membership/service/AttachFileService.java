@@ -1,5 +1,6 @@
 package com.klipwallet.membership.service;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +9,8 @@ import com.klipwallet.membership.dto.attachfile.AttachFileDto.MetaData;
 import com.klipwallet.membership.dto.storage.StorageResult;
 import com.klipwallet.membership.entity.Attachable;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.ObjectId;
+import com.klipwallet.membership.exception.NotFoundException;
 import com.klipwallet.membership.repository.AttachFile;
 import com.klipwallet.membership.repository.AttachFileRepository;
 
@@ -36,5 +39,11 @@ public class AttachFileService {
     @SuppressWarnings("DataFlowIssue")
     private AttachFile toAttachFile(Attachable command, AuthenticatedUser creator, StorageResult storageResult) {
         return new AttachFile(command, storageResult, creator.getMemberId());
+    }
+
+    @Transactional(readOnly = true)
+    public AttachFile tryGetAttachFile(@NonNull ObjectId objectId) {
+        return attachFileRepository.findByObjectId(objectId)
+                                   .orElseThrow(NotFoundException::new);
     }
 }

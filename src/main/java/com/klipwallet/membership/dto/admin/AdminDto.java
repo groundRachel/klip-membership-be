@@ -13,7 +13,6 @@ import lombok.NonNull;
 
 import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.Admin;
-import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 
 public class AdminDto {
@@ -24,8 +23,8 @@ public class AdminDto {
             String email) {
 
         @JsonIgnore
-        public Admin toAdmin(AuthenticatedUser registrant) {
-            return new Admin(email, registrant.getMemberId());
+        public Admin toAdmin(MemberId registrantId) {
+            return new Admin(email, registrantId);
         }
     }
 
@@ -65,7 +64,7 @@ public class AdminDto {
             @Schema(description = "이름", requiredMode = RequiredMode.REQUIRED, example = "jordan.jung")
             String name,
             @Schema(description = "OAuth2 ID", example = "1002048777740038310")
-            String oAuthId,
+            String oauthId,
             @NonNull
             @Schema(description = "추가 일시", requiredMode = RequiredMode.REQUIRED, example = "2023-07-24T15:38:24.005795+09:00")
             OffsetDateTime createdAt,

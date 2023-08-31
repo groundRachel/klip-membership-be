@@ -14,7 +14,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,7 +39,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * @see com.klipwallet.membership.entity.Partner
  * @see com.klipwallet.membership.entity.Admin
  */
+@SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "member_type_email_unique", columnNames = {"type", "email"}),
+        @UniqueConstraint(name = "member_type_oauthid_unique", columnNames = {"type", "oauthId"}),
+})
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
 @EntityListeners(AuditingEntityListener.class)
@@ -50,17 +57,15 @@ public abstract class Member extends BaseEntity<Member> {
     private Integer id;
 
     @Setter(AccessLevel.PACKAGE)
-    @Column(unique = true)
     private String email;
     /**
-     * oAuthId
+     * OAuthId
      * <p>
      * 구글 oauth2 id(sub)
      * </p>
      */
-    @Column(unique = true)
     @Setter(AccessLevel.PACKAGE)
-    private String oAuthId;
+    private String oauthId;
     /**
      * 표시 이름
      * <p>
@@ -109,14 +114,9 @@ public abstract class Member extends BaseEntity<Member> {
             return;
         }
         this.status = Status.WITHDRAWAL;
-        this.name = toDeletedName();
         this.email = null;
-        this.oAuthId = null;
+        this.oauthId = null;
         updateBy(deleterId);
-    }
-
-    private String toDeletedName() {
-        return this.name + "(탈퇴)";
     }
 
     public boolean isEnabled() {

@@ -1,5 +1,6 @@
 package com.klipwallet.membership.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
@@ -19,6 +20,12 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Admin extends Member {
+    /**
+     * 슈퍼 어드민 여부
+     */
+    @Column(nullable = false)
+    private boolean isSuper;
+
     @ForJpa
     protected Admin() {
     }
@@ -27,6 +34,7 @@ public class Admin extends Member {
         setEmail(email);
         setName(toLocalPart(email));
         setStatus(Status.ACTIVATED);
+        isSuper = false;
         createBy(creator);
     }
 
@@ -35,7 +43,7 @@ public class Admin extends Member {
     }
 
     public boolean isSignUp() {
-        return getOAuthId() != null;
+        return getOauthId() != null;
     }
 
     /**
@@ -48,7 +56,14 @@ public class Admin extends Member {
      */
     @SuppressWarnings("DataFlowIssue")
     public void signUp(String oAuth2Id) {
-        setOAuthId(oAuth2Id);
+        setOauthId(oAuth2Id);
         updateBy(getMemberId());    // 나 자신이 접근한 것이므로 내가 updater
+    }
+
+    /**
+     * 슈퍼 어드민 권한 할당.
+     */
+    public void assignSuper() {
+        this.isSuper = true;
     }
 }
