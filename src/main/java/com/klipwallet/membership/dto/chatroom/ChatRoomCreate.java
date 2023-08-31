@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.NonNull;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.klipwallet.membership.entity.ChatRoom;
 
@@ -22,26 +21,21 @@ public record ChatRoomCreate(
         @NotBlank @Size(min = 1, max = 30)
         String title,
         @Schema(description = "오픈채팅방 설명", maxLength = 80, requiredMode = RequiredMode.NOT_REQUIRED)
-        @NotNull @Size(max = 80)
+        @Size(max = 80)
         String description,
         @Schema(description = "오픈채팅방 커버 이미지", requiredMode = RequiredMode.NOT_REQUIRED)
-        @NotNull @URL
+        @URL
         String coverImageUrl,
-        @Schema(description = "오픈채팅방 방장 ID")
+        @Schema(description = "오픈채팅방 방장 정보")
         @NotNull
-        Integer hostId,
-        @Schema(description = "오픈채팅방 방장 닉네임")
-        @NotBlank
-        String hostNickname,
-
-        @Schema(description = "오픈채팅방 방장 프로필 이미지")
-        MultipartFile hostProfileImage,
-
+        ChatRoomOperatorCreate host,
+        @Schema(description = "오픈채팅방 운영자 정보")
+        @NonNull
+        List<ChatRoomOperatorCreate> operators,
         @Schema(description = "오픈채팅방에 연결되는 드롭 아이디")
         @NotNull
-        List<Integer> dropIds
+        List<ChatRoomNftCreate> nfts
 ) {
-
     public ChatRoom toChatRoom(@NonNull ChatRoom chatRoom) {
         return new ChatRoom(chatRoom.getTitle(), chatRoom.getCoverImage(), chatRoom.getOpenChatRoomSummary(), chatRoom.getContractAddress(),
                             chatRoom.getCreatorId());

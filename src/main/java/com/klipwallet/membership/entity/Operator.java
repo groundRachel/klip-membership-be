@@ -30,9 +30,14 @@ public class Operator extends BaseEntity<Operator> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     Long id;
+    /**
+     * 디비에 저장된 클립 계정 Id
+     * {@link com.klipwallet.membership.adaptor.klip.KlipAccount#getKlipAccountId()}
+     */
     @Column(nullable = false)
     Long klipId;
-
+    @Column(nullable = false)
+    String kakaoUserId;
     /**
      * 파트너 계정 Id
      * <p>
@@ -48,8 +53,9 @@ public class Operator extends BaseEntity<Operator> {
     protected Operator() {
     }
 
-    public Operator(Long klipId, Integer partnerId, MemberId creatorId) {
+    public Operator(Long klipId, String kakaoUserId, Integer partnerId, MemberId creatorId) {
         this.klipId = klipId;
+        this.kakaoUserId = kakaoUserId;
         this.partnerId = partnerId;
         this.createBy(creatorId);
     }

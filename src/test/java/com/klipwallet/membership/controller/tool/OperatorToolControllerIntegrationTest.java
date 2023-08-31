@@ -1,4 +1,4 @@
-package com.klipwallet.membership.service;
+package com.klipwallet.membership.controller.tool;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -18,14 +18,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
+import com.klipwallet.membership.adaptor.klip.KlipAccount;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.operator.OperatorSummary;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.repository.OperatorRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
+import com.klipwallet.membership.service.KlipAccountService;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,15 +35,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class OperatorServiceTest {
+class OperatorToolControllerIntegrationTest {
 
     @Autowired
     OperatorRepository operatorRepository;
     @Autowired
     ObjectMapper om;
-
     @MockBean
     PartnerRepository partnerRepository;
+    @MockBean
+    KlipAccountService klipAccountService;
 
     private Long lastOperatorId;
 
@@ -66,13 +69,15 @@ class OperatorServiceTest {
     void create(@Autowired MockMvc mvc) throws Exception {
         Partner partner = new Partner();
         FieldUtils.writeField(partner, "id", 23, true);
-        when(partnerRepository.findById(any())).thenReturn(Optional.of(partner));
+        given(partnerRepository.findById(any())).willReturn(Optional.of(partner));
+        given(klipAccountService.getKlipUser(any())).willReturn(new KlipAccount(1L, "2538023920", "testemail@test.com", "010-1234-5678"));
         String body = """
                       {
-                        "klipId": 1
+                        "klipId": 1,
+                        "klipRequestKey": "84cdc4cc-da8a-42ab-ae11-eb988c3b3f42"
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/operator")
+        var ra = mvc.perform(post("/tool/v1/operators")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isCreated())

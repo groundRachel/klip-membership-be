@@ -1,16 +1,16 @@
 package com.klipwallet.membership.adaptor.klip;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NonNull;
 
 import com.klipwallet.membership.entity.KlipUser;
 
 public record KlipAccount(
-        @JsonValue @NonNull Long id,
-        @JsonValue @NonNull String kakaoSocialId,
-        @JsonValue String email,
-        @JsonValue String phone
+        @JsonProperty("id") @NonNull Long id,
+        @JsonProperty("kakaoUserId") @NonNull String kakaoUserId,
+        @JsonProperty("email") String email,
+        @JsonProperty("phone") String phone
 ) implements KlipUser {
     @JsonCreator
     public KlipAccount {}
@@ -22,7 +22,7 @@ public record KlipAccount(
 
     @Override
     public String getKakaoUserId() {
-        return this.kakaoSocialId;
+        return this.kakaoUserId;
     }
 
     @Override

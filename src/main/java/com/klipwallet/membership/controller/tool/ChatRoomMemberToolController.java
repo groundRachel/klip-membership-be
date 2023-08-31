@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @Tag(name = "Tool.ChatRoomMember", description = "Tool 채팅방 멤버 API")
 @RestController
-@RequestMapping("/tool/v1/chat-room-members")
+@RequestMapping("/tool/v1/chat-rooms/{chatRoomId}/members")
 @RequiredArgsConstructor
 @Slf4j
 public class ChatRoomMemberToolController {

@@ -17,8 +17,7 @@ public record ChatRoomMemberSummary(
 ) {
     public ChatRoomMemberSummary(ChatRoomMember saved) {
         this(saved.getId(),
-             saved.getEmail(),
-             saved.getPhone(),
+             "", "",
              saved.getNickname(),
              saved.getProfileImageUrl());
     }
