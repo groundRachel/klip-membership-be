@@ -1,6 +1,6 @@
 package com.klipwallet.membership.adaptor.klipdrops;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,7 +15,8 @@ import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartners;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Disabled("수동으로 한번만 테스트")
+@Disabled("kubectl config set-context --current --namespace=klip-drops-dev" +
+          "kubectl port-forward svc/klip-drops 3100:3100")
 class KlipDropsInternalApiClientTest {
     @Autowired
     KlipDropsInternalApiClient klipDropsInternalApiClient;
@@ -27,9 +28,9 @@ class KlipDropsInternalApiClientTest {
         assertThat(partner.businessRegistrationNumber()).isEqualTo(partnerId);
         assertThat(partner.partnerId()).isNotZero();
         assertThat(partner.phoneNumber()).isNotEmpty();
-        assertThat(partner.status()).isNotEmpty();
-        assertThat(partner.createdAt()).isBefore(LocalDateTime.now());
-        assertThat(partner.updatedAt()).isBefore(LocalDateTime.now());
+        assertThat(partner.status()).isNotNull();
+        assertThat(partner.createdAt()).isBefore(OffsetDateTime.now());
+        assertThat(partner.updatedAt()).isBefore(OffsetDateTime.now());
     }
 
     @Test

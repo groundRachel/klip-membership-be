@@ -9,7 +9,7 @@ application:
     id: groundx_prod_dev
     password: ${bgms_pw}  # from Vault /klip/common
   klip-drops-internal:
-    api-url: http://127.0.0.1:3100 # run Klip Drops BE to run on local
+    api-url: http://localhost:3100 # kubectl port-forward svc/klip-drops 3100:3100
 
 logging:
   level:

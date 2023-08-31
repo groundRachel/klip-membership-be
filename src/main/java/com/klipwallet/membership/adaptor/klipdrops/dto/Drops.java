@@ -6,6 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record Drops(
         @JsonProperty("drops") List<Drop> drops,
-        @JsonProperty("totalCount") Integer totalCount
+        @JsonProperty("totalCount") Long totalCount
 ) {
 }

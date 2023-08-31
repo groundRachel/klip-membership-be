@@ -1,5 +1,7 @@
 package com.klipwallet.membership.adaptor.klipdrops.dto;
 
+import java.time.OffsetDateTime;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record Drop(
@@ -8,8 +10,7 @@ public record Drop(
         @JsonProperty("creator_name") String creatorName,
         @JsonProperty("total_supply") Integer totalSupply,
         @JsonProperty("total_sales_count") Integer totalSalesCount,
-        @JsonProperty("status") String status,
-        @JsonProperty("open_at") String openAt,
-        @JsonProperty("start_at") String startAt
-) {
-}
+        @JsonProperty("status") DropStatus status,
+        @JsonProperty("open_at") OffsetDateTime openAt,
+        @JsonProperty("start_at") OffsetDateTime startAt
+) {}
