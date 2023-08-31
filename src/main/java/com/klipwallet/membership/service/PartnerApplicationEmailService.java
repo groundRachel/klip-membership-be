@@ -16,8 +16,8 @@ public class PartnerApplicationEmailService {
     @Autowired
     private EmailSendable emailSendable;
 
-    final String senderEmailAddress = "winnie.byun@groundx.xyz";
-    final String subject = "Klip Membership Tool 가입 요청 결과";
+    final String senderEmailAddress = "winnie.byun@groundx.xyz"; //  TODO: check sender email
+    final String subject = "Klip Membership Tool 가입 요청 결과"; // TODO: move to mesages.xml
     final String contentApproved = "가입 요청을 승인하였습니다.";
     final String contentRejected = "가입 요청을 거절하였습니다. 거절 사유 : ";
 
