@@ -19,6 +19,19 @@ application:
       - twinsen.kim@groundx.xyz
       - sello.lee@groundx.xyz
 
+cloud:
+  aws:
+    s3:
+      bucket: klip-membership-fe-dev
+      prefix: dist
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    cloudfront:
+      distribution-domain: membership.dev.klipwallet.com
+
 logging:
   level:
     sql: debug
@@ -34,19 +47,6 @@ management:
     web:
       exposure:
         include: '*'
-
-cloud:
-  aws:
-    s3:
-      bucket: klip-membership-fe-dev
-      prefix: dist
-    region:
-      static: ap-northeast-2
-      auto: false
-    stack:
-      auto: false
-    cloudfront:
-      distribution-domain: membership.dev.klipwallet.com
 
 spring:
   cloud:

@@ -9,6 +9,19 @@ application:
     id: groundx_prod_dev
     password: ${bgms_pw}  # from Vault /klip/common
 
+cloud:
+  aws:
+    s3:
+      bucket: klip-membership-fe-dev
+      prefix: dist
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    cloudfront:
+      distribution-domain: membership.dev.klipwallet.com
+
 logging:
   level:
     sql: debug
@@ -36,10 +49,9 @@ spring:
       enabled: true
       host: vault.dev.klaytn.com
       port: 443
-      token: ${VAULT_TOKEN}   # from local-dev.properties
+      #token:     from ~/.vault-token
   config:
     import:
-      - optional:classpath:/local-dev.properties  # Generate it yourself
       - vault://klip/klip-membership
       - vault://klip/common
   flyway:
