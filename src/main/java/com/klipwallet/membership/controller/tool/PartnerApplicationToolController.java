@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +18,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
+import com.klipwallet.membership.dto.partnerapplication.SignUpStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
-@Tag(name = "Tool.PartnerApplication", description = "파트너 계정 관리 API")
+@Tag(name = "Tool.PartnerApplication", description = "파트너 가입 요청 API")
 @RestController
 @RequestMapping("/tool/v1/partner-applications")
 @RequiredArgsConstructor
@@ -41,5 +43,14 @@ public class PartnerApplicationToolController {
             @Valid @RequestBody PartnerApplicationDto.Application body,
             @AuthenticationPrincipal AuthenticatedUser user) {
         return partnerApplicationService.apply(body, user);
+    }
+
+    @Operation(summary = "가입 상태 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/status")
+    public SignUpStatus getSignUpStatus(@AuthenticationPrincipal AuthenticatedUser user) {
+        return partnerApplicationService.getSignUpStatus(user);
     }
 }
