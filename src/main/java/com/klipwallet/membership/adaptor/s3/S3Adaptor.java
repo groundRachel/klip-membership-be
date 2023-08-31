@@ -40,7 +40,6 @@ public class S3Adaptor implements StorageService {
     public StorageResult store(Attachable command, String path, MemberId memberId) {
         String fullPath = "%s/%s/%s/%s".formatted(S3_SUB_PREFIX, path, String.valueOf(memberId.value()), UUID.randomUUID());
         String key = "%s/%s".formatted(awsS3Properties.getPrefix(), fullPath);
-        @SuppressWarnings("DataFlowIssue")
         PutObjectRequest req = PutObjectRequest.builder()
                                                .bucket(awsS3Properties.getBucket())
                                                .contentType(command.getContentType().toString())

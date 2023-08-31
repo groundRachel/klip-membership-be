@@ -16,7 +16,6 @@ import com.klipwallet.membership.entity.Attachable;
 @SuppressWarnings("ClassCanBeRecord")
 @Value
 public class MultipartAttacheFile implements Attachable {
-    @SuppressWarnings("NullableProblems")
     @NonNull
     MultipartFile file;
 

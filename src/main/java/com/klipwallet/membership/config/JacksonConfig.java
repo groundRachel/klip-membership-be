@@ -3,7 +3,6 @@ package com.klipwallet.membership.config;
 import java.io.IOException;
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -95,7 +94,7 @@ public class JacksonConfig {
         }
 
         @Override
-        public DataSize deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JacksonException {
+        public DataSize deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException {
             return Optional.ofNullable(parser.getValueAsString())
                            .map(Long::parseLong)
                            .map(DataSize::ofBytes)
