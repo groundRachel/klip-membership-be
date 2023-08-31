@@ -9,10 +9,15 @@ import com.klipwallet.membership.entity.Statusable;
 
 @Schema(name = "KlipDrops.PartnerStatus", description = "드롭 상태", example = "not_registered")
 public enum KlipDropsPartnerStatus implements Statusable {
-    not_registered(0),
-    pending(1),
-    active(2),
-    inactive(3);
+    NOT_REGISTERED(0) {
+        @Override
+        public String toDisplay() {
+            return "not_registered";
+        }
+    },
+    PENDING(1),
+    ACTIVE(2),
+    INACTIVE(3);
 
     private final byte code;
 

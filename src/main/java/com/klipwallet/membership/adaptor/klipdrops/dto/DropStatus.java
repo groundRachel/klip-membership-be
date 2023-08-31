@@ -10,11 +10,11 @@ import com.klipwallet.membership.entity.Statusable;
 
 @Schema(name = "KlipDrops.DropStatus", description = "드롭 상태", example = "onSale")
 public enum DropStatus implements Statusable {
-    onSale(1),
-    scheduledForSale(2),
-    endOfSale(3),
-    stopSale(4),
-    inactiveDrop(5);
+    ON_SALE(1),
+    SCHEDULED_FOR_SALE(2),
+    END_OF_SALE(3),
+    STOP_SALE(4),
+    INACTIVE_DROP(5);
 
     private final byte code;
 
