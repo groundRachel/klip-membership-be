@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.util.UriUtils;
 
+import com.klipwallet.membership.entity.AttachFile;
 import com.klipwallet.membership.entity.ObjectId;
-import com.klipwallet.membership.repository.AttachFile;
 import com.klipwallet.membership.service.AttachFileService;
 import com.klipwallet.membership.service.LocalTempStorageService;
 
@@ -37,7 +37,7 @@ public class LocalTempFileController {
         Resource resource = storageService.getResource(file.getObjectId());
         return ResponseEntity.ok()
                              .contentType(file.getContentType())
-                             .contentLength(file.getContentLength())
+                             .contentLength(file.getContentLength().toBytes())
                              .header(CONTENT_DISPOSITION, contentDisposition)
                              .body(resource);
 

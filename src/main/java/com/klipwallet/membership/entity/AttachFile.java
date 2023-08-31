@@ -1,4 +1,4 @@
-package com.klipwallet.membership.repository;
+package com.klipwallet.membership.entity;
 
 import java.util.function.Supplier;
 
@@ -14,14 +14,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 import org.springframework.http.MediaType;
+import org.springframework.util.unit.DataSize;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
 import com.klipwallet.membership.dto.storage.StorageResult;
-import com.klipwallet.membership.entity.Attachable;
-import com.klipwallet.membership.entity.BaseEntity;
-import com.klipwallet.membership.entity.LinkStatus;
-import com.klipwallet.membership.entity.MemberId;
-import com.klipwallet.membership.entity.ObjectId;
 import com.klipwallet.membership.exception.InvalidRequestException;
 
 /**
@@ -46,7 +42,7 @@ public class AttachFile extends BaseEntity<AttachFile> {
      * 파일 byte 사이즈
      */
     @Column(nullable = false)
-    private Long contentLength;
+    private DataSize contentLength;
     /**
      * 스토리지 서비스(ex: S3)의 ObjectId
      */
@@ -78,8 +74,8 @@ public class AttachFile extends BaseEntity<AttachFile> {
     public AttachFile(Attachable command, @NonNull StorageResult storageResult, @NonNull MemberId creatorId) {
         this.filename = command.getFileName();
         this.contentType = verifiedNonNull(command.getContentType(), () -> "'contentType' is empty");
-        verified(command.getBytesSize() > 0, () -> "'contentLength' is 0");
-        this.contentLength = command.getBytesSize();
+        verified(command.getSize().toBytes() > 0, () -> "'contentLength' is 0");
+        this.contentLength = command.getSize();
         this.objectId = storageResult.objectId();
         this.linkUrl = storageResult.objectUrl();
         this.linkStatus = LinkStatus.UNLINK;

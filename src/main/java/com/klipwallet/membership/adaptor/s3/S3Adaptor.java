@@ -37,11 +37,14 @@ public class S3Adaptor implements StorageService {
     private final AwsCloudFrontProperties awsCloudFrontProperties;
 
     @Override
-    public StorageResult store(Attachable command, MemberId memberId) {
-        String path = "%s/%s/%s".formatted(S3_SUB_PREFIX, String.valueOf(memberId.value()), UUID.randomUUID());
-        String key = "%s/%s".formatted(awsS3Properties.getPrefix(), path);
-        PutObjectRequest req =
-                PutObjectRequest.builder().bucket(awsS3Properties.getBucket()).contentType(command.getContentType().toString()).key(key).build();
+    public StorageResult store(Attachable command, String path, MemberId memberId) {
+        String fullPath = "%s/%s/%s/%s".formatted(S3_SUB_PREFIX, path, String.valueOf(memberId.value()), UUID.randomUUID());
+        String key = "%s/%s".formatted(awsS3Properties.getPrefix(), fullPath);
+        PutObjectRequest req = PutObjectRequest.builder()
+                                               .bucket(awsS3Properties.getBucket())
+                                               .contentType(command.getContentType().toString())
+                                               .key(key)
+                                               .build();
         PutObjectResponse res = s3Client.putObject(req, getRequestBody(command));
         if (!res.sdkHttpResponse().isSuccessful()) {
             throw new StorageStoreException(String.valueOf(res.sdkHttpResponse().statusCode()));
@@ -53,7 +56,7 @@ public class S3Adaptor implements StorageService {
     public RequestBody getRequestBody(Attachable command) {
         RequestBody body;
         try {
-            body = RequestBody.fromInputStream(command.getInputStream(), command.getBytesSize());
+            body = RequestBody.fromInputStream(command.getInputStream(), command.getSize().toBytes());
         } catch (IOException e) {
             throw new StorageStoreException(e);
         }

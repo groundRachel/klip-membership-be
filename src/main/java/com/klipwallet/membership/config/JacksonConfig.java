@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
+import org.springframework.util.unit.DataSize;
 
 @JsonComponent
 @SuppressWarnings("serial")
@@ -22,7 +23,6 @@ public class JacksonConfig {
      * JSON Spec 문제는 없지만 javascript 언어에서 long 표현 못하고 overflow 나는 경우가 있어서 string 변환해야함.
      * </p>
      */
-
     public static class LongSerializer extends StdSerializer<Long> {
         public LongSerializer() {
             super(Long.class);
@@ -53,9 +53,6 @@ public class JacksonConfig {
         }
     }
 
-    /**
-     * {@link org.springframework.http.MediaType} {@literal -json->} string
-     */
     public static class MediaTypeSerializer extends StdSerializer<MediaType> {
         public MediaTypeSerializer() {
             super(MediaType.class);
@@ -67,9 +64,6 @@ public class JacksonConfig {
         }
     }
 
-    /**
-     * string {@literal -json->} {@link org.springframework.http.MediaType}
-     */
     public static class MediaTypeDeserializer extends StdDeserializer<MediaType> {
         public MediaTypeDeserializer() {
             super(MediaType.class);
@@ -79,6 +73,31 @@ public class JacksonConfig {
         public MediaType deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException {
             return Optional.ofNullable(parser.getValueAsString())
                            .map(MediaType::valueOf)
+                           .orElse(null);
+        }
+    }
+
+    public static class DataSizeSerializer extends StdSerializer<DataSize> {
+        public DataSizeSerializer() {
+            super(DataSize.class);
+        }
+
+        @Override
+        public void serialize(@NonNull DataSize value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+            gen.writeString(String.valueOf(value.toBytes()));
+        }
+    }
+
+    public static class DataSizeDeserializer extends StdDeserializer<DataSize> {
+        public DataSizeDeserializer() {
+            super(DataSize.class);
+        }
+
+        @Override
+        public DataSize deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException {
+            return Optional.ofNullable(parser.getValueAsString())
+                           .map(Long::parseLong)
+                           .map(DataSize::ofBytes)
                            .orElse(null);
         }
     }

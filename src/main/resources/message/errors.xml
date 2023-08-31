@@ -9,6 +9,7 @@
     <entry key="problemDetail.code.400003">오픈채팅방의 운영자는 방장과 같은 Id를 가질 수 없습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.400004">이 운영자는 파트너 계정에 속해 있지 않습니다. Operator ID: {0,number,#}, Partner ID:{1,number,#}</entry>
     <entry key="problemDetail.code.400005">운영자 ID가 중복되었습니다. ID: {0,number,#}</entry>
+    <entry key="problemDetail.code.400006">파일 업로드 제한 사이즈를 초과했습니다. limit: {0,number} KB, upload: {1,number} KB</entry>
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>

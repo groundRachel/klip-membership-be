@@ -61,7 +61,8 @@ public enum ErrorCode {
     // FAQ_*
     FAQ_NOT_FOUND(404_005),
 
-    // Storage
+    // Storage & AttachFile
+    ATTACH_FILE_UPLOAD_LIMIT_OVER(400_006),
     STORAGE_STORE(500_101),
 
     // InterApi
