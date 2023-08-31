@@ -86,7 +86,7 @@ public class PartnerApplicationService {
         partnerApplicationRepository.save(partnerApplication);
         partnerRepository.save(new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
                                            partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
-                                           partnerApplication.getOAuthId(), user.getMemberId()));
+                                           partnerApplication.getOauthId(), user.getMemberId()));
     }
 
     @Transactional

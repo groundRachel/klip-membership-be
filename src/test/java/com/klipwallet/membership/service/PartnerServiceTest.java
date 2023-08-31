@@ -43,6 +43,8 @@ public class PartnerServiceTest {
         partnerRepository.flush();
         partnerApplicationRepository.deleteAll();
         partnerApplicationRepository.flush();
+        adminRepository.deleteAll();
+        adminRepository.flush();
     }
 
     private record partnerInfo(
@@ -73,7 +75,7 @@ public class PartnerServiceTest {
             PartnerApplication partnerApplication = new PartnerApplication(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId);
             partnerApplication.approve(processorId);
             partnerApplicationRepository.save(partnerApplication);
-            partnerRepository.save(new Partner(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oAuthId, processorId));
+            partnerRepository.save(new Partner(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId, processorId));
         }
         partnerApplicationRepository.flush();
         partnerRepository.flush();
