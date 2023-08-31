@@ -111,7 +111,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partnerApplication.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
-        assertThat(partnerApplication.getOAuthId()).isEqualTo("292085223831.apps.googleusercontent.com");
+        assertThat(partnerApplication.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(APPROVED);
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
         assertThat(partnerApplication.getProcessorId()).isEqualTo(new MemberId(23));
@@ -121,7 +121,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partner.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partner.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
-        assertThat(partner.getOAuthId()).isEqualTo("292085223831.apps.googleusercontent.com");
+        assertThat(partner.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partner.getCreatedAt()).isBefore(LocalDateTime.now());
         assertThat(partner.getCreatorId()).isEqualTo(new MemberId(23));
         assertThat(partner.getUpdatedAt()).isBefore(LocalDateTime.now());
@@ -155,7 +155,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(partnerApplication.getEmail()).isEqualTo("exampl-admin-controller3@groundx.xyz");
-        assertThat(partnerApplication.getOAuthId()).isEqualTo("392085223831.apps.googleusercontent.com");
+        assertThat(partnerApplication.getOauthId()).isEqualTo("392085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(Status.REJECTED);
         assertThat(partnerApplication.getRejectReason()).isEqualTo("정상적이지 않은 사업자번호입니다.");
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());

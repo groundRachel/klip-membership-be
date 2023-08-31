@@ -1,7 +1,7 @@
 application:
   kakao-api:
-    #   admin-key:   from Value /klip/klip-membership
-    #   domain-id:   from Value /klip/klip-membership
+    #admin-key:   from Vault /klip/klip-membership
+    #domain-id:   from Vault /klip/klip-membership
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
   bgms:
     api-url: https://www.biztalk-api.com
@@ -55,8 +55,8 @@ spring:
         registration:
           google:
             provider: google
-            client-id: 69090294389-2pnugpnhjdm5odpk89kdjc318860pb9b.apps.googleusercontent.com
-            client-secret: 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
+            #client-id:       from Vault /klip/klip-membership
+            #client-secret:   from Vault /klip/klip-membership
             scope: profile, email
 
 springdoc:

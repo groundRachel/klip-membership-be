@@ -49,7 +49,7 @@ public class PartnerServiceTest {
             String phoneNumber,
             String businessRegistrationNumber,
             String email,
-            String oAuthId
+            String oauthId
     ) {}
 
     private MemberId createAdmin() {
@@ -69,7 +69,7 @@ public class PartnerServiceTest {
         );
 
         for (partnerInfo p : partnerInfos) {
-            PartnerApplication partnerApplication = new PartnerApplication(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oAuthId);
+            PartnerApplication partnerApplication = new PartnerApplication(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId);
             partnerApplication.approve(processorId);
             partnerApplicationRepository.save(partnerApplication);
         }

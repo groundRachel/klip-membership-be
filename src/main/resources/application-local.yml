@@ -8,6 +8,29 @@ application:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev
     password: ${bgms_pw}  # from local.properties
+  developer:
+    super-admin: gene.goh@groundx.xyz
+    emails:
+      - jordan.jung@groundx.xyz
+      - ian.han@groundx.xyz
+      - winnie.byun@groundx.xyz
+      - rachel.lee@groundx.xyz
+      - ted.jeong@groundx.xyz
+      - twinsen.kim@groundx.xyz
+      - sello.lee@groundx.xyz
+
+cloud:
+  aws:
+    s3:
+      bucket: klip-membership-fe-dev
+      prefix: dist
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    cloudfront:
+      distribution-domain: membership.dev.klipwallet.com
 
 logging:
   level:
@@ -24,19 +47,6 @@ management:
     web:
       exposure:
         include: '*'
-
-cloud:
-  aws:
-    s3:
-      bucket: klip-membership-fe-dev
-      prefix: dist
-    region:
-      static: ap-northeast-2
-      auto: false
-    stack:
-      auto: false
-    cloudfront:
-      distribution-domain: membership.dev.klipwallet.com
 
 spring:
   cloud:
@@ -61,8 +71,8 @@ spring:
         registration:
           google:
             provider: google
-            client-id: 69090294389-2pnugpnhjdm5odpk89kdjc318860pb9b.apps.googleusercontent.com
-            client-secret: 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
+            #client-id:       from local.properties
+            #client-secret:   from local.properties
             scope: profile, email
 
 springdoc:
