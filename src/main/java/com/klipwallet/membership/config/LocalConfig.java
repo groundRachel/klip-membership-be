@@ -18,7 +18,7 @@ import com.klipwallet.membership.service.AdminService;
 /**
  * local 환경에서 개발 편의성을 위해서 미리 회원가입 시키는 구성
  */
-@Profile("local")
+@Profile({"local", "local-dev", "dev"}) // FIXME @Jordan dev 환경에 RDS를 붙이기 전까지 local-dev, dev도 유지한다.
 @Configuration
 @EnableConfigurationProperties(DeveloperProperties.class)
 @RequiredArgsConstructor
