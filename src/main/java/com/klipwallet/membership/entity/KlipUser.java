@@ -20,5 +20,11 @@ public interface KlipUser {
      * Klip 계정 아이디
      */
     @Nonnull
-    String getKlipAccountId();
+    Long getKlipAccountId();
+
+    @Nonnull
+    String getEmail();
+
+    @Nonnull
+    String getPhone();
 }

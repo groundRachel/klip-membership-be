@@ -61,17 +61,22 @@ class NoticeToolControllerIntegrationTest {
         // when/then
         mvc.perform(get("/tool/v1/notices"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.length()").value(4L))
-           .andExpect(jsonPath("$[0].id").isNotEmpty())
-           .andExpect(jsonPath("$[0].title").value("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내"))
-           .andExpect(jsonPath("$[0].primary").value(false))
-           .andExpect(jsonPath("$[0].livedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].creator.id").value(1))
-           .andExpect(jsonPath("$[0].creator.name").isNotEmpty())
-           .andExpect(jsonPath("$[0].updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].updater.id").value(4))
-           .andExpect(jsonPath("$[0].updater.name").isNotEmpty());
+           .andExpect(jsonPath("$.totalElements").value(4L))
+           .andExpect(jsonPath("$.totalPages").value(1))
+           .andExpect(jsonPath("$.numberOfElements").value(4))
+           .andExpect(jsonPath("$.first").value(true))
+           .andExpect(jsonPath("$.last").value(true))
+           .andExpect(jsonPath("$.content.length()").value(4L))
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내"))
+           .andExpect(jsonPath("$.content[0].primary").value(false))
+           .andExpect(jsonPath("$.content[0].livedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].creator.id").value(1))
+           .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updater.id").value(4))
+           .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
     }
 
     /**
@@ -143,7 +148,6 @@ class NoticeToolControllerIntegrationTest {
            .andExpect(jsonPath("$.updater.id").value(notice.getUpdaterId().value()))
            .andExpect(jsonPath("$.updater.name").isNotEmpty());
     }
-
 
     private Notice createNotice(String title, ArticleStatus status) throws IllegalAccessException {
         return createNotice(title, status, false);
@@ -217,7 +221,23 @@ class NoticeToolControllerIntegrationTest {
     }
 
     @WithPartnerUser
-    @DisplayName("Tool 고정 공지 조회: 없음 > 404")
+    @DisplayName("Tool 고정 공지 조회: 고정 공지가 없으면 최신 공지 노출 > 200")
+    @Test
+    void primaryFallbackLatestLived(@Autowired MockMvc mvc) throws Exception {
+        // given
+        @SuppressWarnings("unused")
+        Notice notice1 = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내.1", LIVE);
+        Notice notice2 = createNotice("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내.2", LIVE);
+        Integer latestNoticeId = notice2.getId();
+        // when/then
+        mvc.perform(get("/tool/v1/notices/primary"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(latestNoticeId))
+           .andExpect(jsonPath("$.title").value("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내.2"));
+    }
+
+    @WithPartnerUser
+    @DisplayName("Tool 고정 공지 조회: 공지가 아예 비어 있음. > 404")
     @Test
     void primaryNotFound(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/tool/v1/notices/primary"))

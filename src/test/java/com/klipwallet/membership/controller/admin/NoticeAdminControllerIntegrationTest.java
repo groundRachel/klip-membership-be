@@ -1,10 +1,11 @@
 package com.klipwallet.membership.controller.admin;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,12 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.config.security.WithPartnerUser;
-import com.klipwallet.membership.dto.notice.NoticeDto.Summary;
+import com.klipwallet.membership.dto.notice.NoticeDto.Updatable;
+import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Notice;
 import com.klipwallet.membership.repository.NoticeRepository;
@@ -42,7 +42,6 @@ class NoticeAdminControllerIntegrationTest {
     NoticeRepository noticeRepository;
     @Autowired
     ObjectMapper om;
-    private Integer lastNoticeId;
 
     @BeforeEach
     void setUp() {
@@ -69,18 +68,11 @@ class NoticeAdminControllerIntegrationTest {
                         "body": "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>"
                       }
                       """;
-        var ra = mvc.perform(post("/admin/v1/notices")
-                                     .contentType(APPLICATION_JSON)
-                                     .content(body))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.id").isNumber());
-        setLastNoticeId(ra);
-    }
-
-    private void setLastNoticeId(ResultActions ra) throws IOException {
-        MvcResult mvcResult = ra.andReturn();
-        Summary summary = om.readValue(mvcResult.getResponse().getContentAsString(), Summary.class);
-        lastNoticeId = summary.id();
+        mvc.perform(post("/admin/v1/notices")
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isCreated())
+           .andExpect(jsonPath("$.id").isNumber());
     }
 
     @DisplayName("관리자 공지사항 생성: 인증 없음. > 401")
@@ -152,16 +144,21 @@ class NoticeAdminControllerIntegrationTest {
         mvc.perform(get("/admin/v1/notices")
                             .param("status", DRAFT.toDisplay()))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.length()").value(3L))
-           .andExpect(jsonPath("$[0].id").isNotEmpty())
-           .andExpect(jsonPath("$[0].title").value("[안내] App2App Javascript SDK 신규 버전 배포 안내 - 2.2.1"))
-           .andExpect(jsonPath("$[0].primary").value(false))
-           .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].creator.id").value(1))
-           .andExpect(jsonPath("$[0].creator.name").isNotEmpty())
-           .andExpect(jsonPath("$[0].updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].updater.id").value(1))
-           .andExpect(jsonPath("$[0].updater.name").isNotEmpty());
+           .andExpect(jsonPath("$.totalElements").value(3L))
+           .andExpect(jsonPath("$.totalPages").value(1))
+           .andExpect(jsonPath("$.numberOfElements").value(3))
+           .andExpect(jsonPath("$.first").value(true))
+           .andExpect(jsonPath("$.last").value(true))
+           .andExpect(jsonPath("$.content.length()").value(3L))
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("[안내] App2App Javascript SDK 신규 버전 배포 안내 - 2.2.1"))
+           .andExpect(jsonPath("$.content[0].primary").value(false))
+           .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].creator.id").value(1))
+           .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updater.id").value(1))
+           .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
     }
 
     @WithAdminUser
@@ -173,16 +170,21 @@ class NoticeAdminControllerIntegrationTest {
         mvc.perform(get("/admin/v1/notices")
                             .param("status", LIVE.toDisplay()))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.length()").value(4L))
-           .andExpect(jsonPath("$[0].id").isNotEmpty())
-           .andExpect(jsonPath("$[0].title").value("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내"))
-           .andExpect(jsonPath("$[0].primary").value(false))
-           .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].creator.id").value(1))
-           .andExpect(jsonPath("$[0].creator.name").isNotEmpty())
-           .andExpect(jsonPath("$[0].updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].updater.id").value(4))
-           .andExpect(jsonPath("$[0].updater.name").isNotEmpty());
+           .andExpect(jsonPath("$.totalElements").value(4L))
+           .andExpect(jsonPath("$.totalPages").value(1))
+           .andExpect(jsonPath("$.numberOfElements").value(4))
+           .andExpect(jsonPath("$.first").value(true))
+           .andExpect(jsonPath("$.last").value(true))
+           .andExpect(jsonPath("$.content.length()").value(4L))
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("[공지] Klip 지원 자산 변경에 따른 변경 사항 안내"))
+           .andExpect(jsonPath("$.content[0].primary").value(false))
+           .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].creator.id").value(1))
+           .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updater.id").value(4))
+           .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
     }
 
     @WithAdminUser
@@ -194,16 +196,21 @@ class NoticeAdminControllerIntegrationTest {
         mvc.perform(get("/admin/v1/notices")
                             .param("status", INACTIVE.toDisplay()))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.length()").value(3L))
-           .andExpect(jsonPath("$[0].id").isNotEmpty())
-           .andExpect(jsonPath("$[0].title").value("[문서 개선] 클립 NFT 메타데이터 표준 안내 페이지 추가"))
-           .andExpect(jsonPath("$[0].primary").value(false))
-           .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].creator.id").value(2))
-           .andExpect(jsonPath("$[0].creator.name").isNotEmpty())
-           .andExpect(jsonPath("$[0].updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].updater.id").value(5))
-           .andExpect(jsonPath("$[0].updater.name").isNotEmpty());
+           .andExpect(jsonPath("$.totalElements").value(3L))
+           .andExpect(jsonPath("$.totalPages").value(1))
+           .andExpect(jsonPath("$.numberOfElements").value(3))
+           .andExpect(jsonPath("$.first").value(true))
+           .andExpect(jsonPath("$.last").value(true))
+           .andExpect(jsonPath("$.content.length()").value(3L))
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("[문서 개선] 클립 NFT 메타데이터 표준 안내 페이지 추가"))
+           .andExpect(jsonPath("$.content[0].primary").value(false))
+           .andExpect(jsonPath("$.content[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].creator.id").value(2))
+           .andExpect(jsonPath("$.content[0].creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].updater.id").value(5))
+           .andExpect(jsonPath("$.content[0].updater.name").isNotEmpty());
     }
 
     @WithAdminUser
@@ -235,7 +242,7 @@ class NoticeAdminControllerIntegrationTest {
     /**
      * 0 ~ 2: draft, 3 ~ 6: live, 7 ~ 9: inactive, 10 ~ 11: delete
      */
-    private void createSampleNotices() {
+    private void createSampleNotices() throws InterruptedException {
         List<Notice> notices = List.of(
                 new Notice("[안내] 월렛커넥트 연동 지원 안내", "1", new MemberId(1)),
                 new Notice("[안내] App2App 멀티체인 확장 안내 - 폴리곤", "2", new MemberId(2)),
@@ -254,10 +261,14 @@ class NoticeAdminControllerIntegrationTest {
         results.get(3).changeStatus(LIVE, new MemberId(3));
         results.get(4).changeStatus(LIVE, new MemberId(4));
         results.get(5).changeStatus(LIVE, new MemberId(3));
+        TimeUnit.MILLISECONDS.sleep(1);
         results.get(6).changeStatus(LIVE, new MemberId(4));
+        // set primary
+        results.get(3).update(new Updatable("[안내] app2app 클립 호출 가이드 변경 안내(p)", "4p", true, new MemberId(3)));
 
         results.get(7).changeStatus(INACTIVE, new MemberId(5));
         results.get(8).changeStatus(INACTIVE, new MemberId(6));
+        TimeUnit.MILLISECONDS.sleep(1);
         results.get(9).changeStatus(INACTIVE, new MemberId(5));
 
         results.get(10).deleteBy(new MemberId(6));
@@ -267,12 +278,30 @@ class NoticeAdminControllerIntegrationTest {
         noticeRepository.flush();
     }
 
+    @SuppressWarnings("SameParameterValue")
+    private Integer createNotice(String title, String body, ArticleStatus status) throws IllegalAccessException {
+        return createNotice(title, body, status, false);
+    }
+
+    @SuppressWarnings("ConstantValue")
+    private Integer createNotice(String title, String body, ArticleStatus status, boolean isPrimary) throws IllegalAccessException {
+        Notice notice = new Notice(title, body, new MemberId(1));
+        if (isPrimary) {
+            FieldUtils.writeField(notice, "primary", isPrimary, true);
+        }
+        notice.changeStatus(status, new MemberId(2));
+        return noticeRepository.save(notice).getId();
+    }
+
     @WithAdminUser
     @DisplayName("관리자 공지사항 상세 조회 > 200")
     @Test
     void detail(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        DRAFT);
+        // when/then
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.id").value(noticeId))
@@ -283,9 +312,9 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$.creator.id").value(23))
+           .andExpect(jsonPath("$.creator.id").value(1))
            .andExpect(jsonPath("$.creator.name").isNotEmpty())
-           .andExpect(jsonPath("$.updater.id").value(23))
+           .andExpect(jsonPath("$.updater.id").value(1))
            .andExpect(jsonPath("$.updater.name").isNotEmpty());
     }
 
@@ -311,12 +340,53 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.err").value("Failed to convert 'noticeId' with value: '%s'".formatted(noticeId)));
     }
 
+    @WithAdminUser
+    @DisplayName("관리자 고정 공지 조회 > 200")
+    @Test
+    void primary(@Autowired MockMvc mvc) throws Exception {
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.primary",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        LIVE, true);
+        // when/then
+        mvc.perform(get("/admin/v1/notices/primary", noticeId))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(noticeId))
+           .andExpect(jsonPath("$.title").value("클립 멤버십 툴이 공식 오픈하였습니다.primary"))
+           .andExpect(jsonPath("$.primary").value(true))
+           .andExpect(jsonPath("$.livedAt").isNotEmpty())
+           .andExpect(jsonPath("$.createdAt").isNotEmpty())
+           .andExpect(jsonPath("$.updatedAt").isNotEmpty())
+           .andExpect(jsonPath("$.creator.id").value(1))
+           .andExpect(jsonPath("$.creator.name").isNotEmpty())
+           .andExpect(jsonPath("$.updater.id").value(2))
+           .andExpect(jsonPath("$.updater.name").isNotEmpty());
+    }
+
+    @WithAdminUser
+    @DisplayName("관리자 고정 공지 조회: 없음 > 404")
+    @Test
+    void primaryNotExists(@Autowired MockMvc mvc) throws Exception {
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.primaryNotExists",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        LIVE);
+        // when/then
+        mvc.perform(get("/admin/v1/notices/primary", noticeId))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(404_004))
+           .andExpect(jsonPath("$.err").value("고정 공지를 찾을 수 없습니다."));
+    }
+
     @WithAdminUser(memberId = 24)
     @DisplayName("관리자 공지사항 수정 > 200")
     @Test
     void update(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        DRAFT);
+        // when/then
         String body = """
                       {
                         "title": "클립 멤버십 툴 1.1.0이 릴리즈 되었습니다.",
@@ -335,18 +405,21 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.livedAt").value(nullValue()))
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$.creator.id").value(24))
+           .andExpect(jsonPath("$.creator.id").value(1))
            .andExpect(jsonPath("$.creator.name").isNotEmpty())
            .andExpect(jsonPath("$.updater.id").value(24))
            .andExpect(jsonPath("$.updater.name").isNotEmpty());
     }
 
-    @WithAdminUser(memberId = 25)
+    @WithAdminUser
     @DisplayName("관리자 공지사항 수정: 메인 공지 설정 > 200")
     @Test
     void updateWithPrimaryOn(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.updateWithPrimaryOn",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        LIVE);
+        // when/then
         updateWithPrimaryOn(mvc, noticeId);
     }
 
@@ -366,24 +439,28 @@ class NoticeAdminControllerIntegrationTest {
            .andExpect(jsonPath("$.title").value("클립 멤버십 툴 1.1.0이 릴리즈 되었습니다."))
            .andExpect(jsonPath("$.body").value("<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다. KlipDrops에 이이서 KlipPartners 까지 지원합니다.</p>"))
            .andExpect(jsonPath("$.primary").value(true))
-           .andExpect(jsonPath("$.status").value(DRAFT.toDisplay()))
-           .andExpect(jsonPath("$.livedAt").value(nullValue()))
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()))
+           .andExpect(jsonPath("$.livedAt").isNotEmpty())
            .andExpect(jsonPath("$.createdAt").isNotEmpty())
            .andExpect(jsonPath("$.updatedAt").isNotEmpty())
-           .andExpect(jsonPath("$.creator.id").value(25))
+           .andExpect(jsonPath("$.creator.id").value(1))
            .andExpect(jsonPath("$.creator.name").isNotEmpty())
-           .andExpect(jsonPath("$.updater.id").value(25))
+           .andExpect(jsonPath("$.updater.id").value(23))
            .andExpect(jsonPath("$.updater.name").isNotEmpty());
     }
 
-    @WithAdminUser(memberId = 25)
+    @WithAdminUser
     @DisplayName("관리자 공지사항 수정: 메인 공지 2번 연속 설정 > 200")
     @Test
     void updateTwiceWithMain(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId1 = lastNoticeId;
-        create(mvc);
-        Integer noticeId2 = lastNoticeId;
+        // given
+        Integer noticeId1 = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                         LIVE);
+        // when/then
+        Integer noticeId2 = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.",
+                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                         LIVE);
         updateWithPrimaryOn(mvc, noticeId1);
         updateWithPrimaryOn(mvc, noticeId2);
         // noticeId1.main=false (noticeId2.main=true가 되므로 이전 메인 노출이었던 noticeId1의 main 값은 false가 되어야함)
@@ -400,7 +477,6 @@ class NoticeAdminControllerIntegrationTest {
     @DisplayName("관리자 공지사항 수정: 존재하지 않는 공지사항 수정 시도 > 404")
     @Test
     void updateNotExists(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
         Integer noticeId = -2;
         String body = """
                       {
@@ -420,8 +496,10 @@ class NoticeAdminControllerIntegrationTest {
     @DisplayName("관리자 공지사항 상태 변경: draft -> live > 200")
     @Test
     void changeStatusDraftToLive(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.changeStatusDraftToLive",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        DRAFT);
         String body = """
                       { "value": "live" }
                       """;
@@ -446,8 +524,10 @@ class NoticeAdminControllerIntegrationTest {
     @DisplayName("관리자 공지사항 상태 변경: draft -> live -> inactive > 200")
     @Test
     void changeStatusLiveToInactive(@Autowired MockMvc mvc) throws Exception {
-        changeStatusDraftToLive(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.changeStatusLiveToInactive",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        LIVE);
         String body = """
                       { "value": "inactive" }
                       """;
@@ -472,8 +552,10 @@ class NoticeAdminControllerIntegrationTest {
     @DisplayName("관리자 공지사항 상태 변경: draft -> something > 400")
     @Test
     void changeStatusDraftToSomething(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.changeStatusDraftToSomething",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        LIVE);
         String body = """
                       { "value": "something" }
                       """;
@@ -489,8 +571,11 @@ class NoticeAdminControllerIntegrationTest {
     @DisplayName("관리자 공지사항 삭제 > 204")
     @Test
     void deleteApi(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.deleteApi",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        LIVE);
+        // when/then
         mvc.perform(delete("/admin/v1/notices/{0}", noticeId))
            .andExpect(status().isNoContent());
     }
@@ -499,8 +584,10 @@ class NoticeAdminControllerIntegrationTest {
     @DisplayName("관리자 공지사항 삭제: 공지사항 2번 삭제(멱등성) > 204 X 2")
     @Test
     void delete2Times(@Autowired MockMvc mvc) throws Exception {
-        create(mvc);
-        Integer noticeId = lastNoticeId;
+        // given
+        Integer noticeId = createNotice("클립 멤버십 툴이 공식 오픈하였습니다.delete2Times",
+                                        "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
+                                        LIVE);
         // 1 times
         mvc.perform(delete("/admin/v1/notices/{0}", noticeId))
            .andExpect(status().isNoContent());

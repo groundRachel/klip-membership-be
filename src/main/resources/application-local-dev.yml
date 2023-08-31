@@ -1,8 +1,8 @@
 # local-dev: local 환경이지만 dev 환경 인프라에 의존하는 환경. w/ vault(local-dev.properties)
 application:
   kakao-api:
-    #   admin-key:   from Value /klip/klip-membership
-    #   domain-id:   from Value /klip/klip-membership
+    #   admin-key:   from Vault /klip/klip-membership
+    #   domain-id:   from Vault /klip/klip-membership
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
   bgms:
     api-url: https://www.biztalk-api.com
@@ -10,6 +10,19 @@ application:
     password: ${bgms_pw}  # from Vault /klip/common
   klip-drops-internal:
     api-url: http://localhost:3100 # kubectl port-forward svc/klip-drops 3100:3100
+
+cloud:
+  aws:
+    s3:
+      bucket: klip-membership-fe-dev
+      prefix: dist
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+    cloudfront:
+      distribution-domain: membership.dev.klipwallet.com
 
 logging:
   level:
@@ -38,10 +51,9 @@ spring:
       enabled: true
       host: vault.dev.klaytn.com
       port: 443
-      token: ${VAULT_TOKEN}   # from local-dev.properties
+      #token:     from ~/.vault-token
   config:
     import:
-      - optional:classpath:/local-dev.properties  # Generate it yourself
       - vault://klip/klip-membership
       - vault://klip/common
   flyway:
@@ -55,8 +67,8 @@ spring:
         registration:
           google:
             provider: google
-            client-id: 69090294389-2pnugpnhjdm5odpk89kdjc318860pb9b.apps.googleusercontent.com
-            client-secret: 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
+            #client-id:       from Vault /klip/klip-membership
+            #client-secret:   from Vault /klip/klip-membership
             scope: profile, email
 
 springdoc:

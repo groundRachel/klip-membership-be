@@ -38,7 +38,7 @@ public class AdminAssembler {
     @SuppressWarnings("DataFlowIssue")
     public Detail toDetail(@NonNull Admin admin) {
         Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(admin);
-        return new AdminDto.Detail(admin.getMemberId(), admin.getEmail(), admin.getName(), admin.getOAuthId(),
+        return new AdminDto.Detail(admin.getMemberId(), admin.getEmail(), admin.getName(), admin.getOauthId(),
                                    dtAssembler.toOffsetDateTime(admin.getCreatedAt()),
                                    members.getOrDefault(admin.getCreatorId(), MemberSummary.deactivated(admin.getCreatorId())),
                                    dtAssembler.toOffsetDateTime(admin.getUpdatedAt()),
