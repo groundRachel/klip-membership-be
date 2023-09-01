@@ -23,6 +23,8 @@ cloud:
       auto: false
     cloudfront:
       distribution-domain: membership.dev.klipwallet.com
+    ses:
+      sender-email: developer@groundx.xyz # AWS SES에서 email verfiy된 주소 입력
 
 logging:
   level:

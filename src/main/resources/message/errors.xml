@@ -46,6 +46,10 @@
     <!-- 500_200 Internal-Api -->
     <entry key="problemDetail.code.500200">내부 API 호출에서 오류가 발생하였습니다.</entry>
 
+    <!-- 500_300 Internal-Api -->
+    <entry key="problemDetail.code.500300">알림 관련해서 오류가 발생했습니다.</entry>
+    <entry key="problemDetail.code.500301">이메일 전송이 실패하였습니다.</entry>
+
     <!-- 503 -->
     <entry key="problemDetail.code.503000">서비스를 사용할 수 없습니다.</entry>
     <entry key="problemDetail.code.503001">Service Unavailable Due to async timeout.</entry>

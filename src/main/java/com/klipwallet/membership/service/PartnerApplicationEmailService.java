@@ -24,7 +24,6 @@ public class PartnerApplicationEmailService {
     @TransactionalEventListener(value = PartnerApplicationApproved.class, phase = TransactionPhase.AFTER_COMMIT)
     public void notifyApproveResult(PartnerApplicationApproved event) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(senderEmailAddress);
         message.setTo(event.getEmail());
         message.setSubject(subject);
         message.setText(contentApproved);
@@ -35,7 +34,6 @@ public class PartnerApplicationEmailService {
     @TransactionalEventListener(value = PartnerApplicationRejected.class, phase = TransactionPhase.AFTER_COMMIT)
     public void notifyRejectResult(PartnerApplicationRejected event) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(senderEmailAddress);
         message.setTo(event.getEmail());
         message.setSubject(subject);
         message.setText(contentRejected + event.getRejectReason());

@@ -66,7 +66,10 @@ public enum ErrorCode {
     STORAGE_STORE(500_101),
 
     // InterApi
-    INTERNAL_API_ERROR(500_200);
+    INTERNAL_API_ERROR(500_200),
+
+    // Notifier
+    Email_SEND(500_301);
 
     final int code;
 
