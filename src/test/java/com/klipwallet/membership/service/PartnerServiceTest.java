@@ -14,8 +14,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
-import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.repository.AdminRepository;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
@@ -42,6 +42,8 @@ public class PartnerServiceTest {
         partnerRepository.flush();
         partnerApplicationRepository.deleteAll();
         partnerApplicationRepository.flush();
+        adminRepository.deleteAll();
+        adminRepository.flush();
     }
 
     private record partnerInfo(
@@ -51,14 +53,6 @@ public class PartnerServiceTest {
             String email,
             String oauthId
     ) {}
-
-    private MemberId createAdmin() {
-        Admin admin = new Admin("jordan.jung@groundx.xyz", new MemberId(1));
-        Admin persisted = adminRepository.save(admin);
-        adminRepository.flush();
-        return persisted.getMemberId();
-    }
-
 
     @NotNull
     private List<partnerInfo> createPartnerInfos(MemberId processorId) {
@@ -72,6 +66,7 @@ public class PartnerServiceTest {
             PartnerApplication partnerApplication = new PartnerApplication(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId);
             partnerApplication.approve(processorId);
             partnerApplicationRepository.save(partnerApplication);
+            partnerRepository.save(new Partner(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId, processorId));
         }
         partnerApplicationRepository.flush();
         partnerRepository.flush();
@@ -82,7 +77,7 @@ public class PartnerServiceTest {
     @Test
     void getApprovedPartners() {
         // given
-        MemberId processorId = createAdmin();
+        MemberId processorId = new MemberId(2);
         List<partnerInfo> partnerInfos = createPartnerInfos(processorId);
 
         // when

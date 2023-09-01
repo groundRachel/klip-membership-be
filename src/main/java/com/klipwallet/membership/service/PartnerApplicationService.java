@@ -16,6 +16,7 @@ import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Ap
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.dto.partnerapplication.SignUpStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
@@ -31,6 +32,7 @@ import static com.klipwallet.membership.entity.PartnerApplication.Status.APPROVE
 public class PartnerApplicationService {
     private final PartnerApplicationRepository partnerApplicationRepository;
     private final PartnerApplicationAssembler partnerApplicationAssembler;
+    private final PartnerRepository partnerRepository;
 
     private final PartnerRepository partnerRepository;
 
@@ -77,17 +79,26 @@ public class PartnerApplicationService {
     public void approve(Integer applicationId, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
 
-        partnerApplication.approve(user.getMemberId());
-        partnerApplicationRepository.save(partnerApplication);
+        boolean canSkipDuplicatedRequest = partnerApplication.approve(user.getMemberId());
+        if (canSkipDuplicatedRequest) {
+            return;
+        }
 
+        partnerApplicationRepository.save(partnerApplication);
+        partnerRepository.save(new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
+                                           partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
+                                           partnerApplication.getOauthId(), user.getMemberId()));
     }
 
     @Transactional
     public void reject(Integer applicationId, RejectRequest body, AuthenticatedUser user) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(applicationId);
 
+        boolean canSkipDuplicatedRequest = partnerApplication.reject(body.rejectReason(), user.getMemberId());
+        if (canSkipDuplicatedRequest) {
+            return;
+        }
 
-        partnerApplication.reject(body.rejectReason(), user.getMemberId());
         partnerApplicationRepository.save(partnerApplication);
     }
 

@@ -75,17 +75,20 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
      * 파트너 신청 승인됨 -> 파트너 생성
      *
      * @param processorId 처리자 ID
+     * @return canSkipDuplicatedRequest
      * @see com.klipwallet.membership.entity.PartnerApplicationApproved
      */
-    public void approve(MemberId processorId) {
-        if (canSkipRequest(APPROVED, processorId)) {
-            return;
+    public boolean approve(MemberId processorId) {
+        if (canSkipDuplicatedRequest(APPROVED, processorId)) {
+            return true;
         }
         checkProcessable();
 
         this.status = Status.APPROVED;
         processedBy(processorId);
-        registerEvent(new PartnerApplicationApproved(this.id, this, this.processorId));
+        registerEvent(new PartnerApplicationApproved(this.email));
+
+        return false;
     }
 
     /**
@@ -93,21 +96,24 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
      *
      * @param rejectReason 거절 사유
      * @param processorId  처리자 ID
+     * @return canSkipDuplicatedRequest
      * @see com.klipwallet.membership.entity.PartnerApplicationRejected
      */
-    public void reject(String rejectReason, MemberId processorId) {
-        if (canSkipRequest(REJECTED, processorId)) {
-            return;
+    public boolean reject(String rejectReason, MemberId processorId) {
+        if (canSkipDuplicatedRequest(REJECTED, processorId)) {
+            return true;
         }
         checkProcessable();
 
         this.status = Status.REJECTED;
         this.rejectReason = rejectReason;
         processedBy(processorId);
-        registerEvent(new PartnerApplicationRejected(this.id, this, this.processorId));
+        registerEvent(new PartnerApplicationRejected(this.email, rejectReason));
+
+        return false;
     }
 
-    private boolean canSkipRequest(Status expectedStatus, MemberId expectedUpdatedId) {
+    private boolean canSkipDuplicatedRequest(Status expectedStatus, MemberId expectedUpdatedId) {
         // TODO WINNIE testcode
         return getStatus() == expectedStatus && getProcessorId() == expectedUpdatedId;
     }
