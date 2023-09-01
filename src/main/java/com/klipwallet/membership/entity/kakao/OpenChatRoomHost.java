@@ -9,4 +9,6 @@ import lombok.Value;
 @Value
 public class OpenChatRoomHost {
     KakaoId kakaoId;
+    String nickname;
+    String profileImageUrl;
 }

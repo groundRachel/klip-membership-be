@@ -8,5 +8,5 @@ import lombok.Value;
 @SuppressWarnings("ClassCanBeRecord")
 @Value
 public class KakaoId {
-    Long id;
+    String id;
 }
