@@ -139,7 +139,7 @@ public class FaqService {
 
     private Page<Faq> getResult(ArticleStatus status, Pageable pageable) {
         if (status == null) {
-            return faqRepository.findAll(pageable);
+            return faqRepository.findAllByStatusIn(ArticleStatus.enables(), pageable);
         }
         return faqRepository.findByStatus(status, pageable);
     }
