@@ -33,4 +33,8 @@ public class Partner extends Member {
     public Partner() {
     }
 
+    public void update(String name, String phoneNumber) {
+        this.setName(name);
+        this.phoneNumber = phoneNumber;
+    }
 }

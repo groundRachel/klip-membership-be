@@ -12,8 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
+import com.klipwallet.membership.dto.partner.PartnerDto.Detail;
+import com.klipwallet.membership.dto.partner.PartnerDto.Update;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
@@ -75,7 +78,7 @@ public class PartnerServiceTest {
 
     @WithAdminUser(memberId = 1)
     @Test
-    void getApprovedPartners() {
+    void getPartners() {
         // given
         MemberId processorId = new MemberId(2);
         List<partnerInfo> partnerInfos = createPartnerInfos(processorId);
@@ -96,4 +99,52 @@ public class PartnerServiceTest {
         }
     }
 
+    @Test
+    void getDetail() {
+        // given
+        MemberId processorId = new MemberId(2);
+        List<partnerInfo> partnerInfos = createPartnerInfos(processorId);
+
+        // when
+        List<Detail> details = partnerInfos.stream()
+                                           .map(info -> new KlipMembershipOAuth2User(null, null, null, info.name, info.email))
+                                           .map(user -> service.getDetail(user))
+                                           .toList();
+
+        // then
+        assertThat(details.size()).isEqualTo(partnerInfos.size());
+        for (int i = 0; i < partnerInfos.size(); i++) {
+            partnerInfo partnerInfo = partnerInfos.get(i);
+            Detail detail = details.get(i);
+
+            assertThat(detail.name()).isEqualTo(partnerInfo.name);
+            assertThat(detail.businessRegistrationNumber()).isEqualTo(partnerInfo.businessRegistrationNumber);
+            assertThat(detail.phoneNumber()).isEqualTo(partnerInfo.phoneNumber);
+        }
+    }
+
+    @Test
+    void update() {
+        // given
+        MemberId processorId = new MemberId(2);
+        partnerInfo partnerInfo = createPartnerInfos(processorId).get(0);
+
+        String updateName = "(주) 변경된 이름";
+        String updatePhoneNumber = "010-0000-0000";
+
+        KlipMembershipOAuth2User user = new KlipMembershipOAuth2User(null, null, null, partnerInfo.name, partnerInfo.email);
+
+        // when
+        Detail updatedDetail = service.update(new Update(updateName, updatePhoneNumber), user);
+
+        // then
+        assertThat(updatedDetail.name()).isEqualTo(updateName);
+        assertThat(updatedDetail.businessRegistrationNumber()).isEqualTo(partnerInfo.businessRegistrationNumber);
+        assertThat(updatedDetail.phoneNumber()).isEqualTo(updatePhoneNumber);
+
+        Partner updatedPartner = partnerRepository.findByEmail(partnerInfo.email).orElseThrow();
+        assertThat(updatedDetail.name()).isEqualTo(updatedPartner.getName());
+        assertThat(updatedDetail.businessRegistrationNumber()).isEqualTo(updatedPartner.getBusinessRegistrationNumber());
+        assertThat(updatedDetail.phoneNumber()).isEqualTo(updatedPartner.getPhoneNumber());
+    }
 }

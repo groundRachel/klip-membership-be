@@ -19,6 +19,8 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
 
     Optional<Partner> findByOauthId(String oauthId);
 
+    Optional<Partner> findByEmail(String email);
+
     Boolean existsByEmail(String email);
 
     @Query("""
