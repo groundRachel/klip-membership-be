@@ -9,6 +9,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
 import com.klipwallet.membership.dto.partnerapplication.SignUpStatus;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
@@ -48,15 +49,18 @@ class PartnerApplicationServiceTest {
     @Test
     void getSignUpStatusOfSignedUp() {
         // given
-        PartnerApplication application = createApplication();
+        PartnerApplication partnerApplication = createApplication();
 
-        application.approve(processorId);
-        partnerApplicationRepository.save(application);
+        partnerApplication.approve(processorId);
+        partnerApplicationRepository.save(partnerApplication);
+        partnerRepository.save(new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
+                                           partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
+                                           partnerApplication.getOauthId(), processorId));
         partnerApplicationRepository.flush();
         partnerRepository.flush();
 
         // when
-        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, null, null, "", application.getEmail());
+        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, null, null, "", partnerApplication.getEmail());
         SignUpStatus signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
 
         // then

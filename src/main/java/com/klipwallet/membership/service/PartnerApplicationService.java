@@ -34,8 +34,6 @@ public class PartnerApplicationService {
     private final PartnerApplicationAssembler partnerApplicationAssembler;
     private final PartnerRepository partnerRepository;
 
-    private final PartnerRepository partnerRepository;
-
     private void verifyApply(AuthenticatedUser user) {
         if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED, APPROVED))) {
             throw new PartnerApplicationDuplicatedException();
