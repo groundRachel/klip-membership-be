@@ -18,6 +18,9 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.ChatRoomMember;
 import com.klipwallet.membership.entity.ChatRoomMember.Role;
+import com.klipwallet.membership.entity.kakao.KakaoId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 import com.klipwallet.membership.exception.kakao.OperatorAlreadyExistsException;
 import com.klipwallet.membership.exception.member.OperatorDuplicatedException;
 import com.klipwallet.membership.repository.ChatRoomRepository;
@@ -39,17 +42,21 @@ public class ChatRoomService {
 
         Set<ChatRoomMember> chatRoomMembers = new HashSet<>();
         // save host
-        chatRoomMembers.add(chatRoomMemberService.createOperator(command.host(), Role.HOST, user));
+        ChatRoomMember savedHost = chatRoomMemberService.createOperator(command.host(), Role.HOST, user);
+        chatRoomMembers.add(savedHost);
         // save operators
         for (ChatRoomOperatorCreate chatRoomOperatorCreate : command.operators()) {
             chatRoomMembers.add(chatRoomMemberService.createOperator(chatRoomOperatorCreate, Role.OPERATOR, user));
         }
 
+        OpenChatRoomSummary summary = kakaoService.createOpenChatRoom(command.title(), command.description(), command.coverImageUrl(),
+                                                                      new OpenChatRoomHost(new KakaoId(savedHost.getKakaoUserId()),
+                                                                                           command.host().nickname(),
+                                                                                           command.host().profileImageUrl()));
+        log.info(summary.toString());
         // TODO: @Ian save open chat in DB
 
         // TODO: @Ian save NFTs
-
-        // TODO: @Ian kakaoService.createOpenChatRoom
 
         return null;
     }

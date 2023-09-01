@@ -50,7 +50,6 @@ public class ChatRoomMemberService {
 
     private Operator tryGetOperator(Long operatorId) {
         return operatorRepository.findById(operatorId).orElseThrow(() -> new OperatorNotFoundException(operatorId));
-
     }
 
     private void checkOperatorPartnerId(Operator operator, MemberId partnerId) {
