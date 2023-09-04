@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record Drop(
         @JsonProperty("id") Long id,
+        @JsonProperty("nft_sca") String nftSmartContractAddress,
         @JsonProperty("title") String title,
         @JsonProperty("creator_name") String creatorName,
         @JsonProperty("total_supply") Integer totalSupply,
