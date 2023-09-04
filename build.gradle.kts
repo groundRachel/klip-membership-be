@@ -70,15 +70,18 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.cloud:spring-cloud-starter-vault-config")
+    implementation("org.springframework.session:spring-session-data-redis")
     implementation(platform("software.amazon.awssdk:bom:2.20.131"))
     implementation("software.amazon.awssdk:s3")
     implementation("software.amazon.awssdk:cloudfront")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("io.lettuce:lettuce-core")    // Redis
+    implementation("org.apache.commons:commons-pool2")    // Redis Pool
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:${property("springdocVersion")}")
     // Newrelic
     implementation("com.newrelic.logging:logback:${property("newrelicLogbackVersion")}")
 //    implementation("com.newrelic.agent.java:newrelic-api:7.6.0")
+
 
     // Lombok
     compileOnly("org.projectlombok:lombok")

@@ -56,6 +56,15 @@ spring:
     import:
       - vault://klip/klip-membership
       - vault://klip/common
+  data:
+    redis:
+      host: klip-membership-dev.s9wmjn.ng.0001.apn2.cache.amazonaws.com
+      lettuce:
+        pool:
+          enabled: true
+          max-idle: 4
+          min-idle: 0
+          max-active: 4
   flyway:
     enabled: false
   jpa:
@@ -70,6 +79,11 @@ spring:
             #client-id:       from Vault /klip/klip-membership
             #client-secret:   from Vault /klip/klip-membership
             scope: profile, email
+  session:
+    redis:
+      repository-type: default
+      namespace: local    # 환경 별 prefix 설정. Key 예시: 'local:sessions:{sessionId}'
+    timeout: 1h
 
 springdoc:
   api-docs:

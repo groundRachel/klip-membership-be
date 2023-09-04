@@ -41,6 +41,9 @@ management:
         include: '*'
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration   # redis session disabled
   cloud:
     openfeign:
       circuitbreaker:
