@@ -14,10 +14,10 @@ public class NftProperties {
     /**
      * Drops NFT SCA
      */
-    @NotEmpty String sca;
+    @NotEmpty String klipDropsSca;
 
     @ConstructorBinding
-    public NftProperties(String sca) {
-        this.sca = sca;
+    public NftProperties(String klipDropsSca) {
+        this.klipDropsSca = klipDropsSca;
     }
 }

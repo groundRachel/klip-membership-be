@@ -25,6 +25,6 @@ public record ChatRoomOperatorCreate(
 ) {
     @JsonIgnore
     public ChatRoomMember toChatRoomMember(ChatRoom chatRoom, Operator operator, Role role) {
-        return new ChatRoomMember(chatRoom, operator.getKlipId(), operator.getKakaoUserId(), operatorId, nickname, profileImageUrl, role);
+        return new ChatRoomMember(chatRoom.getId(), operator.getKlipId(), operator.getKakaoUserId(), operatorId, nickname, profileImageUrl, role);
     }
 }

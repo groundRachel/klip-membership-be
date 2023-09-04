@@ -16,7 +16,7 @@ public record ChatRoomNftCreate(
         @NotNull
         Address contractAddress
 ) {
-    public ChatRoomNft toChatRoomNft(Integer partnerId, Long chatRoomId, MemberId creatorId) {
-        return new ChatRoomNft(partnerId, chatRoomId, dropId, contractAddress, creatorId);
+    public ChatRoomNft toChatRoomNft(Long chatRoomId, MemberId creatorId) {
+        return new ChatRoomNft(chatRoomId, dropId, contractAddress, creatorId);
     }
 }

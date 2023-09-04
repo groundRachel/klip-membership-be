@@ -38,6 +38,6 @@ public record ChatRoomMemberCreate(
 ) {
     @JsonIgnore
     public ChatRoomMember toChatRoomMember(ChatRoom chatRoom) {
-        return new ChatRoomMember(chatRoom, klipId, kakaoUserId, operatorId, nickname, profileImageUrl, role);
+        return new ChatRoomMember(chatRoom.getId(), klipId, kakaoUserId, operatorId, nickname, profileImageUrl, role);
     }
 }

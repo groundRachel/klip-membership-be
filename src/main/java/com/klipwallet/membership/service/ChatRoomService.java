@@ -22,6 +22,7 @@ import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.ChatRoomNft;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
 import com.klipwallet.membership.entity.kakao.KakaoId;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
@@ -48,32 +49,45 @@ public class ChatRoomService {
     public ChatRoomSummary create(ChatRoomCreate command, AuthenticatedUser user) {
         checkOperators(command.operators(), command.host().operatorId());
         Operator host = operatorService.tryGetOperator(command.host().operatorId());
-        // Create openchat in Kakao
         OpenChatRoomSummary summary = kakaoService.createOpenChatRoom(command.title(), command.description(), command.coverImageUrl(),
                                                                       new OpenChatRoomHost(new KakaoId(host.getKakaoUserId()),
                                                                                            command.host().nickname(),
                                                                                            command.host().profileImageUrl()));
-        // Save open chat room
-        ChatRoom entity = command.toChatRoom(summary, new Address(nftProperties.getSca()), user.getMemberId());
-        ChatRoom saved = chatRoomRepository.save(entity);
-        // Save host
-        chatRoomMemberService.createHost(saved, command.host(), user);
-        // Save operators
-        for (ChatRoomOperatorCreate chatRoomOperatorCreate : command.operators()) {
-            Operator operator = operatorService.tryGetOperator(chatRoomOperatorCreate.operatorId());
-            // Join kakao open chat room
-            kakaoService.joinOpenChatRoom(summary.getId(), chatRoomOperatorCreate.nickname(), chatRoomOperatorCreate.profileImageUrl(),
-                                          operator.getKakaoUserId());
-            // Insert db
-            chatRoomMemberService.createOperator(saved, chatRoomOperatorCreate, user);
-        }
-        for (ChatRoomNftCreate nftCommand : command.nfts()) {
-            ChatRoomNft nftEntity = nftCommand.toChatRoomNft(user.getMemberId().value(), saved.getId(), user.getMemberId());
-            chatRoomNftRepository.save(nftEntity);
-        }
+        ChatRoom saved = saveOpenChatRoom(command, summary, new Address(nftProperties.getKlipDropsSca()), user.getMemberId());
+        registerHost(saved, command.host(), user);
+        registerOperators(saved, command.operators(), user);
+        registerNfts(saved, command.nfts(), user);
         return new ChatRoomSummary(saved.getId(), saved.getOpenChatRoomSummary().getId(), saved.getOpenChatRoomSummary().getUrl(), saved.getTitle(),
                                    user.getMemberId().value(),
                                    saved.getCreatedAt().atZone(ZoneId.systemDefault()).toOffsetDateTime());
+    }
+
+    private ChatRoom saveOpenChatRoom(ChatRoomCreate command, OpenChatRoomSummary summary, Address contractAddress, MemberId memberId) {
+        ChatRoom entity = command.toChatRoom(summary, contractAddress, memberId);
+        return chatRoomRepository.save(entity);
+    }
+
+    private void registerHost(ChatRoom chatRoom, ChatRoomOperatorCreate hostCommand, AuthenticatedUser user) {
+        chatRoomMemberService.createHost(chatRoom, hostCommand, user);
+    }
+
+    private void registerOperators(ChatRoom chatRoom, List<ChatRoomOperatorCreate> operatorsCommand, AuthenticatedUser user) {
+        for (ChatRoomOperatorCreate chatRoomOperatorCreate : operatorsCommand) {
+            Operator operator = operatorService.tryGetOperator(chatRoomOperatorCreate.operatorId());
+            // Join kakao open chat room
+            kakaoService.joinOpenChatRoom(chatRoom.getOpenChatRoomSummary().getId(), chatRoomOperatorCreate.nickname(),
+                                          chatRoomOperatorCreate.profileImageUrl(),
+                                          operator.getKakaoUserId());
+            // Insert db
+            chatRoomMemberService.createOperator(chatRoom, chatRoomOperatorCreate, user);
+        }
+    }
+
+    private void registerNfts(ChatRoom chatRoom, List<ChatRoomNftCreate> nftCommands, AuthenticatedUser user) {
+        for (ChatRoomNftCreate nftCommand : nftCommands) {
+            ChatRoomNft nftEntity = nftCommand.toChatRoomNft(chatRoom.getId(), user.getMemberId());
+            chatRoomNftRepository.save(nftEntity);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -95,5 +109,4 @@ public class ChatRoomService {
             }
         }
     }
-
 }

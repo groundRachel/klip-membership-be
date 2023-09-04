@@ -21,8 +21,6 @@ public class ChatRoomNft extends BaseEntity<ChatRoomNft> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private Integer partnerId;
-    @Column(nullable = false)
     private Long chatRoomId;
     @Column(nullable = false)
     private Long dropId;
@@ -33,8 +31,7 @@ public class ChatRoomNft extends BaseEntity<ChatRoomNft> {
     protected ChatRoomNft() {
     }
 
-    public ChatRoomNft(Integer partnerId, Long chatRoomId, Long dropId, Address contractAddress, MemberId creatorId) {
-        this.partnerId = partnerId;
+    public ChatRoomNft(Long chatRoomId, Long dropId, Address contractAddress, MemberId creatorId) {
         this.chatRoomId = chatRoomId;
         this.dropId = dropId;
         this.contractAddress = contractAddress.getValue();
