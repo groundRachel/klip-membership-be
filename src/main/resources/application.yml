@@ -26,9 +26,10 @@ management:
           include: readinessState
         liveness:
           include: livenessState
+      show-details: always
   health:
     redis:
-      enabled: false
+      enabled: true   # Redis Session 때문에 활성화 시킴. Fallback to Jdbc Session 고민 중
     refresh:
       enabled: false
     livenessstate:
@@ -77,7 +78,6 @@ spring:
         one-indexed-parameters: true
         max-page-size: 1000
         default-page-size: 20
-
   devtools:
     livereload:
       enabled: false
@@ -91,6 +91,8 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate.discriminator.ignore_explicit_for_joined: false
   messages:
     basename: classpath:message/errors
     fallback-to-system-locale: false

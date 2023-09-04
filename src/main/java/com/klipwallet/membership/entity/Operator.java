@@ -12,6 +12,7 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
+import com.klipwallet.membership.exception.kakao.OperatorNotInPartnerException;
 
 /**
  * 채팅방 멤버 Entity
@@ -58,5 +59,11 @@ public class Operator extends BaseEntity<Operator> {
         this.kakaoUserId = kakaoUserId;
         this.partnerId = partnerId;
         this.createBy(creatorId);
+    }
+
+    public void checkPartnerId(MemberId partnerId) {
+        if (!this.getPartnerId().equals(partnerId.value())) {
+            throw new OperatorNotInPartnerException(this.getId(), partnerId);
+        }
     }
 }

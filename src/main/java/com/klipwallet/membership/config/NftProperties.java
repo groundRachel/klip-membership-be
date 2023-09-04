@@ -7,18 +7,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.validation.annotation.Validated;
 
+@ConfigurationProperties(prefix = "application.nft")
 @Value
-@ConfigurationProperties(prefix = "cloud.aws.s3")
 @Validated
-public class AwsS3Properties {
-    @NotEmpty
-    String bucket;
-    @NotEmpty
-    String prefix;
+public class NftProperties {
+    /**
+     * Drops NFT SCA
+     */
+    @NotEmpty String klipDropsSca;
 
     @ConstructorBinding
-    public AwsS3Properties(String bucket, String prefix) {
-        this.bucket = bucket;
-        this.prefix = prefix;
+    public NftProperties(String klipDropsSca) {
+        this.klipDropsSca = klipDropsSca;
     }
 }

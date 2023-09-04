@@ -11,11 +11,13 @@ application:
     api-url: http://klip-drops.klip-drops-dev.svc.cluster.local:3100
   email:
     sender-email: developer@groundx.xyz # AWS SES에서 email verfiy된 주소 입력
+  nft:
+    klip-drops-sca: 0xb329ddcc6722c158c81BeDe6820dd419e6896486
 
 cloud:
   aws:
     s3:
-      bucket: klip-membership-fe-dev
+      bucket: klip-cms-dev
       prefix: dist
     region:
       static: ap-northeast-2
@@ -23,7 +25,7 @@ cloud:
     stack:
       auto: false
     cloudfront:
-      distribution-domain: membership.dev.klipwallet.com
+      distribution-domain: klip-media.dev.klaytn.com
 
 logging:
   level:
@@ -61,6 +63,15 @@ spring:
         app-role-path: approle
   config:
     import: vault://klip/klip-membership, vault://klip/common
+  data:
+    redis:
+      host: klip-membership-dev.s9wmjn.ng.0001.apn2.cache.amazonaws.com
+      lettuce:
+        pool:
+          enabled: true
+          max-idle: 16
+          min-idle: 0
+          max-active: 16
   flyway:
     enabled: false
   jpa:
@@ -75,6 +86,11 @@ spring:
             #client-id:       from Vault /klip/klip-membership
             #client-secret:   from Vault /klip/klip-membership
             scope: profile, email
+  session:
+    redis:
+      repository-type: default
+      namespace: dev    # 환경 별 predfix 설정. Key 예시: 'dev:sessions:{sessionId}'
+    timeout: 1h         # Session 만료 1시간
 
 springdoc:
   api-docs:

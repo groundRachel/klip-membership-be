@@ -27,6 +27,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.text.CaseUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
@@ -42,8 +43,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "member_type_email_unique", columnNames = {"type", "email"}),
-        @UniqueConstraint(name = "member_type_oauthid_unique", columnNames = {"type", "oauthId"}),
+        @UniqueConstraint(name = "unq_member_type_email", columnNames = {"type", "email"}),
+        @UniqueConstraint(name = "unq_member_type_oauth_id", columnNames = {"type", "oauthId"}),
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type")
@@ -55,6 +56,9 @@ public abstract class Member extends BaseEntity<Member> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer id;
+
+//    @Column(nullable = false, insertable = false, updatable = false)
+//    private Type type;
 
     @Setter(AccessLevel.PACKAGE)
     private String email;
@@ -121,6 +125,49 @@ public abstract class Member extends BaseEntity<Member> {
 
     public boolean isEnabled() {
         return this.status.isEnabled();
+    }
+
+    @Getter
+    @Schema(name = "Member.Type", description = "멤버 타입", example = "M")
+    public enum Type {
+        /**
+         * 유효한 상태
+         */
+        ADMIN("A"),
+        /**
+         * 탈퇴한 상태
+         */
+        PARTNER("P");
+
+        private final String code;
+
+        Type(String code) {
+            if (code.length() != 1) {
+                throw new IllegalArgumentException("Type's code must be 1 character: " + code);
+            }
+            this.code = code;
+        }
+
+        public static Type fromCode(String code) {
+            return Stream.of(values())
+                         .filter(e -> e.getCode().equals(code))
+                         .findFirst()
+                         .orElse(null);
+        }
+
+        @JsonCreator
+        @Nullable
+        public static Type fromDisplay(String display) {
+            return Stream.of(values())
+                         .filter(e -> e.toDisplay().equals(display))
+                         .findFirst()
+                         .orElse(null);
+        }
+
+        @JsonValue
+        public String toDisplay() {
+            return CaseUtils.toCamelCase(name(), false, '_');
+        }
     }
 
     @Getter

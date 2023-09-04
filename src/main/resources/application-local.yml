@@ -12,11 +12,13 @@ application:
     api-url: http://localhost:3100 # kubectl port-forward svc/klip-drops 3100:3100
   email:
     sender-email: developer@groundx.xyz # AWS SES에서 email verfiy된 주소 입력
+  nft:
+    klip-drops-sca: 0xb329ddcc6722c158c81BeDe6820dd419e6896486
 
 cloud:
   aws:
     s3:
-      bucket: klip-membership-fe-dev
+      bucket: klip-cms-dev
       prefix: dist
     region:
       static: ap-northeast-2
@@ -24,7 +26,7 @@ cloud:
     stack:
       auto: false
     cloudfront:
-      distribution-domain: membership.dev.klipwallet.com
+      distribution-domain: klip-media.dev.klaytn.com
 
 logging:
   level:
@@ -43,8 +45,13 @@ management:
         include: '*'
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.session.SessionAutoConfiguration   # redis session disabled
   cloud:
     openfeign:
+      circuitbreaker:
+        enabled: false
       client:
         config:
           default:

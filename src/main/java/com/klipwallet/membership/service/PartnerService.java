@@ -13,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.klipwallet.membership.dto.partner.PartnerAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
+import com.klipwallet.membership.dto.partner.PartnerDto.Detail;
+import com.klipwallet.membership.dto.partner.PartnerDto.Update;
 import com.klipwallet.membership.entity.Member;
+import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerSummaryView;
@@ -50,5 +53,26 @@ public class PartnerService {
         return partnerRepository.findByOauthId(oauthId)
                                 .filter(Member::isEnabled)
                                 .orElseThrow(MemberNotFoundException::new);
+    }
+
+    private Partner tryGetPartner(MemberId partnerId) {
+        return partnerRepository.findById(partnerId.value())
+                                .orElseThrow(MemberNotFoundException::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Detail getDetail(MemberId partnerId) {
+        Partner partner = tryGetPartner(partnerId);
+        return partnerAssembler.toDetail(partner);
+    }
+
+    @Transactional
+    public Detail update(Update command, MemberId partnerId) {
+        Partner partner = tryGetPartner(partnerId);
+
+        partner.update(command.name(), command.phoneNumber());
+        Partner persistent = partnerRepository.save(partner);
+
+        return partnerAssembler.toDetail(persistent);
     }
 }

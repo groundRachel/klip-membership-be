@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
+import com.klipwallet.membership.dto.PhoneNumber;
 import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication;
@@ -18,8 +19,7 @@ import com.klipwallet.membership.entity.PartnerApplication;
 public class PartnerApplicationDto {
     @Schema(description = "[TOOL] 파트너 신청 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record Application(@NotBlank String name,
-                              // TODO add validation; requirement from design team
-                              @NotBlank @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$") String phoneNumber,
+                              @NotBlank @PhoneNumber String phoneNumber,
                               // TODO add validation; requirement from design team
                               @NotBlank @Pattern(regexp = "^\\d{3}-\\d{2}-\\d{5}$") String businessRegistrationNumber) {
         public PartnerApplication toPartnerApplication(AuthenticatedUser user) {
