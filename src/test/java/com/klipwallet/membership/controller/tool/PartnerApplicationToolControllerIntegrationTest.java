@@ -27,6 +27,7 @@ import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import static com.klipwallet.membership.config.SecurityConfig.OAUTH2_USER;
 import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_DUPLICATED;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,7 +84,9 @@ public class PartnerApplicationToolControllerIntegrationTest {
                                        "businessRegistrationNumber": "000-00-00000"
                                      }
                                      """))
-           .andExpect(status().isBadRequest());
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value(400_001))
+           .andExpect(jsonPath("$.err", containsString("phoneNumber: 'must match ")));
     }
 
     @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", authorities = OAUTH2_USER)
@@ -99,7 +102,9 @@ public class PartnerApplicationToolControllerIntegrationTest {
                                        "businessRegistrationNumber": "12345-!@#$-12345"
                                      }
                                      """))
-           .andExpect(status().isBadRequest());
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value(400_001))
+           .andExpect(jsonPath("$.err", containsString("businessRegistrationNumber: 'must match ")));
     }
 
     @NotNull
