@@ -15,7 +15,7 @@ application:
 cloud:
   aws:
     s3:
-      bucket: klip-membership-fe-dev
+      bucket: klip-cms-dev
       prefix: dist
     region:
       static: ap-northeast-2
@@ -23,7 +23,7 @@ cloud:
     stack:
       auto: false
     cloudfront:
-      distribution-domain: membership.dev.klipwallet.com
+      distribution-domain: klip-media.dev.klaytn.com
 
 logging:
   level:
