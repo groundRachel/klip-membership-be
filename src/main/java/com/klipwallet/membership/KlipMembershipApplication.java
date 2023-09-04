@@ -5,11 +5,13 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.MessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import com.klipwallet.membership.config.KlipMembershipProperties;
 import com.klipwallet.membership.config.MessageSourceConfig.ErrorCodeVerifier;
 import com.klipwallet.membership.repository.BaseRepository;
 
@@ -18,6 +20,7 @@ import com.klipwallet.membership.repository.BaseRepository;
 @EnableJpaAuditing
 @EnableAsync
 @RequiredArgsConstructor
+@EnableConfigurationProperties(KlipMembershipProperties.class)
 public class KlipMembershipApplication {
     private final MessageSource messageSource;
 

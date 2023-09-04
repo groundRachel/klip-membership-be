@@ -1,7 +1,5 @@
 package com.klipwallet.membership.config.security;
 
-import java.util.Collections;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
@@ -16,7 +14,7 @@ public class WithAuthenticatedUserSecurityContextFactory implements WithSecurity
     public SecurityContext createSecurityContext(WithAuthenticatedUser user) {
         SecurityContext context = SecurityContextHolder.getContextHolderStrategy().createEmptyContext();
         KlipMembershipOAuth2User principal = new KlipMembershipOAuth2User(
-                new MemberId(user.memberId()), Collections.emptyMap(), AuthorityUtils.createAuthorityList(user.authorities()), user.name(),
+                new MemberId(user.memberId()), AuthorityUtils.createAuthorityList(user.authorities()), user.name(),
                 user.email());
         Authentication auth = new OAuth2AuthenticationToken(principal, principal.getAuthorities(), "google");
         context.setAuthentication(auth);

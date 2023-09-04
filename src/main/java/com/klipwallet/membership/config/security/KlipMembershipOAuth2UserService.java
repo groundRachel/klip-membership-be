@@ -2,17 +2,19 @@ package com.klipwallet.membership.config.security;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.Partner;
@@ -34,19 +36,27 @@ public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2
     private final DefaultOAuth2UserService defaultImpl = new DefaultOAuth2UserService();
     private final PartnerService partnerService;
     private final AdminService adminService;
-    /**
-     * 현재 요청한 request를 주입 받아옴.
-     * <p>
-     * 해당 request는 Singleton이 아니라 {@link org.springframework.web.context.WebApplicationContext#SCOPE_REQUEST} 로 작동됨.
-     * 개인적으로 이 방식을 사용하기 꺼려했으나, 현 아키텍처에서 tool, admin 인증 분기를 할려면 요청 시 host(도메인) 정보를 바탕으로 분기하는 수 밖에 없었음.
-     * 다른 방안도 있지만 우선은 이걸로 해결.
-     * </p>
-     */
-    @Autowired
-    private HttpServletRequest request;
+
+    static boolean isAdmin() {
+        HttpServletRequest request = getRequest();
+        try {
+            URL url = new URL(request.getRequestURL().toString());
+            return url.getHost().startsWith(PREFIX_MEMBERSHIP_ADMIN_API);
+        } catch (MalformedURLException e) {
+            throw new BaseException(e); // 발생 가능성 0%
+        }
+    }
+
+    @NonNull
+    private static HttpServletRequest getRequest() {
+        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+    }
 
     @Override
     public KlipMembershipOAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        if (!isGoogle(userRequest)) {
+            return null;
+        }
         OAuth2User oauth2User = defaultImpl.loadUser(userRequest);
         try {
             if (isAdmin()) {  // Klip Membership Admin 인증
@@ -55,8 +65,13 @@ public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2
             // Klip Membership Tool 인증
             return signInToTool(oauth2User);
         } catch (NotFoundException cause) { // 멤버가 존재하지 않으면 비회원으로 인증
-            return KlipMembershipOAuth2User.notMemberOnGoogle(oauth2User);
+            return KlipMembershipOAuth2User.notMemberOnGoogle(oauth2User, userRequest);
         }
+    }
+
+    private boolean isGoogle(OAuth2UserRequest userRequest) {
+        // spring.security.oauth2.client.registration.google
+        return userRequest.getClientRegistration().getRegistrationId().equals("google");
     }
 
     @NonNull
@@ -72,14 +87,5 @@ public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2
         String oauthId = oauth2User.getName();
         Partner partner = partnerService.signIn(oauthId);
         return KlipMembershipOAuth2User.partnerOnGoogle(partner, oauth2User);
-    }
-
-    private boolean isAdmin() {
-        try {
-            URL url = new URL(request.getRequestURL().toString());
-            return url.getHost().startsWith(PREFIX_MEMBERSHIP_ADMIN_API);
-        } catch (MalformedURLException e) {
-            throw new BaseException(e); // 발생 가능성 0%
-        }
     }
 }

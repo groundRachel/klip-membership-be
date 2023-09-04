@@ -41,7 +41,6 @@ import com.klipwallet.membership.exception.NoticeNotFoundException;
 
 import static com.klipwallet.membership.config.SecurityConfig.ROLE_PARTNER;
 import static com.klipwallet.membership.controller.GlobalRestControllerAdvice.toProblemDetail;
-import static java.util.Collections.emptyMap;
 import static org.springdoc.core.utils.Constants.SPRINGDOC_ENABLED;
 import static org.springdoc.core.utils.SpringDocUtils.getConfig;
 import static org.springframework.http.HttpStatus.*;
@@ -139,8 +138,9 @@ public class SpringDocConfig {
     }
 
     private KlipMembershipOAuth2User oauth2User() {
-        return new KlipMembershipOAuth2User(new MemberId(11), emptyMap(), AuthorityUtils.createAuthorityList(ROLE_PARTNER), "정조던",
+        return new KlipMembershipOAuth2User(new MemberId(11), AuthorityUtils.createAuthorityList(ROLE_PARTNER), "정조던",
                                             "jordan.jung@groundx.xyz");
+
     }
 
     @SuppressWarnings("rawtypes")

@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.klipwallet.membership.entity.Admin;
@@ -22,48 +24,68 @@ import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 
 import static com.klipwallet.membership.config.SecurityConfig.*;
+import static java.util.Collections.emptyMap;
 
-@SuppressWarnings("ClassCanBeRecord")
 @RequiredArgsConstructor
 @ToString
 public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable {
     @Serial
     private static final long serialVersionUID = 9102776982135701748L;
-
+    @jakarta.annotation.Nullable
     private final MemberId memberId;
     private final Map<String, Object> attributes;
     private final Collection<? extends GrantedAuthority> authorities;
     private final String name;
     private final String email;
+    @jakarta.annotation.Nullable
+    private final OAuth2AccessToken accessToken;
+
+    public KlipMembershipOAuth2User(@jakarta.annotation.Nullable MemberId memberId,
+                                    Collection<? extends GrantedAuthority> authorities,
+                                    String name, String email) {
+        this(memberId, emptyMap(), authorities, name, email, null);
+    }
 
     @SuppressWarnings("unused")
-    static KlipMembershipOAuth2User notMemberOnGoogle(OAuth2User googleUser) {
+    static KlipMembershipOAuth2User notMemberOnGoogle(OAuth2User googleUser, OAuth2UserRequest userRequest) {
         return new KlipMembershipOAuth2User(null, googleUser.getAttributes(), googleUser.getAuthorities(), googleUser.getName(),
-                                            getGoogleEmail(googleUser));
+                                            getGoogleEmail(googleUser), null);
     }
 
     private static String getGoogleEmail(Map<String, Object> attributes) {
         return (String) attributes.getOrDefault("email", null);
     }
 
-    public static String getGoogleEmail(OAuth2User oAuth2User) {
-        return getGoogleEmail(oAuth2User.getAttributes());
+    public static String getGoogleEmail(OAuth2User googleUser) {
+        return getGoogleEmail(googleUser.getAttributes());
     }
 
-    public static KlipMembershipOAuth2User partnerOnGoogle(Partner partner, OAuth2User googleUser) {
-        return new KlipMembershipOAuth2User(partner.getMemberId(), googleUser.getAttributes(),
-                                            AuthorityUtils.createAuthorityList(ROLE_PARTNER),
-                                            googleUser.getName(),
-                                            getGoogleEmail(googleUser));
+    public static String getKakaoEmail(OAuth2User kakaoUser) {
+        return getKakaoEmail(kakaoUser.getAttributes());
     }
 
-    public static KlipMembershipOAuth2User adminOnGoogle(Admin admin, OAuth2User googleUser) {
+    private static String getKakaoEmail(Map<String, Object> attributes) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.getOrDefault("kakao_account", emptyMap());
+        return (String) kakaoAccount.get("email");
+    }
+
+
+    static KlipMembershipOAuth2User partnerOnGoogle(Partner partner, OAuth2User googleUser) {
+        return new KlipMembershipOAuth2User(partner.getMemberId(), AuthorityUtils.createAuthorityList(ROLE_PARTNER),
+                                            googleUser.getName(), getGoogleEmail(googleUser));
+    }
+
+    static KlipMembershipOAuth2User adminOnGoogle(Admin admin, OAuth2User googleUser) {
         List<GrantedAuthority> authorities = getAuthorities(admin);
-        return new KlipMembershipOAuth2User(admin.getMemberId(), googleUser.getAttributes(),
+        return new KlipMembershipOAuth2User(admin.getMemberId(), authorities,
+                                            googleUser.getName(), getGoogleEmail(googleUser));
+    }
 
-                                            authorities,
-                                            googleUser.getName(),
-                                            getGoogleEmail(googleUser));
+    static KlipMembershipOAuth2User kakao(OAuth2User kakaoUser, OAuth2AccessToken accessToken) {
+        List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(ROLE_KLIP_KAKAO);
+        return new KlipMembershipOAuth2User(null, kakaoUser.getAttributes(), authorities,
+                                            kakaoUser.getName(), getKakaoEmail(kakaoUser), accessToken);
     }
 
     @NonNull

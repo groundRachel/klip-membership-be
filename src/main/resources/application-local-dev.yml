@@ -1,8 +1,12 @@
+#file: noinspection HttpUrlsUsage
 # local-dev: local 환경이지만 dev 환경 인프라에 의존하는 환경. w/ vault(local-dev.properties)
 application:
+  klip-membership:
+    tool-front-url: http://membership.local.com:3000
+    admin-front-url: http://membership.local.com:3000
   kakao-api:
-    #   admin-key:   from Vault /klip/klip-membership
-    #   domain-id:   from Vault /klip/klip-membership
+    admin-key: ${kakao_admin_key}  # from Vault /klip/common
+    #domain-id:   from Vault /klip/klip-membership
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
   bgms:
     api-url: https://www.biztalk-api.com
@@ -74,20 +78,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            provider: google
-            #client-id:       from Vault /klip/klip-membership
-            #client-secret:   from Vault /klip/klip-membership
-            scope: profile, email
   session:
     redis:
       repository-type: default
       namespace: local    # 환경 별 prefix 설정. Key 예시: 'local:sessions:{sessionId}'
-    timeout: 1h
+    timeout: 30m
 
 springdoc:
   api-docs:

@@ -1,22 +1,31 @@
 package com.klipwallet.membership.config;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.DelegatingOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.klipwallet.membership.config.security.KakaoOAuth2AuthorizationRequestResolver;
+import com.klipwallet.membership.config.security.KakaoOAuth2UserService;
+import com.klipwallet.membership.config.security.KlipMembershipOAuth2SuccessHandler;
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2UserService;
 import com.klipwallet.membership.config.security.ProblemDetailEntryPoint;
 import com.klipwallet.membership.service.AdminService;
 import com.klipwallet.membership.service.PartnerService;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Slf4j
@@ -25,10 +34,12 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @ConditionalOnWebApplication
 public class SecurityConfig {
     public static final String OAUTH2_USER = "OAUTH2_USER";
+    public static final String KLIP_KAKAO = "KLIP_KAKAO";
     public static final String PARTNER = "PARTNER";
     public static final String ADMIN = "ADMIN";
     public static final String SUPER_ADMIN = "SUPERADMIN";
     public static final String ROLE_PREFIX = "ROLE_";
+    public static final String ROLE_KLIP_KAKAO = ROLE_PREFIX + KLIP_KAKAO;
     public static final String ROLE_ADMIN = ROLE_PREFIX + ADMIN;
     public static final String ROLE_SUPER_ADMIN = ROLE_PREFIX + SUPER_ADMIN;
     public static final String ROLE_PARTNER = ROLE_PREFIX + PARTNER;
@@ -66,7 +77,11 @@ public class SecurityConfig {
     @SuppressWarnings("Convert2MethodRef")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   @SuppressWarnings("unused") ProblemDetailEntryPoint problemDetailEntryPoint) throws Exception {
+                                                   @SuppressWarnings("unused") ProblemDetailEntryPoint problemDetailEntryPoint,
+                                                   DelegatingOAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService,
+                                                   KlipMembershipOAuth2SuccessHandler kakaoOAuth2SuccessHandler)
+            throws Exception {
+
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faq/*"),
@@ -84,7 +99,10 @@ public class SecurityConfig {
                                            antMatcher("/usera"),
                                            antMatcher("/usero")).permitAll()
                           .anyRequest().authenticated())
-            .oauth2Login(withDefaults())
+            .oauth2Login(
+                    o -> o.successHandler(kakaoOAuth2SuccessHandler)
+                          .userInfoEndpoint(
+                                  u -> u.userService(oauth2UserService)))
             .anonymous(a -> a.disable())
             .httpBasic(h -> h.disable())
             .formLogin(f -> f.disable())
@@ -100,9 +118,23 @@ public class SecurityConfig {
     /**
      * Implementation of OAuth2UserService
      */
+    @Primary
     @Bean
-    KlipMembershipOAuth2UserService oauth2UserService(PartnerService partnerService, AdminService adminService) {
-        return new KlipMembershipOAuth2UserService(partnerService, adminService);
+    DelegatingOAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService(PartnerService partnerService,
+                                                                                 AdminService adminService) {
+        var klipMembershipOAuth2UserService = new KlipMembershipOAuth2UserService(partnerService, adminService);
+        var kakaoOAuth2UserService = new KakaoOAuth2UserService();
+        return new DelegatingOAuth2UserService<>(List.of(klipMembershipOAuth2UserService, kakaoOAuth2UserService));
+    }
+
+    @Bean
+    KlipMembershipOAuth2SuccessHandler kakaoOAuth2SuccessHandler(KlipMembershipProperties properties) {
+        return new KlipMembershipOAuth2SuccessHandler(properties);
+    }
+
+    //    @Bean 추후 필요할 수 있어서 우선 유지.
+    KakaoOAuth2AuthorizationRequestResolver kakaoOAuth2AuthorizationRequestResolver(ClientRegistrationRepository clientRegistrationRepository) {
+        return new KakaoOAuth2AuthorizationRequestResolver(clientRegistrationRepository);
     }
 
     @Bean
