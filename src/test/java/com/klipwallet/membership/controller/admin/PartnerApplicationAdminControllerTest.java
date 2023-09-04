@@ -94,7 +94,7 @@ class PartnerApplicationAdminControllerTest {
     @Test
     void approveResult_status_APPROVED(@Autowired MockMvc mvc) throws Exception {
         // given
-        PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00002", "exampl-admin-controller2@groundx.xyz",
+        PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00002", "winnie.byun@groundx.xyz",
                                                           "292085223831.apps.googleusercontent.com");
         partnerApplicationRepository.save(apply);
         partnerApplicationRepository.flush();
@@ -109,7 +109,7 @@ class PartnerApplicationAdminControllerTest {
         PartnerApplication partnerApplication = partnerApplicationRepository.findByBusinessRegistrationNumber("100-00-00002").orElseThrow();
         assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
-        assertThat(partnerApplication.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
+        assertThat(partnerApplication.getEmail()).isEqualTo("winnie.byun@groundx.xyz");
         assertThat(partnerApplication.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(APPROVED);
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
@@ -119,7 +119,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partner).isNotNull();
         assertThat(partner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partner.getPhoneNumber()).isEqualTo("010-1234-5678");
-        assertThat(partner.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
+        assertThat(partner.getEmail()).isEqualTo("winnie.byun@groundx.xyz");
         assertThat(partner.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partner.getCreatedAt()).isBefore(LocalDateTime.now());
         assertThat(partner.getCreatorId()).isEqualTo(new MemberId(23));
