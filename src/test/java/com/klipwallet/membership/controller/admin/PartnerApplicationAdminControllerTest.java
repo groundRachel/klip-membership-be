@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.klipwallet.membership.config.security.WithAdminUser;
-import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
@@ -165,15 +164,8 @@ class PartnerApplicationAdminControllerTest {
                          .ifPresent(p -> {throw new RuntimeException();});
     }
 
-    private MemberId createAdmin() {
-        Admin admin = new Admin("jordan.jung@groundx.xyz", new MemberId(1));
-        Admin persisted = adminRepository.save(admin);
-        adminRepository.flush();
-        return persisted.getMemberId();
-    }
-
     void createApplications() {
-        MemberId processorId = createAdmin();
+        MemberId processorId = new MemberId(2);
 
         List<PartnerApplication> applications = Arrays.asList(
                 new PartnerApplication("(주) 그라운드엑스0", "010-1234-5678", "000-00-00001", "example1@groundx.xyz", "192085223830"),
@@ -202,7 +194,7 @@ class PartnerApplicationAdminControllerTest {
         partnerRepository.flush();
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 요청 상태 > 200")
     @Test
     void getPartnerApplications_APPLIED(@Autowired MockMvc mvc) throws Exception {
@@ -228,7 +220,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$[2].processor").isEmpty());
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 거절 상태 > 200")
     @Test
     void getPartnerApplications_REJECTED(@Autowired MockMvc mvc) throws Exception {
@@ -252,7 +244,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$[2].processor.name").value("jordan.jung"));
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 비정상 입력 > 400")
     @Test
     void getPartnerApplications_UNDEFINED(@Autowired MockMvc mvc) throws Exception {
@@ -265,7 +257,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(status().isBadRequest());
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 미입력 > 400")
     @Test
     void getPartnerApplications_NoStatus(@Autowired MockMvc mvc) throws Exception {
