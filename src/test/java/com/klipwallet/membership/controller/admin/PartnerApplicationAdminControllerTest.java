@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.klipwallet.membership.config.security.WithAdminUser;
-import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
@@ -95,7 +94,7 @@ class PartnerApplicationAdminControllerTest {
     @Test
     void approveResult_status_APPROVED(@Autowired MockMvc mvc) throws Exception {
         // given
-        PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00002", "exampl-admin-controller2@groundx.xyz",
+        PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00002", "winnie.byun@groundx.xyz",
                                                           "292085223831.apps.googleusercontent.com");
         partnerApplicationRepository.save(apply);
         partnerApplicationRepository.flush();
@@ -110,7 +109,7 @@ class PartnerApplicationAdminControllerTest {
         PartnerApplication partnerApplication = partnerApplicationRepository.findByBusinessRegistrationNumber("100-00-00002").orElseThrow();
         assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
-        assertThat(partnerApplication.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
+        assertThat(partnerApplication.getEmail()).isEqualTo("winnie.byun@groundx.xyz");
         assertThat(partnerApplication.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(APPROVED);
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
@@ -120,7 +119,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partner).isNotNull();
         assertThat(partner.getName()).isEqualTo("(주) 그라운드엑스");
         assertThat(partner.getPhoneNumber()).isEqualTo("010-1234-5678");
-        assertThat(partner.getEmail()).isEqualTo("exampl-admin-controller2@groundx.xyz");
+        assertThat(partner.getEmail()).isEqualTo("winnie.byun@groundx.xyz");
         assertThat(partner.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partner.getCreatedAt()).isBefore(LocalDateTime.now());
         assertThat(partner.getCreatorId()).isEqualTo(new MemberId(23));
@@ -165,15 +164,8 @@ class PartnerApplicationAdminControllerTest {
                          .ifPresent(p -> {throw new RuntimeException();});
     }
 
-    private MemberId createAdmin() {
-        Admin admin = new Admin("jordan.jung@groundx.xyz", new MemberId(1));
-        Admin persisted = adminRepository.save(admin);
-        adminRepository.flush();
-        return persisted.getMemberId();
-    }
-
     void createApplications() {
-        MemberId processorId = createAdmin();
+        MemberId processorId = new MemberId(2);
 
         List<PartnerApplication> applications = Arrays.asList(
                 new PartnerApplication("(주) 그라운드엑스0", "010-1234-5678", "000-00-00001", "example1@groundx.xyz", "192085223830"),
@@ -202,7 +194,7 @@ class PartnerApplicationAdminControllerTest {
         partnerRepository.flush();
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 요청 상태 > 200")
     @Test
     void getPartnerApplications_APPLIED(@Autowired MockMvc mvc) throws Exception {
@@ -228,7 +220,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$[2].processor").isEmpty());
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 거절 상태 > 200")
     @Test
     void getPartnerApplications_REJECTED(@Autowired MockMvc mvc) throws Exception {
@@ -252,7 +244,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$[2].processor.name").value("jordan.jung"));
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 비정상 입력 > 400")
     @Test
     void getPartnerApplications_UNDEFINED(@Autowired MockMvc mvc) throws Exception {
@@ -265,7 +257,7 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(status().isBadRequest());
     }
 
-    @WithAdminUser(memberId = 1)
+    @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 미입력 > 400")
     @Test
     void getPartnerApplications_NoStatus(@Autowired MockMvc mvc) throws Exception {

@@ -9,6 +9,8 @@ application:
     password: ${bgms_pw}  # from Vault /klip/common
   klip-drops-internal:
     api-url: http://klip-drops.klip-drops-dev.svc.cluster.local:3100
+  email:
+    sender-email: developer@groundx.xyz # AWS SES에서 email verfiy된 주소 입력
 
 cloud:
   aws:
@@ -22,8 +24,6 @@ cloud:
       auto: false
     cloudfront:
       distribution-domain: membership.dev.klipwallet.com
-    ses:
-      sender-email: developer@groundx.xyz # AWS SES에서 email verfiy된 주소 입력
 
 logging:
   level:

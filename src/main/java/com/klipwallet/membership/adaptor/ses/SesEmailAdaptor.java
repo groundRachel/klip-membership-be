@@ -1,7 +1,5 @@
 package com.klipwallet.membership.adaptor.ses;
 
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,8 +14,9 @@ import software.amazon.awssdk.services.sesv2.model.Destination;
 import software.amazon.awssdk.services.sesv2.model.EmailContent;
 import software.amazon.awssdk.services.sesv2.model.Message;
 import software.amazon.awssdk.services.sesv2.model.SendEmailRequest;
+import software.amazon.awssdk.services.sesv2.model.SendEmailResponse;
 
-import com.klipwallet.membership.config.AwsSesProperties;
+import com.klipwallet.membership.config.EmailProperties;
 import com.klipwallet.membership.exception.notifier.EmailNotifierException;
 import com.klipwallet.membership.service.EmailSendable;
 
@@ -26,20 +25,24 @@ import com.klipwallet.membership.service.EmailSendable;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@EnableConfigurationProperties({AwsSesProperties.class})
+@EnableConfigurationProperties({EmailProperties.class})
 public class SesEmailAdaptor implements EmailSendable {
-
     private final SesV2Client sesClient;
-    private final AwsSesProperties awsSesProperties;
+    private final EmailProperties emailProperties;
 
     @Override
     public void sendEmail(SimpleMailMessage message) {
         SendEmailRequest emailRequest = buildEmailRequest(message);
 
-        Optional.of(emailRequest)
-                .map(sesClient::sendEmail)
-                .filter(sendEmailResponse -> sendEmailResponse.sdkHttpResponse().isSuccessful())
-                .orElseThrow(EmailNotifierException::new);
+        try {
+            SendEmailResponse emailResponse = sesClient.sendEmail(emailRequest);
+            if (!emailResponse.sdkHttpResponse().isSuccessful()) {
+                throw new EmailNotifierException(String.valueOf(emailResponse.sdkHttpResponse().statusCode()));
+            }
+        } catch (Exception e) {
+            log.error("failed to sendEmail [err]: {}, [sender]: {}, [message]: {}", e, emailProperties.getSenderEmail(), message);
+            throw new EmailNotifierException(e.getMessage());
+        }
     }
 
     private SendEmailRequest buildEmailRequest(SimpleMailMessage message) {
@@ -48,12 +51,12 @@ public class SesEmailAdaptor implements EmailSendable {
         Content sub = Content.builder().data(message.getSubject()).build();
 
         Content content = Content.builder().data(message.getText()).build();
-        Body body = Body.builder().text(content).build();// TODO HTML
+        Body body = Body.builder().text(content).build(); // TODO HTML
 
         Message msg = Message.builder().subject(sub).body(body).build();
         EmailContent emailContent = EmailContent.builder().simple(msg).build();
 
-        String sender = awsSesProperties.getSenderEmail();
+        String sender = emailProperties.getSenderEmail();
 
         return SendEmailRequest.builder()
                                .destination(destination)

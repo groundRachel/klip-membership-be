@@ -61,15 +61,13 @@ public enum ErrorCode {
     // FAQ_*
     FAQ_NOT_FOUND(404_005),
 
-    // Storage & AttachFile
+    // Infra
     ATTACH_FILE_UPLOAD_LIMIT_OVER(400_006),
     STORAGE_STORE(500_101),
+    EMAIL_SEND_ERROR(500_103),
 
     // InterApi
-    INTERNAL_API_ERROR(500_200),
-
-    // Notifier
-    Email_SEND(500_301);
+    INTERNAL_API_ERROR(500_200);
 
     final int code;
 
