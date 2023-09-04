@@ -12,6 +12,7 @@ import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
 import com.klipwallet.membership.entity.Partner;
+import com.klipwallet.membership.exception.OperatorNotFoundException;
 import com.klipwallet.membership.exception.member.PartnerNotFoundException;
 import com.klipwallet.membership.repository.OperatorRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
@@ -39,6 +40,10 @@ public class OperatorService {
         return new OperatorSummary(saved);
     }
 
+    public Operator tryGetOperator(Long operatorId) {
+        return operatorRepository.findById(operatorId).orElseThrow(() -> new OperatorNotFoundException(operatorId));
+    }
+
     private Partner tryGetPartner(MemberId partnerId) {
         return partnerRepository.findById(partnerId.value()).orElseThrow(() -> new PartnerNotFoundException(partnerId));
     }
@@ -47,4 +52,6 @@ public class OperatorService {
         // TODO: @Ian get klaytn address by a2a adaptor
         return klipAccountService.getKlipUser(new Address(""));
     }
+
+
 }

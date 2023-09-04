@@ -10,11 +10,13 @@ application:
     password: ${bgms_pw}  # from local.properties
   klip-drops-internal:
     api-url: http://localhost:3100 # kubectl port-forward svc/klip-drops 3100:3100
+  nft:
+    klip-drops-sca: 0xb329ddcc6722c158c81BeDe6820dd419e6896486
 
 cloud:
   aws:
     s3:
-      bucket: klip-membership-fe-dev
+      bucket: klip-cms-dev
       prefix: dist
     region:
       static: ap-northeast-2
@@ -22,7 +24,7 @@ cloud:
     stack:
       auto: false
     cloudfront:
-      distribution-domain: membership.dev.klipwallet.com
+      distribution-domain: klip-media.dev.klaytn.com
 
 logging:
   level:

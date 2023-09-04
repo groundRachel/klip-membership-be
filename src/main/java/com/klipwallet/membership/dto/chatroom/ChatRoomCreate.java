@@ -14,7 +14,10 @@ import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.NonNull;
 import org.hibernate.validator.constraints.URL;
 
+import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.ChatRoom;
+import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 
 @Schema(description = "채팅방 생성 DTO", accessMode = AccessMode.WRITE_ONLY)
 public record ChatRoomCreate(
@@ -39,8 +42,8 @@ public record ChatRoomCreate(
 ) {
     private static final int MAX_OPERATOR_SIZE = 4;
 
-    public ChatRoom toChatRoom(@NonNull ChatRoom chatRoom) {
-        return new ChatRoom(chatRoom.getTitle(), chatRoom.getCoverImage(), chatRoom.getOpenChatRoomSummary(), chatRoom.getContractAddress(),
-                            chatRoom.getCreatorId());
+    public ChatRoom toChatRoom(@NonNull OpenChatRoomSummary openChatRoomSummary, Address nftSca,
+                               MemberId creatorId) {
+        return new ChatRoom(title, coverImageUrl, openChatRoomSummary, nftSca, creatorId);
     }
 }
