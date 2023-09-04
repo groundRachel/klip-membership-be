@@ -47,25 +47,24 @@ public class ChatRoomService {
     @Transactional
     public ChatRoomSummary create(ChatRoomCreate command, AuthenticatedUser user) {
         checkOperators(command.operators(), command.host().operatorId());
-
-        Operator operator = operatorService.tryGetOperator(command.host().operatorId());
-
+        Operator host = operatorService.tryGetOperator(command.host().operatorId());
         // Create openchat in Kakao
         OpenChatRoomSummary summary = kakaoService.createOpenChatRoom(command.title(), command.description(), command.coverImageUrl(),
-                                                                      new OpenChatRoomHost(new KakaoId(operator.getKakaoUserId()),
+                                                                      new OpenChatRoomHost(new KakaoId(host.getKakaoUserId()),
                                                                                            command.host().nickname(),
                                                                                            command.host().profileImageUrl()));
-
-        // TODO: Join operators chat room
-
         // Save open chat room
         ChatRoom entity = command.toChatRoom(summary, new Address(nftProperties.getSca()), user.getMemberId());
         ChatRoom saved = chatRoomRepository.save(entity);
-
         // Save host
         chatRoomMemberService.createHost(saved, command.host(), user);
         // Save operators
         for (ChatRoomOperatorCreate chatRoomOperatorCreate : command.operators()) {
+            Operator operator = operatorService.tryGetOperator(chatRoomOperatorCreate.operatorId());
+            // Join kakao open chat room
+            kakaoService.joinOpenChatRoom(summary.getId(), chatRoomOperatorCreate.nickname(), chatRoomOperatorCreate.profileImageUrl(),
+                                          operator.getKakaoUserId());
+            // Insert db
             chatRoomMemberService.createOperator(saved, chatRoomOperatorCreate, user);
         }
         for (ChatRoomNftCreate nftCommand : command.nfts()) {

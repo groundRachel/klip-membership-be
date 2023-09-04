@@ -19,7 +19,7 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 public class ChatRoomNft extends BaseEntity<ChatRoomNft> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @Column(nullable = false)
     private Integer partnerId;
     @Column(nullable = false)
@@ -27,17 +27,17 @@ public class ChatRoomNft extends BaseEntity<ChatRoomNft> {
     @Column(nullable = false)
     private Long dropId;
     @Column(nullable = false)
-    private Address sca;
+    private String contractAddress;
 
     @ForJpa
     protected ChatRoomNft() {
     }
 
-    public ChatRoomNft(Integer partnerId, Long chatRoomId, Long dropId, Address sca, MemberId creatorId) {
+    public ChatRoomNft(Integer partnerId, Long chatRoomId, Long dropId, Address contractAddress, MemberId creatorId) {
         this.partnerId = partnerId;
         this.chatRoomId = chatRoomId;
         this.dropId = dropId;
-        this.sca = sca;
+        this.contractAddress = contractAddress.getValue();
         this.createBy(creatorId);
     }
 }

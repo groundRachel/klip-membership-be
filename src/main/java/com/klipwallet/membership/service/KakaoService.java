@@ -14,4 +14,6 @@ public interface KakaoService {
      * @return 개선될 오픈채팅방 아이디 ValueObject
      */
     OpenChatRoomSummary createOpenChatRoom(String title, String description, String coverImage, OpenChatRoomHost host);
+
+    OpenChatRoomSummary joinOpenChatRoom(Long linkId, String nickname, String profileImage, String targetId);
 }

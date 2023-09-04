@@ -41,6 +41,8 @@ class ChatRoomToolControllerTest {
     OperatorService operatorService;
     @Value("${user-id}")
     private String kakaoUserId;
+    @Value("${participant-id}")
+    private String kakaoPartnerId;
 
     @BeforeEach
     void setUp() {
@@ -62,8 +64,10 @@ class ChatRoomToolControllerTest {
     @Test
     @Disabled("실제 오픈채팅방 생성되어 Disabled")
     void createChatRoom(@Autowired MockMvc mvc) throws Exception {
-        Operator operator = new Operator(324L, kakaoUserId, 23, new MemberId(1));
-        given(operatorService.tryGetOperator(any())).willReturn(operator);
+        Operator host = new Operator(324L, kakaoUserId, 23, new MemberId(1));
+        given(operatorService.tryGetOperator(1L)).willReturn(host);
+        Operator operator = new Operator(325L, kakaoPartnerId, 23, new MemberId(2));
+        given(operatorService.tryGetOperator(2L)).willReturn(operator);
         String body = """
                       {
                         "title": "NFT 오픈채팅방",
@@ -79,21 +83,16 @@ class ChatRoomToolControllerTest {
                                 "operatorId": 2,
                                 "nickname": "운영자 2 닉네임",
                                 "profileImageUrl": "https://membership.dev.klipwallet.com/klip-membership/test.jpg"
-                            },
-                            {
-                                "operatorId": 3,
-                                "nickname": "운영자 3 닉네임",
-                                "profileImageUrl": "https://membership.dev.klipwallet.com/klip-membership/test.jpg"
                             }
                         ],
                         "nfts": [
                             {
                                 "dropId": 39700080005,
-                                "sca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             },
                             {
                                 "dropId": 39700080005,
-                                "sca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             }
                         ]
                       }
@@ -112,7 +111,7 @@ class ChatRoomToolControllerTest {
     @DisplayName("오픈채팅방 생성: 제목 없음 > 400")
     @Test
     void createChatRoomCheckNull(@Autowired MockMvc mvc) throws Exception {
-        Operator operator = new Operator(324L, kakaoUserId, 23, new MemberId(1));
+        Operator operator = new Operator(324L, "2238023120", 23, new MemberId(1));
         given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
                       {
@@ -139,11 +138,11 @@ class ChatRoomToolControllerTest {
                         "nfts": [
                             {
                                 "dropId": null,
-                                "sca": null
+                                "contractAddress": null
                             },
                             {
                                 "dropId": 39700080005,
-                                "sca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             }
                         ]
                       }
@@ -167,7 +166,7 @@ class ChatRoomToolControllerTest {
                             jsonPath("$.errors[?(@.field == 'operators[0].profileImageUrl')].message").value(
                                     "operators[0].profileImageUrl: '공백일 수 없습니다'"))
                     .andExpect(jsonPath("$.errors[?(@.field == 'nfts[0].dropId')].message").value("nfts[0].dropId: '널이어서는 안됩니다'"))
-                    .andExpect(jsonPath("$.errors[?(@.field == 'nfts[0].sca')].message").value("nfts[0].sca: '널이어서는 안됩니다'"));
+                    .andExpect(jsonPath("$.errors[?(@.field == 'nfts[0].contractAddress')].message").value("nfts[0].contractAddress: '널이어서는 안됩니다'"));
 
     }
 
@@ -175,7 +174,7 @@ class ChatRoomToolControllerTest {
     @DisplayName("오픈채팅방 생성: 운영자 인원 제한 초과 > 400")
     @Test
     void createChatRoomExceedOperatorLimit(@Autowired MockMvc mvc) throws Exception {
-        Operator operator = new Operator(324L, kakaoUserId, 23, new MemberId(1));
+        Operator operator = new Operator(324L, "2238023120", 23, new MemberId(1));
         given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
                       {
@@ -217,11 +216,11 @@ class ChatRoomToolControllerTest {
                         "nfts": [
                             {
                                 "dropId": 39700080005,
-                                "sca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             },
                             {
                                 "dropId": 39700080005,
-                                "sca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             }
                         ]
                       }

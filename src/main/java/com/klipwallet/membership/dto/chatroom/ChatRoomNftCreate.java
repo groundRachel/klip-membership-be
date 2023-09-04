@@ -14,9 +14,9 @@ public record ChatRoomNftCreate(
         Long dropId,
         @Schema(description = "Drop SCA")
         @NotNull
-        Address sca
+        Address contractAddress
 ) {
     public ChatRoomNft toChatRoomNft(Integer partnerId, Long chatRoomId, MemberId creatorId) {
-        return new ChatRoomNft(partnerId, chatRoomId, dropId, sca, creatorId);
+        return new ChatRoomNft(partnerId, chatRoomId, dropId, contractAddress, creatorId);
     }
 }

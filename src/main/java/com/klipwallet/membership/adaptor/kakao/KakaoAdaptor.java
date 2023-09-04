@@ -7,6 +7,8 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.klipwallet.membership.adaptor.kakao.dto.CreateOpenlinkReq;
+import com.klipwallet.membership.adaptor.kakao.dto.JoinOpenlinkReq;
+import com.klipwallet.membership.adaptor.kakao.dto.JoinOpenlinkRes;
 import com.klipwallet.membership.adaptor.kakao.dto.OpenlinkSummaryRes;
 import com.klipwallet.membership.config.KakaoApiProperties;
 import com.klipwallet.membership.entity.KakaoOpenChatRoomOpened;
@@ -28,6 +30,13 @@ public class KakaoAdaptor implements KakaoService {
         OpenlinkSummaryRes res = apiClient.createOpenlink(
                 new CreateOpenlinkReq(host.getKakaoId().getId(), kakaoApiProperties.getDomainId(), title, coverImage, description, host.getNickname(),
                                       host.getProfileImageUrl()));
+        return new OpenChatRoomSummary(res.linkId(), res.linkUrl());
+    }
+
+    @Override
+    public OpenChatRoomSummary joinOpenChatRoom(Long linkId, String nickname, String profileImage, String targetId) {
+        JoinOpenlinkRes res = apiClient.joinOpenlink(
+                new JoinOpenlinkReq(targetId, nickname, profileImage, kakaoApiProperties.getDomainId(), linkId));
         return new OpenChatRoomSummary(res.linkId(), res.linkUrl());
     }
 
