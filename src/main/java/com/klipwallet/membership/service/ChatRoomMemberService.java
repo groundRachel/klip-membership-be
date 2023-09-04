@@ -12,19 +12,16 @@ import com.klipwallet.membership.entity.ChatRoomMember;
 import com.klipwallet.membership.entity.ChatRoomMember.Role;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
-import com.klipwallet.membership.exception.OperatorNotFoundException;
 import com.klipwallet.membership.exception.kakao.OperatorNotInPartnerException;
 import com.klipwallet.membership.repository.ChatRoomMemberRepository;
 import com.klipwallet.membership.repository.ChatRoomRepository;
-import com.klipwallet.membership.repository.OperatorRepository;
 
 @Service
 @RequiredArgsConstructor
 public class ChatRoomMemberService {
     private final ChatRoomMemberRepository chatRoomMemberRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final KlipAccountService klipAccountService;
-    private final OperatorRepository operatorRepository;
+    private final OperatorService operatorService;
 
     /**
      * 외부 API 에서 사용
@@ -36,20 +33,24 @@ public class ChatRoomMemberService {
         return null;
     }
 
-    public ChatRoomMember createOperator(ChatRoomOperatorCreate command, Role role, AuthenticatedUser user) {
-        Operator operator = tryGetOperator(command.operatorId());
+    public ChatRoomMember createHost(ChatRoom chatRoom, ChatRoomOperatorCreate command, AuthenticatedUser user) {
+        return saveOperator(chatRoom, command, user, Role.HOST);
+    }
+
+    public ChatRoomMember createOperator(ChatRoom chatRoom, ChatRoomOperatorCreate command, AuthenticatedUser user) {
+        return saveOperator(chatRoom, command, user, Role.OPERATOR);
+    }
+
+    private ChatRoomMember saveOperator(ChatRoom chatRoom, ChatRoomOperatorCreate command, AuthenticatedUser user, Role role) {
+        Operator operator = operatorService.tryGetOperator(command.operatorId());
         checkOperatorPartnerId(operator, user.getMemberId());
 
-        ChatRoomMember entity = command.toChatRoomMember(operator, role);
+        ChatRoomMember entity = command.toChatRoomMember(chatRoom, operator, role);
         return chatRoomMemberRepository.save(entity);
     }
 
     public ChatRoom getChatRoom(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId).get();
-    }
-
-    private Operator tryGetOperator(Long operatorId) {
-        return operatorRepository.findById(operatorId).orElseThrow(() -> new OperatorNotFoundException(operatorId));
     }
 
     private void checkOperatorPartnerId(Operator operator, MemberId partnerId) {

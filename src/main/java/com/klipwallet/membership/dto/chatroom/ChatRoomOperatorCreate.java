@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.ChatRoomMember;
 import com.klipwallet.membership.entity.ChatRoomMember.Role;
 import com.klipwallet.membership.entity.Operator;
@@ -23,7 +24,7 @@ public record ChatRoomOperatorCreate(
         String profileImageUrl
 ) {
     @JsonIgnore
-    public ChatRoomMember toChatRoomMember(Operator operator, Role role) {
-        return new ChatRoomMember(operator.getKlipId(), operator.getKakaoUserId(), operatorId, nickname, profileImageUrl, role);
+    public ChatRoomMember toChatRoomMember(ChatRoom chatRoom, Operator operator, Role role) {
+        return new ChatRoomMember(chatRoom, operator.getKlipId(), operator.getKakaoUserId(), operatorId, nickname, profileImageUrl, role);
     }
 }

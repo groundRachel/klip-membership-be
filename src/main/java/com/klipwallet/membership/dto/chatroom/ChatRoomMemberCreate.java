@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 
+import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.ChatRoomMember;
 import com.klipwallet.membership.entity.ChatRoomMember.Role;
 
@@ -36,7 +37,7 @@ public record ChatRoomMemberCreate(
         Role role
 ) {
     @JsonIgnore
-    public ChatRoomMember toChatRoomMember() {
-        return new ChatRoomMember(klipId, kakaoUserId, operatorId, nickname, profileImageUrl, role);
+    public ChatRoomMember toChatRoomMember(ChatRoom chatRoom) {
+        return new ChatRoomMember(chatRoom, klipId, kakaoUserId, operatorId, nickname, profileImageUrl, role);
     }
 }

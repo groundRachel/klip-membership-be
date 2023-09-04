@@ -1,7 +1,6 @@
 package com.klipwallet.membership.controller.tool;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -22,7 +21,7 @@ import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
 import com.klipwallet.membership.repository.ChatRoomMemberRepository;
-import com.klipwallet.membership.repository.OperatorRepository;
+import com.klipwallet.membership.service.OperatorService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -39,7 +38,7 @@ class ChatRoomToolControllerTest {
     @Autowired
     ChatRoomMemberRepository chatRoomMemberRepository;
     @MockBean
-    OperatorRepository operatorRepository;
+    OperatorService operatorService;
     @Value("${user-id}")
     private String kakaoUserId;
 
@@ -64,7 +63,7 @@ class ChatRoomToolControllerTest {
     @Disabled("실제 오픈채팅방 생성되어 Disabled")
     void createChatRoom(@Autowired MockMvc mvc) throws Exception {
         Operator operator = new Operator(324L, kakaoUserId, 23, new MemberId(1));
-        given(operatorRepository.findById(any())).willReturn(Optional.of(operator));
+        given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
                       {
                         "title": "NFT 오픈채팅방",
@@ -102,15 +101,19 @@ class ChatRoomToolControllerTest {
         var ra = mvc.perform(post("/tool/v1/chat-rooms")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
-                    .andExpect(status().isCreated());
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.id").isString())
+                    .andExpect(jsonPath("$.openChatRoomId").isString())
+                    .andExpect(jsonPath("$.openChatRoomUrl").isString())
+                    .andExpect(jsonPath("$.title").value("NFT 오픈채팅방"));
     }
 
     @WithPartnerUser
     @DisplayName("오픈채팅방 생성: 제목 없음 > 400")
     @Test
     void createChatRoomCheckNull(@Autowired MockMvc mvc) throws Exception {
-        Operator operator = new Operator(324L, "2538023310", 23, new MemberId(1));
-        given(operatorRepository.findById(any())).willReturn(Optional.of(operator));
+        Operator operator = new Operator(324L, kakaoUserId, 23, new MemberId(1));
+        given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
                       {
                         "title": "",
@@ -172,8 +175,8 @@ class ChatRoomToolControllerTest {
     @DisplayName("오픈채팅방 생성: 운영자 인원 제한 초과 > 400")
     @Test
     void createChatRoomExceedOperatorLimit(@Autowired MockMvc mvc) throws Exception {
-        Operator operator = new Operator(324L, "2538023310", 23, new MemberId(1));
-        given(operatorRepository.findById(any())).willReturn(Optional.of(operator));
+        Operator operator = new Operator(324L, kakaoUserId, 23, new MemberId(1));
+        given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
                       {
                         "title": "NFT 오픈채팅방",

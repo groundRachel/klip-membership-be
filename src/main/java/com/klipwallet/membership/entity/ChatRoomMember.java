@@ -2,9 +2,12 @@ package com.klipwallet.membership.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -22,6 +25,9 @@ import com.klipwallet.membership.entity.ChatRoom.Source;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
 public class ChatRoomMember {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chatroom_id", nullable = false)
+    private ChatRoom chatRoom;
     @Column(nullable = false)
     private Long klipId;
     @Column(nullable = false)
@@ -42,8 +48,9 @@ public class ChatRoomMember {
     protected ChatRoomMember() {
     }
 
-    public ChatRoomMember(Long klipId, String kakaoUserId, Long operatorId, String nickname, String profileImageUrl,
+    public ChatRoomMember(ChatRoom chatRoom, Long klipId, String kakaoUserId, Long operatorId, String nickname, String profileImageUrl,
                           Role role) {
+        this.chatRoom = chatRoom;
         this.klipId = klipId;
         this.kakaoUserId = kakaoUserId;
         this.operatorId = operatorId;
