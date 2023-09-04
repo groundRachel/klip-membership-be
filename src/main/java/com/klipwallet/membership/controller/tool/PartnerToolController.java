@@ -34,7 +34,7 @@ public class PartnerToolController {
     })
     @GetMapping
     public PartnerDto.Detail detail(@AuthenticationPrincipal AuthenticatedUser user) {
-        return partnerService.getDetail(user);
+        return partnerService.getDetail(user.getMemberId());
     }
 
     @Operation(summary = "파트너 상세 정보 수정 (마이페이지)")
@@ -47,6 +47,6 @@ public class PartnerToolController {
     public PartnerDto.Detail update(
             @Valid @RequestBody PartnerDto.Update command,
             @AuthenticationPrincipal AuthenticatedUser user) {
-        return partnerService.update(command, user);
+        return partnerService.update(command, user.getMemberId());
     }
 }

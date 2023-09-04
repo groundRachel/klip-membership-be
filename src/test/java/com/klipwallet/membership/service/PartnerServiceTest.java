@@ -3,6 +3,7 @@ package com.klipwallet.membership.service;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
 import com.klipwallet.membership.dto.partner.PartnerDto.Detail;
@@ -107,8 +107,9 @@ public class PartnerServiceTest {
 
         // when
         List<Detail> details = partnerInfos.stream()
-                                           .map(info -> new KlipMembershipOAuth2User(null, null, null, info.name, info.email))
-                                           .map(user -> service.getDetail(user))
+                                           .map(info -> partnerRepository.findByEmail(info.email))
+                                           .flatMap(Optional::stream)
+                                           .map(partner -> service.getDetail(partner.getMemberId()))
                                            .toList();
 
         // then
@@ -128,14 +129,13 @@ public class PartnerServiceTest {
         // given
         MemberId processorId = new MemberId(2);
         partnerInfo partnerInfo = createPartnerInfos(processorId).get(0);
+        Partner partner = partnerRepository.findByEmail(partnerInfo.email).orElseThrow();
 
         String updateName = "(주) 변경된 이름";
         String updatePhoneNumber = "010-0000-0000";
 
-        KlipMembershipOAuth2User user = new KlipMembershipOAuth2User(null, null, null, partnerInfo.name, partnerInfo.email);
-
         // when
-        Detail updatedDetail = service.update(new Update(updateName, updatePhoneNumber), user);
+        Detail updatedDetail = service.update(new Update(updateName, updatePhoneNumber), partner.getMemberId());
 
         // then
         assertThat(updatedDetail.name()).isEqualTo(updateName);
