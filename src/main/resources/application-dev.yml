@@ -1,6 +1,9 @@
 application:
+  klip-membership:
+    tool-front-url: https://membership.dev.klipwallet.com
+    admin-front-url: https://membership-admin.dev.klipwallet.com
   kakao-api:
-    #admin-key:   from Vault /klip/klip-membership
+    admin-key: ${kakao_admin_key}  # from Vault /klip/common
     #domain-id:   from Vault /klip/klip-membership
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
   bgms:
@@ -77,20 +80,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            provider: google
-            #client-id:       from Vault /klip/klip-membership
-            #client-secret:   from Vault /klip/klip-membership
-            scope: profile, email
+
   session:
     redis:
       repository-type: default
-      namespace: dev    # 환경 별 predfix 설정. Key 예시: 'dev:sessions:{sessionId}'
-    timeout: 1h         # Session 만료 1시간
+      namespace: dev    # 환경 별 prefix 설정. Key 예시: 'dev:sessions:{sessionId}'
+    timeout: 30m
 
 springdoc:
   api-docs:

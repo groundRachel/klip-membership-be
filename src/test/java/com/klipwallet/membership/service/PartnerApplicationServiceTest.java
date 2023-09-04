@@ -14,6 +14,7 @@ import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -60,7 +61,7 @@ class PartnerApplicationServiceTest {
         partnerRepository.flush();
 
         // when
-        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, null, null, "", partnerApplication.getEmail());
+        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", partnerApplication.getEmail());
         SignUpStatus signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
 
         // then
@@ -73,7 +74,7 @@ class PartnerApplicationServiceTest {
         PartnerApplication application = createApplication();
 
         // when
-        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, null, null, "", application.getEmail());
+        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", application.getEmail());
         SignUpStatus signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
 
         // then
@@ -83,7 +84,7 @@ class PartnerApplicationServiceTest {
     @Test
     void getSignUpStatusOfUnapplied() {
         // given
-        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, null, null, "", "email@groundx.xyz");
+        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", "email@groundx.xyz");
         SignUpStatus signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
 
         // then
@@ -101,7 +102,7 @@ class PartnerApplicationServiceTest {
         partnerRepository.flush();
 
         // when
-        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, null, null, "", application.getEmail());
+        KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", application.getEmail());
         SignUpStatus signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
 
         // then
