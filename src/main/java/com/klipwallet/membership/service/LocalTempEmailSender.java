@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class LocalTempEmailSender implements EmailSendable {
 
     @Override
-    public void sendEmail(SimpleMailMessage message) {
+    public boolean sendEmail(SimpleMailMessage message) {
         log.info("""
                  [Email] Successfully sent an email
                  from : {}
@@ -25,5 +25,6 @@ public class LocalTempEmailSender implements EmailSendable {
                  content : {}
                  """,
                  message.getFrom(), Objects.requireNonNull(message.getTo())[0], message.getSubject(), message.getText());
+        return true;
     }
 }

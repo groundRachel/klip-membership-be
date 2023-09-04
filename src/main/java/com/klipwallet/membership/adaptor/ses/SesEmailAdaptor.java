@@ -31,7 +31,7 @@ public class SesEmailAdaptor implements EmailSendable {
     private final EmailProperties emailProperties;
 
     @Override
-    public void sendEmail(SimpleMailMessage message) {
+    public boolean sendEmail(SimpleMailMessage message) {
         SendEmailRequest emailRequest = buildEmailRequest(message);
 
         try {
@@ -39,10 +39,11 @@ public class SesEmailAdaptor implements EmailSendable {
             if (!emailResponse.sdkHttpResponse().isSuccessful()) {
                 throw new EmailNotifierException(String.valueOf(emailResponse.sdkHttpResponse().statusCode()));
             }
+            return true;
         } catch (Exception e) {
-            log.error("failed to sendEmail [err]: {}, [sender]: {}, [message]: {}", e, emailProperties.getSenderEmail(), message);
-            throw new EmailNotifierException(e.getMessage());
+            log.error("failed to sendEmail [sender]: {}, [message]: {}", emailProperties.getSenderEmail(), message, e);
         }
+        return false;
     }
 
     private SendEmailRequest buildEmailRequest(SimpleMailMessage message) {

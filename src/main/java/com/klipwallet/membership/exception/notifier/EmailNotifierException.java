@@ -12,8 +12,4 @@ public class EmailNotifierException extends BaseCodeException {
     public EmailNotifierException(String msg) {
         super(ErrorCode.EMAIL_SEND_ERROR, msg);
     }
-
-    public EmailNotifierException() {
-        super(ErrorCode.EMAIL_SEND_ERROR, "");
-    }
 }
