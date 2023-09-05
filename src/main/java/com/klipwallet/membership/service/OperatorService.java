@@ -35,7 +35,7 @@ public class OperatorService implements OperatorInvitable {
     public OperatorSummary create(OperatorCreate command, AuthenticatedUser user) {
         KlipUser klipUser = tryGetKlipUser(command.klipRequestKey());
 
-        /**
+        /*
          * TODO: @Ian 가져온 클립 유저 정보 KlipAccount 테이블에 저장
          * {@link com.klipwallet.membership.adaptor.klip.KlipAccount}
          */
