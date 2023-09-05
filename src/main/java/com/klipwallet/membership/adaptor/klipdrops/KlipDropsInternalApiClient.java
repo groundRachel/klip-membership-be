@@ -1,15 +1,17 @@
 package com.klipwallet.membership.adaptor.klipdrops;
 
+import java.math.BigInteger;
 import java.util.List;
 
+import org.springframework.cloud.openfeign.CollectionFormat;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Description;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.klipwallet.membership.adaptor.klipdrops.dto.Drop;
-import com.klipwallet.membership.adaptor.klipdrops.dto.Drops;
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrop;
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrops;
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartners;
 
 @FeignClient(name = "klip-drops-internal")
@@ -21,11 +23,12 @@ public interface KlipDropsInternalApiClient {
                                      @RequestParam(value = "size", required = false) Integer size);
 
     @GetMapping(value = "/v1/partners/{partnerId}/drops")
-    Drops getDropsByPartner(@PathVariable(value = "partnerId") Integer partnerId,
-                            @RequestParam(value = "page", required = false) Integer page,
-                            @RequestParam(value = "size", required = false) Integer size);
+    KlipDropsDrops getDropsByPartner(@PathVariable(value = "partnerId") Integer partnerId,
+                                     @RequestParam(value = "page", required = false) Integer page,
+                                     @RequestParam(value = "size", required = false) Integer size);
 
-    @GetMapping(value = "/v1/drops")
     @Description(value = "최대길이 100")
-    List<Drop> getDropsByIds(@RequestParam(value = "drop_ids") List<Integer> dropIds);
+    @GetMapping(value = "/v1/drops")
+    @CollectionFormat(feign.CollectionFormat.CSV)
+    List<KlipDropsDrop> getDropsByIds(@RequestParam(value = "drop_ids") List<BigInteger> dropIds);
 }

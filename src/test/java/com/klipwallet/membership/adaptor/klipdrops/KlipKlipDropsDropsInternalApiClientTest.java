@@ -1,5 +1,6 @@
 package com.klipwallet.membership.adaptor.klipdrops;
 
+import java.math.BigInteger;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -9,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.klipwallet.membership.adaptor.klipdrops.dto.Drop;
-import com.klipwallet.membership.adaptor.klipdrops.dto.Drops;
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrop;
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrops;
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartners;
 
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Disabled("kubectl config set-context --current --namespace=klip-drops-dev ;" +
           "kubectl port-forward svc/klip-drops 3100:3100")
-class KlipDropsInternalApiClientTest {
+class KlipKlipDropsDropsInternalApiClientTest {
     @Autowired
     KlipDropsInternalApiClient klipDropsInternalApiClient;
 
@@ -88,20 +89,20 @@ class KlipDropsInternalApiClientTest {
         Integer size = 3;
         Integer partnerId = 43; // dev 환경에 drop 8 개 있는 계
 
-        Drops dropsFirst = klipDropsInternalApiClient.getDropsByPartner(partnerId, 1, size);
-        assertThat(dropsFirst.drops().size()).isEqualTo(size);
-        assertThat(dropsFirst.totalCount()).isNotEqualTo(0);
+        KlipDropsDrops klipDropsDropsFirst = klipDropsInternalApiClient.getDropsByPartner(partnerId, 1, size);
+        assertThat(klipDropsDropsFirst.drops().size()).isEqualTo(size);
+        assertThat(klipDropsDropsFirst.totalCount()).isNotEqualTo(0);
 
-        Drops dropsSecond = klipDropsInternalApiClient.getDropsByPartner(partnerId, 2, size);
-        assertThat(dropsSecond.drops().size()).isEqualTo(size);
-        assertThat(dropsSecond.totalCount()).isNotEqualTo(0);
+        KlipDropsDrops klipDropsDropsSecond = klipDropsInternalApiClient.getDropsByPartner(partnerId, 2, size);
+        assertThat(klipDropsDropsSecond.drops().size()).isEqualTo(size);
+        assertThat(klipDropsDropsSecond.totalCount()).isNotEqualTo(0);
 
-        List<Drop> dropsAll = Stream.concat(dropsFirst.drops().stream(),
-                                            dropsSecond.drops().stream()).toList();
+        List<KlipDropsDrop> dropsAll = Stream.concat(klipDropsDropsFirst.drops().stream(),
+                                                     klipDropsDropsSecond.drops().stream()).toList();
 
         for (int i = 0; i < dropsAll.size() - 1; i++) {
-            Drop now = dropsAll.get(i);
-            Drop next = dropsAll.get(i + 1);
+            KlipDropsDrop now = dropsAll.get(i);
+            KlipDropsDrop next = dropsAll.get(i + 1);
 
             assertThat(now.openAt()).isAfterOrEqualTo(next.openAt());
         }
@@ -109,9 +110,14 @@ class KlipDropsInternalApiClientTest {
 
     @Test
     void getDropsByIds() {
-        List<Integer> dropIds = List.of(3150048, 1010046);
-        List<Drop> dropsByIds = klipDropsInternalApiClient.getDropsByIds(dropIds);
+        List<BigInteger> dropIds = List.of(new BigInteger(String.valueOf(3150048)),
+                                           new BigInteger(String.valueOf(1010046)),
+                                           new BigInteger(String.valueOf(1010041)));
+        List<KlipDropsDrop> dropsByIds = klipDropsInternalApiClient.getDropsByIds(dropIds);
 
         assertThat(dropsByIds.size()).isEqualTo(dropIds.size());
+        for (KlipDropsDrop drop : dropsByIds) {
+            assertThat(dropIds).contains(drop.id());
+        }
     }
 }
