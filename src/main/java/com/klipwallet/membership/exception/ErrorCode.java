@@ -54,6 +54,7 @@ public enum ErrorCode {
 
     // Partner_*,
     PARTNER_NOT_FOUND(404_003),
+    PARTNER_KLIP_DROPS_PARTNER_ID_NOT_FOUND(404_010),
 
     // Operator_*,
     OPERATOR_NOT_FOUND(404_008),

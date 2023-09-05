@@ -15,12 +15,19 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class Partner extends Member {
     @Column(nullable = false)
+    private Integer partnerApplicationId; // todo foreign key
+    private Integer klipDropsPartnerId;
+
+    @Column(nullable = false)
     private String phoneNumber;
 
     @Column(nullable = false)
     private String businessRegistrationNumber;
 
-    public Partner(String name, String phoneNumber, String businessRegistrationNumber, String email, String oAuthId, MemberId creator) {
+    public Partner(Integer partnerApplicationId, Integer klipDropsPartnerId, String name, String phoneNumber, String businessRegistrationNumber,
+                   String email, String oAuthId, MemberId creator) {
+        this.partnerApplicationId = partnerApplicationId;
+        this.klipDropsPartnerId = klipDropsPartnerId;
         setName(name);
         this.phoneNumber = phoneNumber;
         this.businessRegistrationNumber = businessRegistrationNumber;

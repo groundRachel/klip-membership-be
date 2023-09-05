@@ -3,6 +3,7 @@ package com.klipwallet.membership.adaptor.klipdrops;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrops;
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartners;
 import com.klipwallet.membership.service.KlipDropsService;
@@ -17,5 +18,12 @@ public class KlipDropsAdaptor implements KlipDropsService {
         Integer size = 1;
         KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(businessRegistrationNumber, null, null, size);
         return allPartners.klipDropsPartners().get(0);
+    }
+
+    @Override
+    public KlipDropsDrops getDropsByPartner(Integer klipDropsPartnerId) {
+        Integer page = 1;
+        Integer size = 1000;
+        return klipDropsInternalApiClient.getDropsByPartner(klipDropsPartnerId, page, size);
     }
 }

@@ -65,11 +65,12 @@ public class PartnerServiceTest {
                 new partnerInfo("Winnie Corp.", "010-1234-5678", "000-00-00003", "example3@groundx.xyz", "392085223830.apps.googleusercontent.com")
         );
 
-        for (partnerInfo p : partnerInfos) {
+        for (int i = 0; i < partnerInfos.size(); i++) {
+            partnerInfo p = partnerInfos.get(i);
             PartnerApplication partnerApplication = new PartnerApplication(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId);
             partnerApplication.approve(processorId);
             partnerApplicationRepository.save(partnerApplication);
-            partnerRepository.save(new Partner(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId, processorId));
+            partnerRepository.save(new Partner(i, i, p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId, processorId));
         }
         partnerApplicationRepository.flush();
         partnerRepository.flush();
