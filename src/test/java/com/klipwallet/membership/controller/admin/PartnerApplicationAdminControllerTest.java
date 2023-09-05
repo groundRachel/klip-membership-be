@@ -44,10 +44,10 @@ class PartnerApplicationAdminControllerTest {
 
     @AfterEach
     void afterEach() {
-        partnerApplicationRepository.deleteAll();
-        partnerApplicationRepository.flush();
         partnerRepository.deleteAll();
         partnerRepository.flush();
+        partnerApplicationRepository.deleteAll();
+        partnerApplicationRepository.flush();
         adminRepository.deleteAll();
         adminRepository.flush();
     }
