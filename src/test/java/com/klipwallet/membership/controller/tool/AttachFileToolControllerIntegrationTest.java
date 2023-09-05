@@ -44,7 +44,7 @@ class AttachFileToolControllerIntegrationTest {
                                           .param("type", type.toDisplay()))
            .andExpect(status().isCreated())
            .andExpect(jsonPath("$.attachFileId").isNotEmpty())
-           .andExpect(jsonPath("$.linkUrl").value(Matchers.startsWith("http://localhost:8080/common/v1/temp-files/")))
+           .andExpect(jsonPath("$.linkUrl").value(Matchers.startsWith("http://localhost:8080/local/v1/temp-files/")))
            .andExpect(jsonPath("$.contentType").value(MediaType.IMAGE_PNG_VALUE))
            .andExpect(jsonPath("$.contentLength").value(116_465));
     }

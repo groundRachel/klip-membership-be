@@ -15,7 +15,7 @@ application:
 logging:
   group:
     openfeign:
-      - com.klipwallet.membership.adaptor.biztalk.BgmsApiClient
+      - com.klipwallet.membership.adaptor.kakao.biztalk.BgmsApiClient
       - com.klipwallet.membership.adaptor.kakao.KakaoApiClient
 
 management:
@@ -122,6 +122,7 @@ spring:
             redirect-uri: '{baseScheme}://{baseHost}{basePort}/login/oauth2/code/{registrationId}'
             client-name: Kakao
             scope:
+              - profile
               - account_email
               - talk_openchats
   servlet:

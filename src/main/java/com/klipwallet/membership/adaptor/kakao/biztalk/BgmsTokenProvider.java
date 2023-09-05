@@ -1,4 +1,4 @@
-package com.klipwallet.membership.adaptor.biztalk;
+package com.klipwallet.membership.adaptor.kakao.biztalk;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

@@ -5,43 +5,95 @@ import java.io.IOException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import com.klipwallet.membership.config.KlipMembershipProperties;
+import com.klipwallet.membership.dto.OneTimeAction;
+import com.klipwallet.membership.entity.OperatorInvitation;
+import com.klipwallet.membership.service.OperatorInvitable;
 
 import static com.klipwallet.membership.config.SecurityConfig.ROLE_KLIP_KAKAO;
 
+@RequiredArgsConstructor
+@Slf4j
 public class KlipMembershipOAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final KlipMembershipProperties properties;
-
-    public KlipMembershipOAuth2SuccessHandler(KlipMembershipProperties properties) {
-        this.properties = properties;
-    }
+    private final OperatorInvitable operatorInvitable;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
-        if (isKakao()) {
-            // 카카온 인증의 경우 > 운영진 초대
-            response.sendRedirect("%s/landing/invite-operator/result?status=success".formatted(properties.getToolFrontUrl()));
-            return;
+        try {
+            if (isAdmin()) {
+                response.sendRedirect(properties.getAdminFrontUrl());
+                return;
+            }
+            if (isKakao(authentication)) {
+                CodeAndAction codeAndAction = getCodeAndAction(request);
+                OneTimeAction action = codeAndAction.action();
+                String invitationCode = codeAndAction.code();
+                switch (action) {
+                    case NONE -> log.warn("OneTimeAction is none. {}", request);
+                    case INVITE_OPERATOR -> tryInviteOperator(response, authentication, invitationCode);
+                    // TODO @Jordan case JOIN_CHATROOM -> tryJonChatroom();
+                    default -> log.error("OneTimeAction is invalid. {}", request);
+                }
+                return;
+            }
+            response.sendRedirect(properties.getToolFrontUrl());
+        } catch (Exception cause) {
+            response.sendRedirect("%s/landing/invite-operator/result?status=error&httpStatus=500&code=500000&err=Error".formatted(
+                    properties.getToolFrontUrl()));
         }
-        if (isAdmin()) {
-            response.sendRedirect(properties.getAdminFrontUrl());
-            return;
-        }
-        // TODO @Jordan 파트너 신청의 경우 redirection 분기 추가 가능
-        response.sendRedirect(properties.getToolFrontUrl());
     }
 
-    private boolean isKakao() {
-        Authentication authentication = SecurityContextHolder.getContextHolderStrategy().getContext().getAuthentication();
+    private void tryInviteOperator(HttpServletResponse response, Authentication authentication, String invitationCode) throws IOException {
+        OperatorInvitation invitation = operatorInvitable.lookup(invitationCode);
+        if (isExpired(invitation)) {    // 운영진 초대가 만료.
+            response.sendRedirect("%s/landing/invite-operator/result?status=unknown".formatted(properties.getToolFrontUrl()));
+        } else if (isAlreadyOperator(authentication)) {    // 이미 운영진인 경우
+            response.sendRedirect("%s/landing/invite-operator/result?status=alreadyDone".formatted(properties.getToolFrontUrl()));
+        } else {    // 운영진 초대가 가능한 경우: 운영진 초대 페이지로
+            response.sendRedirect("%s/landing/invite-operator/agreements".formatted(properties.getToolFrontUrl()));
+        }
+    }
+
+    @NonNull
+    private CodeAndAction getCodeAndAction(HttpServletRequest request) {
+        String state = request.getParameter("state");
+        String[] codes = state.split(":");
+        String code = codes[0];
+        String otActionString = null;
+        if (codes.length > 1) {
+            otActionString = codes[1];
+        }
+        OneTimeAction otAction = OneTimeAction.fromDisplay(otActionString);
+        return new CodeAndAction(code, otAction);
+    }
+
+    private boolean isExpired(OperatorInvitation invitation) {
+        return invitation == null;
+    }
+
+    private boolean isKakao(Authentication authentication) {
         return authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_KLIP_KAKAO));
+    }
+
+    private boolean isAlreadyOperator(Authentication authentication) {
+        KlipMembershipOAuth2User user = (KlipMembershipOAuth2User) authentication.getPrincipal();
+        String kakaoUserId = user.getName();
+        return operatorInvitable.isAlreadyOperator(kakaoUserId);
     }
 
     private boolean isAdmin() {
         return KlipMembershipOAuth2UserService.isAdmin();
+    }
+
+    private record CodeAndAction(String code, OneTimeAction action) {
+
     }
 }

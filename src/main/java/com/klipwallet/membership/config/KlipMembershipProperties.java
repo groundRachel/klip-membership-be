@@ -12,15 +12,31 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "application.klip-membership")
 public class KlipMembershipProperties {
+    /**
+     * 운영진 초대 Path
+     */
+    private static final String PATH_INVITE_OPERATOR = "/landing/invite-operator";
+    /**
+     * Klip Membership Tool Origin
+     * <p>ex: {@code https://membership.klipwallet.com}</p>
+     */
     @NotNull @URL
     String toolFrontUrl;
-
+    /**
+     * Klip Membership Admin Origin
+     * <p>ex: {@code https://membership-admin.klipwallet.com}</p>
+     */
     @NotNull @URL
     String adminFrontUrl;
+
 
     @ConstructorBinding
     public KlipMembershipProperties(String toolFrontUrl, String adminFrontUrl) {
         this.toolFrontUrl = toolFrontUrl;
         this.adminFrontUrl = adminFrontUrl;
+    }
+
+    public String getInviteOperatorUrl() {
+        return this.toolFrontUrl + PATH_INVITE_OPERATOR;
     }
 }

@@ -14,7 +14,7 @@ import com.klipwallet.membership.config.KakaoApiProperties;
 import com.klipwallet.membership.entity.KakaoOpenChatRoomOpened;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
-import com.klipwallet.membership.service.KakaoService;
+import com.klipwallet.membership.service.kakao.KakaoService;
 
 @Component
 @Slf4j
@@ -49,7 +49,7 @@ public class KakaoAdaptor implements KakaoService {
      *
      * @param event 카카오 오픈채팅이 생성됨 DomainEvent
      * @see com.klipwallet.membership.entity.KakaoOpenChatRoomOpened
-     * @see com.klipwallet.membership.service.KakaoService#createOpenChatRoom(String, String, String, com.klipwallet.membership.entity.kakao.OpenChatRoomHost)
+     * @see com.klipwallet.membership.service.kakao.KakaoService#createOpenChatRoom(String, String, String, com.klipwallet.membership.entity.kakao.OpenChatRoomHost)
      */
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void subscribeOnRollback(KakaoOpenChatRoomOpened event) {

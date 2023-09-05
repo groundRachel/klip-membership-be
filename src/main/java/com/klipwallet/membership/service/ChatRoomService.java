@@ -31,6 +31,7 @@ import com.klipwallet.membership.exception.kakao.OperatorAlreadyExistsException;
 import com.klipwallet.membership.exception.member.OperatorDuplicatedException;
 import com.klipwallet.membership.repository.ChatRoomNftRepository;
 import com.klipwallet.membership.repository.ChatRoomRepository;
+import com.klipwallet.membership.service.kakao.KakaoService;
 
 @Service
 @RequiredArgsConstructor

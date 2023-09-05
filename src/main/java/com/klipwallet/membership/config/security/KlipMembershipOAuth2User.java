@@ -5,10 +5,11 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -31,16 +32,17 @@ import static java.util.Collections.emptyMap;
 public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable {
     @Serial
     private static final long serialVersionUID = 9102776982135701748L;
-    @jakarta.annotation.Nullable
+    @Nullable
     private final MemberId memberId;
     private final Map<String, Object> attributes;
     private final Collection<? extends GrantedAuthority> authorities;
     private final String name;
     private final String email;
-    @jakarta.annotation.Nullable
+    @Nullable
+    @Getter
     private final OAuth2AccessToken accessToken;
 
-    public KlipMembershipOAuth2User(@jakarta.annotation.Nullable MemberId memberId,
+    public KlipMembershipOAuth2User(@Nullable MemberId memberId,
                                     Collection<? extends GrantedAuthority> authorities,
                                     String name, String email) {
         this(memberId, emptyMap(), authorities, name, email, null);

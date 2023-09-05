@@ -1,4 +1,4 @@
-package com.klipwallet.membership.service;
+package com.klipwallet.membership.adaptor.local;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +20,7 @@ import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.ObjectId;
 import com.klipwallet.membership.exception.NotFoundException;
 import com.klipwallet.membership.exception.storage.StorageStoreException;
+import com.klipwallet.membership.service.StorageService;
 
 /**
  * Local {@link com.klipwallet.membership.service.StorageService}
@@ -36,7 +37,7 @@ public class LocalTempStorageService implements StorageService {
     public LocalTempStorageService(@Value("${server.port:8080}") int serverPort) throws IOException {
         this.serverPort = serverPort;
         this.uploadPath = Files.createTempDirectory("attach-file");
-        log.info("tempUploadPath: {}", uploadPath);
+        log.info("LocalTempStorageService.uploadPath: {}", uploadPath);
     }
 
     @Override
@@ -46,7 +47,7 @@ public class LocalTempStorageService implements StorageService {
             FileCopyUtils.copy(command.getInputStream(), Files.newOutputStream(tempFile));
             log.info("Success store: {}", tempFile);
             ObjectId objectId = new ObjectId(tempFile.getFileName().toString());
-            return new StorageResult(objectId, "http://localhost:%s/common/v1/temp-files/%s".formatted(serverPort, objectId.getValue()));
+            return new StorageResult(objectId, "http://localhost:%s/local/v1/temp-files/%s".formatted(serverPort, objectId.getValue()));
         } catch (IOException e) {
             throw new StorageStoreException(e);
         }

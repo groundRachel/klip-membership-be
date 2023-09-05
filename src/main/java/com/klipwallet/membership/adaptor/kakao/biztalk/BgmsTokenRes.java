@@ -1,4 +1,4 @@
-package com.klipwallet.membership.adaptor.biztalk;
+package com.klipwallet.membership.adaptor.kakao.biztalk;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

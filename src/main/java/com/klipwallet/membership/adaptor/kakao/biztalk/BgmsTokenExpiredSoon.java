@@ -1,4 +1,4 @@
-package com.klipwallet.membership.adaptor.biztalk;
+package com.klipwallet.membership.adaptor.kakao.biztalk;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -11,7 +11,7 @@ import com.klipwallet.membership.entity.DomainEvent;
  * 사용자 토큰이 곧 만료되므로 background로 토큰을 재발급 시도.
  * </p>
  *
- * @see com.klipwallet.membership.adaptor.biztalk.BgmsInvitationNotificationAdaptor
+ * @see BgmsInvitationNotificationAdaptor
  */
 @EqualsAndHashCode(callSuper = true)
 @Value
