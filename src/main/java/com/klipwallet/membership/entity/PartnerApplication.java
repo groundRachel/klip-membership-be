@@ -47,6 +47,9 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
     private Status status;
     private String rejectReason;
 
+    private Integer klipDropsPartnerId;
+    private String klipDropsPartnerName;
+
     @CreatedDate
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
@@ -61,6 +64,7 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
         this.email = email;
         this.oauthId = oauthId;
         this.createdAt = LocalDateTime.now();
+        this.registerEvent(new PartnerApplicationCreated(this));
     }
 
     public PartnerApplication() {
@@ -69,6 +73,11 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
     private void processedBy(@NonNull MemberId processorId) {
         this.processorId = processorId;
         this.processedAt = LocalDateTime.now();
+    }
+
+    public void setKlipDropsInfo(Integer klipDropsPartnerId, String klipDropsPartnerName) {
+        this.klipDropsPartnerId = klipDropsPartnerId;
+        this.klipDropsPartnerName = klipDropsPartnerName;
     }
 
     /**

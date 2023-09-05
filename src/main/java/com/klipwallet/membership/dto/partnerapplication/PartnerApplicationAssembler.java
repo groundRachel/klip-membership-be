@@ -31,7 +31,6 @@ public class PartnerApplicationAssembler {
 
         return partnerApplications.stream()
                                   .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(),
-                                                                      -1,  // TODO fetch info from drops
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
                                                                       memberAssembler.getMemberSummary(p.getProcessorId())))
