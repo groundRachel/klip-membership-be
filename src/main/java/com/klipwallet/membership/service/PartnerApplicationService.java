@@ -8,8 +8,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationAssembler;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Application;
@@ -19,6 +23,7 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
+import com.klipwallet.membership.entity.PartnerApplicationCreated;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
 import com.klipwallet.membership.exception.member.PartnerApplicationNotFoundException;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
@@ -27,12 +32,14 @@ import com.klipwallet.membership.repository.PartnerRepository;
 import static com.klipwallet.membership.entity.PartnerApplication.Status.APPLIED;
 import static com.klipwallet.membership.entity.PartnerApplication.Status.APPROVED;
 
+
 @Service
 @RequiredArgsConstructor
 public class PartnerApplicationService {
     private final PartnerApplicationRepository partnerApplicationRepository;
     private final PartnerApplicationAssembler partnerApplicationAssembler;
     private final PartnerRepository partnerRepository;
+    private final KlipDropsService klipDropsService;
 
     private void verifyApply(AuthenticatedUser user) {
         if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED, APPROVED))) {
@@ -49,6 +56,15 @@ public class PartnerApplicationService {
         return partnerApplicationAssembler.toApplyResult(partnerApplication);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @TransactionalEventListener(value = PartnerApplicationCreated.class, phase = TransactionPhase.AFTER_COMMIT)
+    public void getAndSetKlipDropsPartnerInfo(PartnerApplicationCreated event) {
+        PartnerApplication partnerApplication = tryGetPartnerApplication(event.getPartnerApplicationId());
+
+        KlipDropsPartner partner = klipDropsService.getPartnerByBusinessRegistrationNumber(partnerApplication.getBusinessRegistrationNumber());
+        partnerApplication.setKlipDropsInfo(partner.partnerId(), partner.name());
+        partnerApplicationRepository.save(partnerApplication);
+    }
 
     private PartnerApplication tryGetPartnerApplication(Integer applicationId) {
         return partnerApplicationRepository.findById(applicationId)
@@ -57,9 +73,6 @@ public class PartnerApplicationService {
 
     @Transactional(readOnly = true)
     public List<PartnerApplicationDto.PartnerApplicationRow> getPartnerApplications(Pageable page, Status status) {
-        // TODO KLDV-3068 get and check partner business number from drops
-        // TODO consider adding a cache; some results are from drops
-
         Pageable pageable = PageRequest.of(page.getPageNumber(), page.getPageSize(), toSort(status));
 
         Page<PartnerApplication> partnerApplications = partnerApplicationRepository.findAllByStatus(status, pageable);

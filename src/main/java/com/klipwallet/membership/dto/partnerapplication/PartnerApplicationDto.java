@@ -34,11 +34,10 @@ public class PartnerApplicationDto {
             OffsetDateTime createdAt
     ) {}
 
-    @Schema(description = "[ADMIN] 파트너 신청 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    @Schema(description = "[ADMIN] 파트너 신청, 거절 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record PartnerApplicationRow(
             @NonNull Integer id,
             @NonNull String businessName,
-            Integer partnerId, // TODO fetch info from drops
             OffsetDateTime createdAt,
             OffsetDateTime processedAt,
             MemberSummary processor

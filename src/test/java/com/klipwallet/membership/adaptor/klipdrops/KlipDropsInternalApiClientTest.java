@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Disabled("kubectl config set-context --current --namespace=klip-drops-dev ;" +
           "kubectl port-forward svc/klip-drops 3100:3100")
-class KlipKlipDropsDropsInternalApiClientTest {
+class KlipDropsInternalApiClientTest {
     @Autowired
     KlipDropsInternalApiClient klipDropsInternalApiClient;
 
