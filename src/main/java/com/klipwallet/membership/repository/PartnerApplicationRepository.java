@@ -22,4 +22,6 @@ public interface PartnerApplicationRepository extends JpaRepository<PartnerAppli
     boolean existsByEmailAndStatusIsIn(String email, List<Status> status);
 
     Page<PartnerApplication> findAllByStatus(PartnerApplication.Status status, Pageable pageable);
+
+    Integer countByStatus(PartnerApplication.Status status);
 }

@@ -29,8 +29,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -268,5 +267,35 @@ class PartnerApplicationAdminControllerTest {
         mvc.perform(get("/admin/v1/partner-applications").
                             contentType(APPLICATION_JSON))
            .andExpect(status().isBadRequest());
+    }
+
+    @WithAdminUser(memberId = 2)
+    @DisplayName("파트너 가입 요청 수 조회: 요청 상태 > 200")
+    @Test
+    void getPartnerApplicationNumber_APPLIED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        createApplications();
+
+        // when, then
+        mvc.perform(get("/admin/v1/partner-applications/count").
+                            param("status", APPLIED.toDisplay()).
+                            contentType(APPLICATION_JSON))
+           .andExpect(status().isOk())
+           .andExpect(content().string("3"));
+    }
+
+    @WithAdminUser(memberId = 2)
+    @DisplayName("파트너 가입 거절 수 조회: 요청 상태 > 200")
+    @Test
+    void getPartnerApplicationNumber_REJECTED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        createApplications();
+
+        // when, then
+        mvc.perform(get("/admin/v1/partner-applications/count").
+                            param("status", REJECTED.toDisplay()).
+                            contentType(APPLICATION_JSON))
+           .andExpect(status().isOk())
+           .andExpect(content().string("3"));
     }
 }

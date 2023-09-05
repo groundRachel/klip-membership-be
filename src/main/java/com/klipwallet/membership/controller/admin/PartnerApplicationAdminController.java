@@ -46,6 +46,15 @@ public class PartnerApplicationAdminController {
         return partnerApplicationService.getPartnerApplications(page, status);
     }
 
+    @Operation(summary = "파트너 가입 요청, 거절 수 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+    })
+    @GetMapping("/count")
+    public Integer getPartnerApplicationNumber(@RequestParam Status status) {
+        return partnerApplicationService.getPartnerApplicationNumber(status);
+    }
+
     @Operation(summary = "요청한 파트너 승인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "승인 성공"),
