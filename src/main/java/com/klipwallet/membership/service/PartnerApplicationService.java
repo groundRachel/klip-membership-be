@@ -66,6 +66,11 @@ public class PartnerApplicationService {
         return partnerApplicationAssembler.toPartnerApplicationRow(partnerApplications);
     }
 
+    @Transactional
+    public Integer getPartnerApplicationNumber(Status status) {
+        return partnerApplicationRepository.countByStatus(status);
+    }
+
     private Sort toSort(Status status) {
         if (status == APPLIED) {
             return Sort.sort(PartnerApplication.class).by(PartnerApplication::getCreatedAt).descending();
