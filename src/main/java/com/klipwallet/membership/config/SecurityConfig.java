@@ -56,7 +56,7 @@ public class SecurityConfig {
         // /h2-console
         http.securityMatcher(antMatcher("/h2-console/**"))
             .csrf(c -> c.disable())
-            .headers(h -> h.frameOptions(f -> f.disable()))
+            .headers(h -> h.frameOptions(f -> f.sameOrigin()))
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/h2-console/**")).permitAll())
             .requestCache(r -> r.disable())
