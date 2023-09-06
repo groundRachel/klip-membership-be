@@ -15,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.Faq;
 import com.klipwallet.membership.entity.MemberId;
@@ -78,7 +77,6 @@ class FaqToolControllerIntegrationTest {
         faqRepository.flush();
     }
 
-    @WithPartnerUser
     @DisplayName("파트너 FAQ 조회 > 200")
     @Test
     void getFaq(@Autowired MockMvc mvc) throws Exception {
@@ -103,7 +101,6 @@ class FaqToolControllerIntegrationTest {
            .andExpect(jsonPath("$.updater.name").isNotEmpty());
     }
 
-    @WithPartnerUser
     @DisplayName("파트너 FAQ 조회 > 존재하지 않는 FAQ 조회 시도 404")
     @Test
     void getNotExistFaq(@Autowired MockMvc mvc) throws Exception {
@@ -115,7 +112,6 @@ class FaqToolControllerIntegrationTest {
            .andExpect(jsonPath("$.err").value("FAQ를 찾을 수 없습니다. ID: %d".formatted(faqId)));
     }
 
-    @WithPartnerUser
     @DisplayName("파트너 FAQ 조회 > live 상태가 아닌 FAQ 조회 시도 404")
     @ParameterizedTest
     @EnumSource(value = ArticleStatus.class, names = "LIVE", mode = Mode.EXCLUDE)
@@ -136,7 +132,6 @@ class FaqToolControllerIntegrationTest {
         return faqRepository.save(entity);
     }
 
-    @WithPartnerUser
     @DisplayName("파트너 FAQ 목록 조회 (default (page, size) > 200")
     @Test
     void listFaqWithDefaultQuery(@Autowired MockMvc mvc) throws Exception {
@@ -162,7 +157,6 @@ class FaqToolControllerIntegrationTest {
            .andExpect(jsonPath("$.content[3].status").value(LIVE.toDisplay()));
     }
 
-    @WithPartnerUser
     @DisplayName("파트너 FAQ 목록 조회 (size = 1, page = 2 > 200")
     @Test
     void listFaqWithPageSize(@Autowired MockMvc mvc) throws Exception {
