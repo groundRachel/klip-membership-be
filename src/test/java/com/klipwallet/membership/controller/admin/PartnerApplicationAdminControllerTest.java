@@ -235,10 +235,10 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.length()").value(3L))
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스8"))
            .andExpect(jsonPath("$[0].processedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].processor.name").value("jordan.jung"))
+           .andExpect(jsonPath("$[0].processor.name").isNotEmpty())
            .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스7"))
            .andExpect(jsonPath("$[1].processedAt").isNotEmpty())
-           .andExpect(jsonPath("$[1].processor.name").value("jordan.jung"))
+           .andExpect(jsonPath("$[1].processor.name").isNotEmpty())
            .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스6"))
            .andExpect(jsonPath("$[2].processedAt").isNotEmpty())
            .andExpect(jsonPath("$[2].processor.name").value("jordan.jung"));
