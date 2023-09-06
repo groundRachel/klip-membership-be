@@ -5,9 +5,11 @@ import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.klipwallet.membership.entity.Address;
+
 public record KlipDropsDrop(
         @JsonProperty("id") BigInteger id,
-        @JsonProperty("nft_sca") String nftSmartContractAddress,
+        @JsonProperty("nft_sca") Address nftSmartContractAddress,
         @JsonProperty("title") String title,
         @JsonProperty("creator_name") String creatorName,
         @JsonProperty("total_supply") Integer totalSupply,
