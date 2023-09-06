@@ -64,9 +64,9 @@ class ChatRoomToolControllerTest {
     @Test
     @Disabled("실제 오픈채팅방 생성되어 Disabled")
     void createChatRoom(@Autowired MockMvc mvc) throws Exception {
-        Operator host = new Operator(324L, kakaoUserId, 23, new MemberId(1));
+        Operator host = new Operator(324L, kakaoUserId, new MemberId(23));
         given(operatorService.tryGetOperator(1L)).willReturn(host);
-        Operator operator = new Operator(325L, kakaoPartnerId, 23, new MemberId(2));
+        Operator operator = new Operator(325L, kakaoPartnerId, new MemberId(23));
         given(operatorService.tryGetOperator(2L)).willReturn(operator);
         String body = """
                       {
@@ -111,7 +111,7 @@ class ChatRoomToolControllerTest {
     @DisplayName("오픈채팅방 생성: 제목 없음 > 400")
     @Test
     void createChatRoomCheckNull(@Autowired MockMvc mvc) throws Exception {
-        Operator operator = new Operator(324L, "2238023120", 23, new MemberId(1));
+        Operator operator = new Operator(324L, "2238023120", new MemberId(23));
         given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
                       {
@@ -174,7 +174,7 @@ class ChatRoomToolControllerTest {
     @DisplayName("오픈채팅방 생성: 운영자 인원 제한 초과 > 400")
     @Test
     void createChatRoomExceedOperatorLimit(@Autowired MockMvc mvc) throws Exception {
-        Operator operator = new Operator(324L, "2238023120", 23, new MemberId(1));
+        Operator operator = new Operator(324L, "2238023120", new MemberId(23));
         given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
                       {

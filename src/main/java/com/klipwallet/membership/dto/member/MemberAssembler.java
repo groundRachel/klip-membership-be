@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,7 @@ public class MemberAssembler {
     private Set<Integer> toIdSet(Collection<MemberId> memberIds) {
         return memberIds.stream()
                         .map(MemberId::value)
-                        .collect(Collectors.toSet());
+                        .collect(toUnmodifiableSet());
     }
 
     @SuppressWarnings("unused")

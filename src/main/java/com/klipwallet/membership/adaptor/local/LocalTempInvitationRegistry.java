@@ -63,4 +63,14 @@ public class LocalTempInvitationRegistry implements InvitationRegistry {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void delete(String invitationCode) {
+        Path path = Paths.get(registryPath.toString(), invitationCode);
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException e) {
+            log.error("Failed to delete invitationCode file: {}", path, e);
+        }
+    }
 }

@@ -2,7 +2,6 @@ package com.klipwallet.membership.dto.admin;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class AdminAssembler {
     public List<Row> toRows(List<Admin> admins) {
         return admins.stream()
                      .map(this::toRow)
-                     .collect(Collectors.toList());
+                     .toList();
     }
 
     @SuppressWarnings("DataFlowIssue")

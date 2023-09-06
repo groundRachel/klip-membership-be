@@ -2,6 +2,7 @@
 # local: 인프라 의존을 최소화하는 local 개발 환경. w/o vault(without-local-dev.properties)
 application:
   klip-membership:
+    env: local
     tool-front-url: http://membership.local.com:3000
     admin-front-url: http://membership.local.com:3000
   kakao-api:

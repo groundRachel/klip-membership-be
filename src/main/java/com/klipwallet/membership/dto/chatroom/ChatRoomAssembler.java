@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
 import com.klipwallet.membership.entity.ChatRoom;
 
-import static java.util.stream.Collectors.toList;
-
 @Component
 @RequiredArgsConstructor
 public class ChatRoomAssembler {
@@ -18,7 +16,7 @@ public class ChatRoomAssembler {
     public List<ChatRoomRow> toRows(List<ChatRoom> entities) {
         return entities.stream()
                        .map(this::toRow)
-                       .collect(toList());
+                       .toList();
     }
 
     private ChatRoomRow toRow(ChatRoom entity) {

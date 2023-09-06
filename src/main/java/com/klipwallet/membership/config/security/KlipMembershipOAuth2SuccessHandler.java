@@ -38,7 +38,7 @@ public class KlipMembershipOAuth2SuccessHandler implements AuthenticationSuccess
                 String invitationCode = codeAndAction.code();
                 switch (action) {
                     case NONE -> log.warn("OneTimeAction is none. {}", request);
-                    case INVITE_OPERATOR -> tryInviteOperator(response, authentication, invitationCode);
+                    case INVITE_OPERATOR -> tryInviteOperator(request, response, authentication, invitationCode);
                     // TODO @Jordan case JOIN_CHATROOM -> tryJonChatroom();
                     default -> log.error("OneTimeAction is invalid. {}", request);
                 }
@@ -51,13 +51,16 @@ public class KlipMembershipOAuth2SuccessHandler implements AuthenticationSuccess
         }
     }
 
-    private void tryInviteOperator(HttpServletResponse response, Authentication authentication, String invitationCode) throws IOException {
+    private void tryInviteOperator(HttpServletRequest request, HttpServletResponse response, Authentication authentication, String invitationCode)
+            throws IOException {
         OperatorInvitation invitation = operatorInvitable.lookup(invitationCode);
         if (isExpired(invitation)) {    // 운영진 초대가 만료.
             response.sendRedirect("%s/landing/invite-operator/result?status=unknown".formatted(properties.getToolFrontUrl()));
         } else if (isAlreadyOperator(authentication)) {    // 이미 운영진인 경우
             response.sendRedirect("%s/landing/invite-operator/result?status=alreadyDone".formatted(properties.getToolFrontUrl()));
         } else {    // 운영진 초대가 가능한 경우: 운영진 초대 페이지로
+            // 이후 운영진 가입 API에서 사용하기 위해서 저장한다.
+            request.getSession().setAttribute(OperatorInvitation.STORE_KEY, invitationCode);
             response.sendRedirect("%s/landing/invite-operator/agreements".formatted(properties.getToolFrontUrl()));
         }
     }

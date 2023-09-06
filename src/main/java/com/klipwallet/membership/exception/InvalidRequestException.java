@@ -15,6 +15,10 @@ public class InvalidRequestException extends BaseCodeException {
         super(code);
     }
 
+    public InvalidRequestException(ErrorCode code, Throwable cause) {
+        super(code, cause);
+    }
+
     public InvalidRequestException(ErrorCode code, Object... args) {
         super(code, args);
     }

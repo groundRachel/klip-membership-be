@@ -16,6 +16,8 @@ public class KlipMembershipProperties {
      * 운영진 초대 Path
      */
     private static final String PATH_INVITE_OPERATOR = "/landing/invite-operator";
+    @NotNull
+    DeployEnv env;
     /**
      * Klip Membership Tool Origin
      * <p>ex: {@code https://membership.klipwallet.com}</p>
@@ -31,7 +33,8 @@ public class KlipMembershipProperties {
 
 
     @ConstructorBinding
-    public KlipMembershipProperties(String toolFrontUrl, String adminFrontUrl) {
+    public KlipMembershipProperties(DeployEnv env, String toolFrontUrl, String adminFrontUrl) {
+        this.env = env;
         this.toolFrontUrl = toolFrontUrl;
         this.adminFrontUrl = adminFrontUrl;
     }

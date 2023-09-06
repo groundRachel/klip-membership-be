@@ -90,6 +90,8 @@ public class SecurityConfig {
                           .requestMatchers(antMatcher("/tool/v1/**")).hasRole(PARTNER)
                           .requestMatchers(antMatcher("/admin/v1/admins/**")).hasRole(SUPER_ADMIN)
                           .requestMatchers(antMatcher("/admin/v1/**")).hasRole(ADMIN)
+                          .requestMatchers(antMatcher("/external/v1/operators")).hasRole(KLIP_KAKAO)
+                          .requestMatchers(antMatcher("/external/v1/**")).permitAll()
                           .requestMatchers(antMatcher("/error/**")).permitAll()
                           .requestMatchers(antMatcher("/actuator/**")).permitAll()      // actuator
                           .requestMatchers(antMatcher("/swagger-ui/**"),

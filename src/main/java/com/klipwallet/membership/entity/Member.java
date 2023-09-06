@@ -1,7 +1,6 @@
 package com.klipwallet.membership.entity;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import jakarta.annotation.Nullable;
@@ -29,6 +28,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.text.CaseUtils;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import static java.util.stream.Collectors.toUnmodifiableSet;
 
 /**
  * 이용자 Entity
@@ -184,7 +185,7 @@ public abstract class Member extends BaseEntity<Member> {
 
         private static final Set<Status> ENABLES = Stream.of(values())
                                                          .filter(s -> s != WITHDRAWAL)
-                                                         .collect(Collectors.toUnmodifiableSet());
+                                                         .collect(toUnmodifiableSet());
 
         private final byte code;
 

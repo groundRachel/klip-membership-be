@@ -2,7 +2,10 @@ package com.klipwallet.membership.controller;
 
 import java.nio.charset.StandardCharsets;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +31,7 @@ import com.klipwallet.membership.entity.ObjectId;
 import com.klipwallet.membership.service.AttachFileService;
 import com.klipwallet.membership.service.OperatorInvitable;
 
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 @Tag(name = "Local.Common", description = "Local Helper API")
@@ -70,6 +74,11 @@ public class LocalController {
         return new InviteResult(invitationUrl);
     }
 
-    public record InviteResult(String invitationUrl) {
+    @Schema(description = "운영진 초대 응답 DTO", accessMode = AccessMode.WRITE_ONLY)
+    @SuppressWarnings("HttpUrlsUsage")
+    public record InviteResult(
+            @Schema(description = "운영진 초대 링크", requiredMode = REQUIRED,
+                    example = "http://membership.local.com:3000/landing/invite-operator?code=5620810961087251174")
+            @JsonProperty("invitationUrl") String invitationUrl) {
     }
 }

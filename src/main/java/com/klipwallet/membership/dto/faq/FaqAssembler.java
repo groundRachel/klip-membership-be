@@ -2,7 +2,6 @@ package com.klipwallet.membership.dto.faq;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.Nonnull;
 
@@ -37,7 +36,7 @@ public class FaqAssembler {
         Map<MemberId, MemberSummary> members = memberAssembler.getMemberSummaryMapBy(faqs);
         return faqs.stream()
                       .map(n -> toRow(n, members))
-                      .collect(Collectors.toList());
+                      .toList();
     }
 
     private FaqRow toRow(Faq entity, Map<MemberId, MemberSummary> members) {

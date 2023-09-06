@@ -33,4 +33,12 @@ public interface InvitationRegistry {
      */
     @Nullable
     OperatorInvitation lookup(String invitationCode);
+
+    /**
+     * 초대 코드 삭제
+     * <p>해당 코드는 1회용이기 때문에 해당 코드로 초대가 완료되면, 삭제한다.</p>
+     *
+     * @param invitationCode 삭제할 초대 코드
+     */
+    void delete(String invitationCode);
 }

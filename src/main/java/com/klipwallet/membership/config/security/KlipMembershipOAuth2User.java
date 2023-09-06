@@ -48,6 +48,13 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
         this(memberId, emptyMap(), authorities, name, email, null);
     }
 
+    public KlipMembershipOAuth2User(@Nullable MemberId memberId,
+                                    Map<String, Object> attributes,
+                                    Collection<? extends GrantedAuthority> authorities,
+                                    String name, String email) {
+        this(memberId, attributes, authorities, name, email, null);
+    }
+
     @SuppressWarnings("unused")
     static KlipMembershipOAuth2User notMemberOnGoogle(OAuth2User googleUser, OAuth2UserRequest userRequest) {
         return new KlipMembershipOAuth2User(null, googleUser.getAttributes(), googleUser.getAuthorities(), googleUser.getName(),
@@ -70,6 +77,12 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
         @SuppressWarnings("unchecked")
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.getOrDefault("kakao_account", emptyMap());
         return (String) kakaoAccount.get("email");
+    }
+
+    private static String getKakaoPhoneNumber(Map<String, Object> attributes) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.getOrDefault("kakao_account", emptyMap());
+        return (String) kakaoAccount.get("phone_number");
     }
 
 
@@ -125,5 +138,11 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
+    }
+
+    @Nullable
+    @Override
+    public String getKakaoPhoneNumber() {
+        return getKakaoPhoneNumber(this.attributes);
     }
 }

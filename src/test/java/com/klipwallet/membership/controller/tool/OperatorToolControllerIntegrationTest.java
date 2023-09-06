@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.klipwallet.membership.adaptor.klip.KlipAccount;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.operator.OperatorSummary;
+import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.repository.OperatorRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
@@ -70,7 +71,7 @@ class OperatorToolControllerIntegrationTest {
         Partner partner = new Partner();
         FieldUtils.writeField(partner, "id", 23, true);
         given(partnerRepository.findById(any())).willReturn(Optional.of(partner));
-        given(klipAccountService.getKlipUser(any())).willReturn(new KlipAccount(1L, "2538023920", "testemail@test.com", "010-1234-5678"));
+        given(klipAccountService.getKlipUser(any(Address.class))).willReturn(new KlipAccount(1L, "2538023920", "testemail@test.com", "010-1234-5678"));
         String body = """
                       {
                         "klipId": 1,

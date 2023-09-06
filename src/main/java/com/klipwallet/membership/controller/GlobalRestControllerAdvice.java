@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -196,7 +195,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
     private List<FieldErrorView> getFieldErrorViews(ConstraintViolationException ex, Locale locale) {
         return ex.getConstraintViolations().stream()
                  .map(this::toFieldErrorView)
-                 .collect(Collectors.toList());
+                 .toList();
     }
 
     private FieldErrorView toFieldErrorView(ConstraintViolation<?> constraintViolation) {
@@ -294,7 +293,7 @@ public class GlobalRestControllerAdvice extends ResponseEntityExceptionHandler {
         Map<ObjectError, String> messageMap = ex.resolveErrorMessages(messageSource(), locale);
         return ex.getFieldErrors().stream()
                  .map(f -> new FieldErrorView(f, messageMap.get(f)))
-                 .collect(Collectors.toList());
+                 .toList();
     }
 
     @Override

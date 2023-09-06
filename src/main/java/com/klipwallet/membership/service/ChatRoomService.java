@@ -28,7 +28,7 @@ import com.klipwallet.membership.entity.kakao.KakaoId;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
 import com.klipwallet.membership.exception.kakao.OperatorAlreadyExistsException;
-import com.klipwallet.membership.exception.member.OperatorDuplicatedException;
+import com.klipwallet.membership.exception.operator.OperatorDuplicatedException;
 import com.klipwallet.membership.repository.ChatRoomNftRepository;
 import com.klipwallet.membership.repository.ChatRoomRepository;
 import com.klipwallet.membership.service.kakao.KakaoService;
