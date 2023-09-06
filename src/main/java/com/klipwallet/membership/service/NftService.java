@@ -8,11 +8,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrops;
 import com.klipwallet.membership.dto.nft.NftAssembler;
-import com.klipwallet.membership.dto.nft.NftDto.NftSummary;
+import com.klipwallet.membership.dto.nft.NftDto.Summary;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
-import com.klipwallet.membership.exception.member.KlipDropsPartnerIdNotFound;
 import com.klipwallet.membership.exception.member.PartnerNotFoundException;
+import com.klipwallet.membership.exception.member.PartnerUnlinkedToKlipDropsPartnerException;
 import com.klipwallet.membership.repository.PartnerRepository;
 
 @Service
@@ -23,18 +23,18 @@ public class NftService {
     private final NftAssembler nftAssembler;
 
     @Transactional(readOnly = true)
-    public List<NftSummary> getNftList(MemberId partnerId) {
+    public List<Summary> getNftList(MemberId partnerId) {
         Partner partner = partnerRepository.findById(partnerId.value())
                                            .orElseThrow(() -> new PartnerNotFoundException(partnerId));
 
         Integer klipDropsPartnerId = partner.getKlipDropsPartnerId();
         if (klipDropsPartnerId == null) {
-            throw new KlipDropsPartnerIdNotFound(partnerId);
+            throw new PartnerUnlinkedToKlipDropsPartnerException(partnerId);
         }
 
         // TODO: 다른 채팅에 등록된 Drop은 filter out
-        
+
         KlipDropsDrops dropsByPartner = klipDropsService.getDropsByPartner(klipDropsPartnerId);
-        return nftAssembler.toNftSummary(dropsByPartner);
+        return nftAssembler.toNftSummaries(dropsByPartner);
     }
 }

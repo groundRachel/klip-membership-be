@@ -11,7 +11,7 @@ import com.klipwallet.membership.adaptor.klipdrops.dto.DropStatus;
 @RequiredArgsConstructor
 public class NftDto {
     @Schema(description = "[Tool] 오픈채팅방 생성을 위한 NFT 리스트 조회", accessMode = AccessMode.READ_ONLY)
-    public record NftSummary(
+    public record Summary(
             String name,
             String creatorName,
             BigInteger dropId,

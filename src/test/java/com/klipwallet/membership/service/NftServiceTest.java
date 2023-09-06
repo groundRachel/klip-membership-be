@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.klipwallet.membership.dto.nft.NftDto.NftSummary;
+import com.klipwallet.membership.dto.nft.NftDto.Summary;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
@@ -55,14 +55,14 @@ class NftServiceTest {
         Partner partner = createPartner();
 
         // when
-        List<NftSummary> nftList = service.getNftList(partner.getMemberId());
+        List<Summary> nftList = service.getNftList(partner.getMemberId());
 
         // then
         assertThat(nftList.size()).isNotZero();
         assertThat(nftList.get(0).name()).isNotEmpty();
         assertThat(nftList.get(0).creatorName()).isNotNull();
         assertThat(nftList.get(0).dropId()).isNotZero();
-        assertThat(nftList.get(0).totalSalesCount()).isNotZero();
-        assertThat(nftList.get(0).totalSalesCount()).isNotZero();
+        assertThat(nftList.get(0).totalSalesCount()).isPositive();
+        assertThat(nftList.get(0).totalSalesCount()).isPositive();
     }
 }

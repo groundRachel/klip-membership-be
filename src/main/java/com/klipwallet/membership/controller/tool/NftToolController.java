@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.klipwallet.membership.dto.nft.NftDto.NftSummary;
+import com.klipwallet.membership.dto.nft.NftDto.Summary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.NftService;
 
@@ -30,7 +30,7 @@ public class NftToolController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
     })
     @GetMapping
-    public List<NftSummary> getNftList(@AuthenticationPrincipal AuthenticatedUser user) {
+    public List<Summary> getNftList(@AuthenticationPrincipal AuthenticatedUser user) {
         return nftService.getNftList(user.getMemberId());
     }
 }
