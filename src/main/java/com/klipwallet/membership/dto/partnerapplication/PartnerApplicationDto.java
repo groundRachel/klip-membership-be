@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
@@ -50,6 +51,6 @@ public class PartnerApplicationDto {
 
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record RejectRequest(
-            String rejectReason
+            @Schema(requiredMode = RequiredMode.REQUIRED) String rejectReason
     ) {}
 }
