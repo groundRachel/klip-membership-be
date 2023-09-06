@@ -84,7 +84,7 @@ public class SecurityConfig {
 
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
-                    a -> a.requestMatchers(antMatcher("/tool/v1/faq/*"),
+                    a -> a.requestMatchers(antMatcher("/tool/v1/faq/**"),
                                            antMatcher("/tool/v1/members/me")).permitAll()
                           .requestMatchers(antMatcher("/tool/v1/partner-applications")).hasAuthority(OAUTH2_USER)
                           .requestMatchers(antMatcher("/tool/v1/**")).hasRole(PARTNER)
