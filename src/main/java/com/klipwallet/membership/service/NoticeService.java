@@ -27,7 +27,6 @@ import com.klipwallet.membership.exception.NoticeNotFoundException;
 import com.klipwallet.membership.exception.PrimaryNoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
 
-import static com.klipwallet.membership.entity.ArticleStatus.DELETE;
 import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 
 @Service
@@ -69,15 +68,22 @@ public class NoticeService {
     }
 
     private void checkStatus(ArticleStatus status) {
-        if (status == DELETE) {
+        if (status.isEnabled()) {
             throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
         }
     }
 
     private Page<Row> getPaginationRows(ArticleStatus status, Pageable pageable, Sort forceSort) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), forceSort);
-        Page<Notice> notices = noticeRepository.findAllByStatusAndPrimary(status, false, pageRequest);
+        Page<Notice> notices = getPaginationNotices(status, pageRequest);
         return noticeAssembler.toRows(notices);
+    }
+
+    private Page<Notice> getPaginationNotices(ArticleStatus status, Pageable pageRequest) {
+        if (status == LIVE) {
+            return noticeRepository.findAllByStatusAndPrimary(status, false, pageRequest);
+        }
+        return noticeRepository.findAllByStatus(status, pageRequest);
     }
 
     /**
