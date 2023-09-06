@@ -54,7 +54,7 @@ class PartnerApplicationServiceTest {
 
         partnerApplication.approve(processorId);
         partnerApplicationRepository.save(partnerApplication);
-        partnerRepository.save(new Partner(partnerApplication, 3,
+        partnerRepository.save(new Partner(partnerApplication.getId(), 3,
                                            partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
                                            partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
                                            partnerApplication.getOauthId(), processorId));

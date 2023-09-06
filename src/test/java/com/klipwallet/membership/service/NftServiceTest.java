@@ -43,7 +43,7 @@ class NftServiceTest {
 
         Integer kliDropsPartnerId = 1;
         return partnerRepository.save(
-                new Partner(persistentPartnerApplication, kliDropsPartnerId, "그라운드엑스", "010-1234-5678", "356-88-00968", "groundx@groundx.xyz",
+                new Partner(persistentPartnerApplication.getId(), kliDropsPartnerId, "그라운드엑스", "010-1234-5678", "356-88-00968", "groundx@groundx.xyz",
                             "192085223830.apps.googleusercontent.com", new MemberId(2)));
     }
 

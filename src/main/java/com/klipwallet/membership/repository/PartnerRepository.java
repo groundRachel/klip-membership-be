@@ -23,6 +23,7 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
 
     Boolean existsByEmail(String email);
 
+    // TODO join on partner application id (foreign key)
     @Query("""
            select new com.klipwallet.membership.entity.MemberId(p.id) as memberId, p.name as name, a.processedAt as processedAt,
                   a.processorId as processorId

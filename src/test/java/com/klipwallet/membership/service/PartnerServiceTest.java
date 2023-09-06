@@ -69,9 +69,9 @@ public class PartnerServiceTest {
             partnerInfo p = partnerInfos.get(i);
             PartnerApplication partnerApplication = new PartnerApplication(p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId);
             partnerApplication.approve(processorId);
-            partnerApplicationRepository.save(partnerApplication);
+            PartnerApplication savedApplication = partnerApplicationRepository.save(partnerApplication);
             partnerRepository.save(
-                    new Partner(partnerApplication, i, p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId, processorId));
+                    new Partner(savedApplication.getId(), i, p.name, p.phoneNumber, p.businessRegistrationNumber, p.email, p.oauthId, processorId));
         }
         partnerApplicationRepository.flush();
         partnerRepository.flush();

@@ -3,8 +3,6 @@ package com.klipwallet.membership.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,10 +14,9 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Partner extends Member {
+    @Column(nullable = false) // TODO make foreign key
+    private Integer partnerApplicationId;
 
-    @OneToOne
-    @JoinColumn(name = "partner_application_id", nullable = false)
-    private PartnerApplication partnerApplication;
     private Integer klipDropsPartnerId;
 
     @Column(nullable = false)
@@ -28,10 +25,10 @@ public class Partner extends Member {
     @Column(nullable = false)
     private String businessRegistrationNumber;
 
-    public Partner(PartnerApplication partnerApplication, Integer klipDropsPartnerId, String name, String phoneNumber,
+    public Partner(Integer partnerApplicationId, Integer klipDropsPartnerId, String name, String phoneNumber,
                    String businessRegistrationNumber,
                    String email, String oAuthId, MemberId creator) {
-        this.partnerApplication = partnerApplication;
+        this.partnerApplicationId = partnerApplicationId;
         this.klipDropsPartnerId = klipDropsPartnerId;
         setName(name);
         this.phoneNumber = phoneNumber;
