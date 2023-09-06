@@ -54,7 +54,12 @@ public class NoticeAdminController {
         return noticeService.create(command, user);
     }
 
-    @Operation(summary = "Admin 공지사항 상태 별 목록 조회")
+    @Operation(summary = "Admin 공지사항 상태 별 목록 조회",
+               description = """
+                             - 해당 목록에서 **고정 공지는 노출되지 않는다.**
+                             - sort 인자는 무시되며, 최근 수정일시 최신 순으로 정렬한다.(order by updatedAt desc)
+                             - 하지만 status=live인 경우 최근 Live일시 최신 순으로 정렬한다.(order by livedAt desc)
+                             """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "공지사항 목록 조회 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid Query", content = @Content(schema = @Schema(ref = "Error400"))),

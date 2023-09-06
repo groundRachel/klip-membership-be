@@ -27,7 +27,11 @@ import com.klipwallet.membership.service.NoticeService;
 public class NoticeToolController {
     private final NoticeService noticeService;
 
-    @Operation(summary = "Tool 공지사항 목록 조회")
+    @Operation(summary = "Tool 공지사항 목록 조회",
+               description = """
+                             - 해당 목록에서 **고정 공지는 노출되지 않는다.**
+                             - sort 인자는 무시되며, 무조건 최근 Live일시 최신 순으로 정렬한다.(order by livedAt desc)
+                             """)
     @ApiResponses(@ApiResponse(responseCode = "200", description = "공지사항 목록 조회 성공"))
     @GetMapping
     public Page<Row> list(@ParameterObject Pageable pageable) {
