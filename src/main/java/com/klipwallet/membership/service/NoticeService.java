@@ -27,7 +27,6 @@ import com.klipwallet.membership.exception.NoticeNotFoundException;
 import com.klipwallet.membership.exception.PrimaryNoticeNotFoundException;
 import com.klipwallet.membership.repository.NoticeRepository;
 
-import static com.klipwallet.membership.entity.ArticleStatus.DELETE;
 import static com.klipwallet.membership.entity.ArticleStatus.LIVE;
 
 @Service
@@ -63,17 +62,28 @@ public class NoticeService {
      */
     @Transactional(readOnly = true)
     public Page<Row> getListByStatus(ArticleStatus status, Pageable pageable) {
-        if (status == DELETE) {
-            throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
-        }
+        checkStatus(status);
         Sort orderByUpdatedAtDesc = Sort.sort(Notice.class).by(Notice::getUpdatedAt).descending();
         return getPaginationRows(status, pageable, orderByUpdatedAtDesc);
     }
 
+    private void checkStatus(ArticleStatus status) {
+        if (status.isEnabled()) {
+            throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
+        }
+    }
+
     private Page<Row> getPaginationRows(ArticleStatus status, Pageable pageable, Sort forceSort) {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), forceSort);
-        Page<Notice> notices = noticeRepository.findAllByStatus(status, pageRequest);
+        Page<Notice> notices = getPaginationNotices(status, pageRequest);
         return noticeAssembler.toRows(notices);
+    }
+
+    private Page<Notice> getPaginationNotices(ArticleStatus status, Pageable pageRequest) {
+        if (status == LIVE) {
+            return noticeRepository.findAllByStatusAndPrimary(status, false, pageRequest);
+        }
+        return noticeRepository.findAllByStatus(status, pageRequest);
     }
 
     /**
@@ -207,7 +217,7 @@ public class NoticeService {
      * @see #update(Integer, com.klipwallet.membership.dto.notice.NoticeDto.Update, com.klipwallet.membership.entity.AuthenticatedUser)
      */
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    public void subscribePrimaryNoticeChanged(@SuppressWarnings("unused") PrimaryNoticeChanged event) {
+    public void subscribePrimaryNoticeChanged(PrimaryNoticeChanged event) {
         Integer primaryNoticeId = event.getPrimaryNoticeId();
         List<Notice> mainNotices = noticeRepository.findAllByPrimary(true);
         for (Notice notice : mainNotices) {

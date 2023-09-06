@@ -54,7 +54,11 @@ public class NoticeAdminController {
         return noticeService.create(command, user);
     }
 
-    @Operation(summary = "Admin 공지사항 상태 별 목록 조회")
+    @Operation(summary = "Admin 공지사항 상태 별 목록 조회",
+               description = """
+                             - status=live: 최근 Live일시 최신 순으로 정렬되며, **고정 공지 미노출**
+                             - status!=live: 최근 수정일시 최신 순으로 정렬되며, 고정 공지 노출
+                             """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "공지사항 목록 조회 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid Query", content = @Content(schema = @Schema(ref = "Error400"))),

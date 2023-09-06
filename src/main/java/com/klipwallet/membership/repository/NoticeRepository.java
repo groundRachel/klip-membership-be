@@ -3,12 +3,16 @@ package com.klipwallet.membership.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.Notice;
 
 public interface NoticeRepository extends AbstractArticleRepository<Notice> {
+    Page<Notice> findAllByStatusAndPrimary(ArticleStatus status, boolean isPrimary, Pageable sort);
+
     /**
      * 고정 공지 여부로 목록 조회
      *
