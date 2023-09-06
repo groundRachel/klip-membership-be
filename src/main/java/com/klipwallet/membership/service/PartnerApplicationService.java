@@ -107,7 +107,8 @@ public class PartnerApplicationService {
         }
 
         partnerApplicationRepository.save(partnerApplication);
-        partnerRepository.save(new Partner(partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
+        partnerRepository.save(new Partner(partnerApplication.getId(), partnerApplication.getKlipDropsPartnerId(),
+                                           partnerApplication.getBusinessName(), partnerApplication.getPhoneNumber(),
                                            partnerApplication.getBusinessRegistrationNumber(), partnerApplication.getEmail(),
                                            partnerApplication.getOauthId(), user.getMemberId()));
     }

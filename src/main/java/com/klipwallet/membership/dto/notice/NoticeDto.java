@@ -120,7 +120,7 @@ public class NoticeDto {
     }
 
     @Schema(description = "공지사항 상태 DTO", accessMode = AccessMode.READ_WRITE)
-    public record Status(@NonNull @NotNull @JsonProperty("value") ArticleStatus value) {
+    public record Status(@NonNull @NotNull @JsonProperty("status") ArticleStatus value) {
     }
 
     @Schema(description = "공지사항 목록의 Row DTO", accessMode = AccessMode.READ_ONLY)

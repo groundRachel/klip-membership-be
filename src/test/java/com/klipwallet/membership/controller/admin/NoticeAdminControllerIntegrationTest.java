@@ -501,13 +501,13 @@ class NoticeAdminControllerIntegrationTest {
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         DRAFT);
         String body = """
-                      { "value": "live" }
+                      { "status": "live" }
                       """;
         mvc.perform(put("/admin/v1/notices/{0}/status", noticeId)
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.value").value(LIVE.toDisplay()));
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()));
 
         // status = live & livedAt exists & change updatedAt/updatedBy
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
@@ -529,13 +529,13 @@ class NoticeAdminControllerIntegrationTest {
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         String body = """
-                      { "value": "inactive" }
+                      { "status": "inactive" }
                       """;
         mvc.perform(put("/admin/v1/notices/{0}/status", noticeId)
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.value").value(INACTIVE.toDisplay()));
+           .andExpect(jsonPath("$.status").value(INACTIVE.toDisplay()));
 
         // status = live & livedAt exists & change updatedAt/updatedBy
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
@@ -557,7 +557,7 @@ class NoticeAdminControllerIntegrationTest {
                                         "<p>클립 멤버십 툴은 NFT 홀더들에게 오픈 채팅 등의 구독 서비스를 제공하는 서비스입니다.</p>",
                                         LIVE);
         String body = """
-                      { "value": "something" }
+                      { "status": "something" }
                       """;
         mvc.perform(put("/admin/v1/notices/{0}/status", noticeId)
                             .contentType(APPLICATION_JSON)

@@ -29,6 +29,7 @@
     <entry key="problemDetail.code.404007">어드민을 찾을 수 없습니다. Email: {0}</entry>
     <entry key="problemDetail.code.404008">운영자를 찾을 수 없습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.404009">이용자가 존재하지 않습니다.</entry>
+    <entry key="problemDetail.code.404010">Klip Drops 파트너 정보가 존재하지 않습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.404011">사업자 번호에 해당하는 Klip Drops 파트너를 찾을 수 없습니다. ID: {0,number,#} 사업자번호: {1}</entry>
 
     <!-- 409 -->
