@@ -42,6 +42,8 @@ public class KlipMembershipOAuth2SuccessHandler implements AuthenticationSuccess
                     // TODO @Jordan case JOIN_CHATROOM -> tryJonChatroom();
                     default -> log.error("OneTimeAction is invalid. {}", request);
                 }
+            }
+            if (response.isCommitted()) {
                 return;
             }
             response.sendRedirect(properties.getToolFrontUrl());
