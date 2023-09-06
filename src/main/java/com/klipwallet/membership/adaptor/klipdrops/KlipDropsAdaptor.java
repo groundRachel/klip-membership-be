@@ -16,6 +16,9 @@ public class KlipDropsAdaptor implements KlipDropsService {
     public KlipDropsPartner getPartnerByBusinessRegistrationNumber(String businessRegistrationNumber) {
         Integer size = 1;
         KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(businessRegistrationNumber, null, null, size);
+        if (allPartners.klipDropsPartners().size() == 0) {
+            return null;
+        }
         return allPartners.klipDropsPartners().get(0);
     }
 }

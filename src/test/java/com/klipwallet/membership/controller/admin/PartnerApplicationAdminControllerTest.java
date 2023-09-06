@@ -281,7 +281,7 @@ class PartnerApplicationAdminControllerTest {
                             param("status", APPLIED.toDisplay()).
                             contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(content().string("3"));
+           .andExpect(content().string("\"3\""));
     }
 
     @WithAdminUser(memberId = 2)
@@ -296,6 +296,6 @@ class PartnerApplicationAdminControllerTest {
                             param("status", REJECTED.toDisplay()).
                             contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(content().string("3"));
+           .andExpect(content().string("\"3\""));
     }
 }

@@ -67,7 +67,10 @@ public enum ErrorCode {
     EMAIL_SEND_ERROR(500_103),
 
     // InterApi
-    INTERNAL_API_ERROR(500_200);
+    INTERNAL_API_ERROR(500_200),
+
+    // Klip Drops
+    KLIP_DROPS_PARTNER_NOT_FOUND_BY_BUSINESS_NUMBER(404_011);
 
     final int code;
 

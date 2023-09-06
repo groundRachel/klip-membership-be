@@ -23,5 +23,5 @@ public interface PartnerApplicationRepository extends JpaRepository<PartnerAppli
 
     Page<PartnerApplication> findAllByStatus(PartnerApplication.Status status, Pageable pageable);
 
-    Integer countByStatus(PartnerApplication.Status status);
+    Long countByStatus(PartnerApplication.Status status);
 }

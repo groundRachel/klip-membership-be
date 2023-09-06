@@ -51,7 +51,7 @@ public class PartnerApplicationAdminController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
     })
     @GetMapping("/count")
-    public Integer getPartnerApplicationNumber(@RequestParam Status status) {
+    public Long getPartnerApplicationNumber(@RequestParam Status status) {
         return partnerApplicationService.getPartnerApplicationNumber(status);
     }
 
