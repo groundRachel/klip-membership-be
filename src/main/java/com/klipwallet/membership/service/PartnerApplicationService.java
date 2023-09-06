@@ -85,8 +85,9 @@ public class PartnerApplicationService {
     }
 
     @Transactional
-    public Long getPartnerApplicationNumber(Status status) {
-        return partnerApplicationRepository.countByStatus(status);
+    public PartnerApplicationDto.PartnerApplicationCount getPartnerApplicationNumber(Status status) {
+        Long countByStatus = partnerApplicationRepository.countByStatus(status);
+        return new PartnerApplicationDto.PartnerApplicationCount(countByStatus);
     }
 
     private Sort toSort(Status status) {

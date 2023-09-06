@@ -29,7 +29,8 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -281,7 +282,7 @@ class PartnerApplicationAdminControllerTest {
                             param("status", APPLIED.toDisplay()).
                             contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(content().string("\"3\""));
+           .andExpect(jsonPath("$.count").value(3));
     }
 
     @WithAdminUser(memberId = 2)
@@ -296,6 +297,6 @@ class PartnerApplicationAdminControllerTest {
                             param("status", REJECTED.toDisplay()).
                             contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
-           .andExpect(content().string("\"3\""));
+           .andExpect(jsonPath("$.count").value(3));
     }
 }

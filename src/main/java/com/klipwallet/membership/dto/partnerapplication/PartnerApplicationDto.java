@@ -43,6 +43,11 @@ public class PartnerApplicationDto {
             MemberSummary processor
     ) {}
 
+    @Schema(description = "[ADMIN] 파트너 신청, 거절 수를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    public record PartnerApplicationCount(
+            @NonNull Long count
+    ) {}
+
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record RejectRequest(
             String rejectReason

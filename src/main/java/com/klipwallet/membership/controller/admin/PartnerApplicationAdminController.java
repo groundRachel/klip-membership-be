@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationCount;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
@@ -51,7 +52,7 @@ public class PartnerApplicationAdminController {
             @ApiResponse(responseCode = "200", description = "조회 성공"),
     })
     @GetMapping("/count")
-    public Long getPartnerApplicationNumber(@RequestParam Status status) {
+    public PartnerApplicationCount getPartnerApplicationNumber(@RequestParam Status status) {
         return partnerApplicationService.getPartnerApplicationNumber(status);
     }
 
