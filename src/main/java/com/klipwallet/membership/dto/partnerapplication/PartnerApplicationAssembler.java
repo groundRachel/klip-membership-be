@@ -1,7 +1,6 @@
 package com.klipwallet.membership.dto.partnerapplication;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +33,6 @@ public class PartnerApplicationAssembler {
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
                                                                       memberAssembler.getMemberSummary(p.getProcessorId())))
-                                  .collect(Collectors.toList());
+                                  .toList();
     }
 }

@@ -22,12 +22,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.klipwallet.membership.dto.OneTimeAction;
+
 import static org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
 public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
-    public static final String OPERATOR_NO_PERMISSION = "op.noPermission";
-    public static final String OPERATOR_AGREED = "op.agreed";
-
     private static final char PATH_DELIMITER = '/';
 
     private static final String REGISTRATION_ID_URI_VARIABLE_NAME = "registrationId";
@@ -89,8 +88,8 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
             return defaultImpl.resolve(request);
         }
         String redirectUriAction = getRedirectUriAction(request, "login");
-        String kmAction = getKmAction(request);
-        return resolve(request, registrationId, redirectUriAction, kmAction);
+        OneTimeAction otAction = getOtAction(request);
+        return resolve(request, registrationId, redirectUriAction, otAction);
     }
 
     private String resolveRegistrationId(HttpServletRequest request) {
@@ -110,17 +109,17 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
             return defaultImpl.resolve(request, clientRegistrationId);
         }
         String redirectUriAction = getRedirectUriAction(request, "authorize");
-        String kmAction = getKmAction(request);
-        return resolve(request, clientRegistrationId, redirectUriAction, kmAction);
+        OneTimeAction otAction = getOtAction(request);
+        return resolve(request, clientRegistrationId, redirectUriAction, otAction);
     }
 
     @NonNull
-    private String getKmAction(HttpServletRequest request) {
-        String action = request.getParameter("kmAction");
-        if (action == null) {
-            return OPERATOR_NO_PERMISSION;
+    private OneTimeAction getOtAction(HttpServletRequest request) {
+        String otActionString = request.getParameter("otAction");
+        if (otActionString == null) {
+            return OneTimeAction.NONE;
         }
-        return action;
+        return OneTimeAction.fromDisplay(otActionString);
     }
 
     private String getRedirectUriAction(HttpServletRequest request, String defaultAction) {
@@ -132,7 +131,7 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
     }
 
     private OAuth2AuthorizationRequest resolve(HttpServletRequest request, String registrationId,
-                                               String redirectUriAction, String kmAction) {
+                                               String redirectUriAction, OneTimeAction otAction) {
         if (registrationId == null) {
             return null;
         }
@@ -143,14 +142,23 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
         OAuth2AuthorizationRequest.Builder builder = getBuilder(clientRegistration);
 
         String redirectUriStr = expandRedirectUri(request, clientRegistration, redirectUriAction);
+        String state = generateState(request, otAction);
 
         builder.clientId(clientRegistration.getClientId())
                .authorizationUri(clientRegistration.getProviderDetails().getAuthorizationUri())
                .redirectUri(redirectUriStr)
                .scopes(clientRegistration.getScopes())
-               .state(DEFAULT_STATE_GENERATOR.generateKey() + ":" + kmAction);
+               .state(state);
 
         return builder.build();
+    }
+
+    private String generateState(HttpServletRequest request, OneTimeAction otAction) {
+        String code = request.getParameter("code");
+        if (code == null) {
+            return "%s:%s".formatted(DEFAULT_STATE_GENERATOR.generateKey(), otAction.toDisplay());
+        }
+        return "%s:%s".formatted(code, otAction.toDisplay());
     }
 
     private OAuth2AuthorizationRequest.Builder getBuilder(ClientRegistration clientRegistration) {

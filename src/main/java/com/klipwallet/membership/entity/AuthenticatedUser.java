@@ -8,6 +8,8 @@ import jakarta.annotation.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import static com.klipwallet.membership.config.SecurityConfig.ROLE_KLIP_KAKAO;
+
 
 /**
  * Klip Membership 인증된 사용자 인터페이스
@@ -38,4 +40,15 @@ public interface AuthenticatedUser extends OAuth2User {
     String getEmail();
 
     Collection<? extends GrantedAuthority> getAuthorities();
+
+    default boolean isKakao() {
+        return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_KLIP_KAKAO));
+    }
+
+    /**
+     * 카카오 OAuth로 인증했을 때 카카오 이용자 휴대폰 번호.
+     * <p>카카오 이용자가 아닌 경우 {@code null} 반환</p>
+     */
+    @Nullable
+    String getKakaoPhoneNumber();
 }

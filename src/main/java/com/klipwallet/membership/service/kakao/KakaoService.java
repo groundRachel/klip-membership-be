@@ -1,4 +1,4 @@
-package com.klipwallet.membership.service;
+package com.klipwallet.membership.service.kakao;
 
 import com.klipwallet.membership.entity.kakao.OpenChatRoomHost;
 import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;

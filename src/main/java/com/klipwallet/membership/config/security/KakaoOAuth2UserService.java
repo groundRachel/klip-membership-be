@@ -20,8 +20,11 @@ public class KakaoOAuth2UserService implements OAuth2UserService<OAuth2UserReque
         return KlipMembershipOAuth2User.kakao(oauth2User, userRequest.getAccessToken());
     }
 
+
     private boolean isKakao(OAuth2UserRequest userRequest) {
         // spring.security.oauth2.client.registration.kakao
         return userRequest.getClientRegistration().getRegistrationId().equals("kakao");
     }
+
+
 }

@@ -19,5 +19,7 @@ public @interface WithAuthenticatedUser {
 
     String email() default "jordan.jung@groundx.xyz";
 
+    String kakaoPhoneNumber() default "";
+
     String[] authorities() default {ROLE_PARTNER};
 }

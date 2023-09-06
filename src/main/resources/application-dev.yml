@@ -1,5 +1,6 @@
 application:
   klip-membership:
+    env: dev
     tool-front-url: https://membership.dev.klipwallet.com
     admin-front-url: https://membership-admin.dev.klipwallet.com
   kakao-api:
@@ -84,7 +85,7 @@ spring:
   session:
     redis:
       repository-type: default
-      namespace: dev    # 환경 별 prefix 설정. Key 예시: 'dev:sessions:{sessionId}'
+      namespace: ${application.klip-membership.env}    # 환경 별 prefix 설정. Key 예시: 'dev:sessions:{sessionId}'
     timeout: 30m
 
 springdoc:

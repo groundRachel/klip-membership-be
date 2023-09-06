@@ -2,7 +2,7 @@ package com.klipwallet.membership.exception;
 
 import lombok.ToString;
 
-import com.klipwallet.membership.adaptor.biztalk.BgmsTokenRes;
+import com.klipwallet.membership.adaptor.kakao.biztalk.BgmsTokenRes;
 import com.klipwallet.membership.dto.InternalApiError;
 
 @SuppressWarnings("serial")

@@ -11,8 +11,10 @@ import com.klipwallet.membership.dto.admin.AdminDto.Register;
 import com.klipwallet.membership.dto.admin.AdminDto.Summary;
 import com.klipwallet.membership.entity.Admin;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.exception.NotFoundException;
 import com.klipwallet.membership.repository.AdminRepository;
+import com.klipwallet.membership.repository.PartnerRepository;
 import com.klipwallet.membership.service.AdminService;
 
 /**
@@ -25,6 +27,7 @@ import com.klipwallet.membership.service.AdminService;
 public class LocalConfig implements CommandLineRunner {
     private final AdminService adminService;
     private final AdminRepository adminRepository;
+    private final PartnerRepository partnerRepository;
     private final DeveloperProperties developerProperties;
 
     @Transactional
@@ -34,6 +37,13 @@ public class LocalConfig implements CommandLineRunner {
         for (String email : developerProperties.getEmails()) {
             registerAdmin(email, superAdmin);
         }
+        registerPartner(superAdmin);
+    }
+
+    private void registerPartner(Admin superAdmin) {
+        Partner jordan = new Partner("jordan.jung", "010-1111-2222", "000-00-00000",
+                                     "jordan.jung@groundx.xyz", "115419318504487812056", superAdmin.getMemberId());
+        partnerRepository.save(jordan);
     }
 
     private void registerAdmin(String mail, Admin superAdmin) {

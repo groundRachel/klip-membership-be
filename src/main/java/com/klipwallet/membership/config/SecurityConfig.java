@@ -24,6 +24,7 @@ import com.klipwallet.membership.config.security.KlipMembershipOAuth2SuccessHand
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2UserService;
 import com.klipwallet.membership.config.security.ProblemDetailEntryPoint;
 import com.klipwallet.membership.service.AdminService;
+import com.klipwallet.membership.service.OperatorInvitable;
 import com.klipwallet.membership.service.PartnerService;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -79,9 +80,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    @SuppressWarnings("unused") ProblemDetailEntryPoint problemDetailEntryPoint,
                                                    DelegatingOAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService,
-                                                   KlipMembershipOAuth2SuccessHandler kakaoOAuth2SuccessHandler)
-            throws Exception {
-
+                                                   KakaoOAuth2AuthorizationRequestResolver kakaoOAuth2AuthorizationRequestResolver,
+                                                   KlipMembershipOAuth2SuccessHandler kakaoOAuth2SuccessHandler) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faqs/**"),
@@ -90,6 +90,8 @@ public class SecurityConfig {
                           .requestMatchers(antMatcher("/tool/v1/**")).hasRole(PARTNER)
                           .requestMatchers(antMatcher("/admin/v1/admins/**")).hasRole(SUPER_ADMIN)
                           .requestMatchers(antMatcher("/admin/v1/**")).hasRole(ADMIN)
+                          .requestMatchers(antMatcher("/external/v1/operators")).hasRole(KLIP_KAKAO)
+                          .requestMatchers(antMatcher("/external/v1/**")).permitAll()
                           .requestMatchers(antMatcher("/error/**")).permitAll()
                           .requestMatchers(antMatcher("/actuator/**")).permitAll()      // actuator
                           .requestMatchers(antMatcher("/swagger-ui/**"),
@@ -101,6 +103,8 @@ public class SecurityConfig {
                           .anyRequest().authenticated())
             .oauth2Login(
                     o -> o.successHandler(kakaoOAuth2SuccessHandler)
+                          .authorizationEndpoint(
+                                  a -> a.authorizationRequestResolver(kakaoOAuth2AuthorizationRequestResolver))
                           .userInfoEndpoint(
                                   u -> u.userService(oauth2UserService)))
             .anonymous(a -> a.disable())
@@ -111,7 +115,6 @@ public class SecurityConfig {
                     e -> e.accessDeniedPage("/error/403")
                     // .authenticationEntryPoint(problemDetailEntryPoint) FIXME @Jordan FE 붙이면 주석 제거
             );
-
         return http.build();
     }
 
@@ -128,11 +131,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    KlipMembershipOAuth2SuccessHandler kakaoOAuth2SuccessHandler(KlipMembershipProperties properties) {
-        return new KlipMembershipOAuth2SuccessHandler(properties);
+    KlipMembershipOAuth2SuccessHandler kakaoOAuth2SuccessHandler(KlipMembershipProperties properties, OperatorInvitable operatorInvitable) {
+        return new KlipMembershipOAuth2SuccessHandler(properties, operatorInvitable);
     }
 
-    //    @Bean 추후 필요할 수 있어서 우선 유지.
+    @Bean
     KakaoOAuth2AuthorizationRequestResolver kakaoOAuth2AuthorizationRequestResolver(ClientRegistrationRepository clientRegistrationRepository) {
         return new KakaoOAuth2AuthorizationRequestResolver(clientRegistrationRepository);
     }

@@ -10,6 +10,7 @@
     <entry key="problemDetail.code.400004">이 운영자는 파트너 계정에 속해 있지 않습니다. Operator ID: {0,number,#}, Partner ID:{1,number,#}</entry>
     <entry key="problemDetail.code.400005">운영자 ID가 중복되었습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.400006">파일 업로드 제한 사이즈를 초과했습니다. limit: {0,number} KB, upload: {1,number} KB</entry>
+    <entry key="problemDetail.code.400007">운영진 초대자와 현재 접속자가 일치하지 않습니다.</entry>
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>
@@ -36,6 +37,12 @@
     <entry key="problemDetail.code.409000">서버의 현재 상태와 요청이 충돌했습니다.</entry>
     <entry key="problemDetail.code.409001">이미 처리된 파트너 가입 요청입니다. ID: {0,number,#}, 처리상태: {1}, 처리자: {2,number,#}, 처리시각: {3}</entry>
     <entry key="problemDetail.code.409002">해당 이메일로 진행 중인 요청이 있습니다.</entry>
+    <entry key="problemDetail.code.409003">이미 가입된 운영진입니다. {0}</entry>
+
+    <!-- 410 -->
+    <entry key="problemDetail.code.410001">만료되었거나, 접근할 수 없는 리소스입니다.</entry>
+    <entry key="problemDetail.code.410002">운영진 초대 기한이 만료되었습니다.(24시간)</entry>
+    <entry key="problemDetail.code.410003">운영진 가입 입력 시간을 초과했습니다.(30분) 카카오 알림톡 링크를 클릭해서 다시 시작해주세요.</entry>
 
     <!-- 500 -->
     <entry key="problemDetail.code.500000">내부 서버에서 오류가 발생하였습니다.</entry>

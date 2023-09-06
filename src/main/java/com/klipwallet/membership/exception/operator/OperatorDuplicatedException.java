@@ -1,4 +1,4 @@
-package com.klipwallet.membership.exception.member;
+package com.klipwallet.membership.exception.operator;
 
 import jakarta.validation.constraints.NotNull;
 

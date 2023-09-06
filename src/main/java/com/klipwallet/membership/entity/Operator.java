@@ -54,11 +54,18 @@ public class Operator extends BaseEntity<Operator> {
     protected Operator() {
     }
 
-    public Operator(Long klipId, String kakaoUserId, Integer partnerId, MemberId creatorId) {
+    /**
+     * 운영진 생성
+     *
+     * @param klipId 운영진의 Klip 이용자 ID
+     * @param kakaoUserId 운영진의 카카오 이용자ID
+     * @param partnerId 가입
+     */
+    public Operator(Long klipId, String kakaoUserId, MemberId partnerId) {
         this.klipId = klipId;
         this.kakaoUserId = kakaoUserId;
-        this.partnerId = partnerId;
-        this.createBy(creatorId);
+        this.partnerId = partnerId.value();
+        this.createBy(partnerId);
     }
 
     public void checkPartnerId(MemberId partnerId) {

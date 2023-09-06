@@ -49,7 +49,7 @@ public class Notice extends AbstractArticle<Notice> {
     /**
      * 고정 공지로 설정
      */
-    private void primaryOn() {
+    void primaryOn() {
         if (this.primary) {    // 멱등성
             return;
         }

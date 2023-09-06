@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.klipwallet.membership.adaptor.klip.KlipAccount;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.dto.chatroom.ChatRoomMemberSummary;
+import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.repository.ChatRoomMemberRepository;
 import com.klipwallet.membership.service.KlipAccountService;
 
@@ -60,7 +61,7 @@ class ChatRoomMemberToolControllerTest {
     @DisplayName("오픈채팅방 멤버 생성 > 201")
     @Test
     void createChatRoomMember(@Autowired MockMvc mvc) throws Exception {
-        given(klipAccountService.getKlipUser(any()))
+        given(klipAccountService.getKlipUser(any(Address.class)))
                 .willReturn(new KlipAccount(1L, "2538023320", "testemail@test.com", "010-1234-5678"));
         String body = """
                       {
@@ -83,7 +84,7 @@ class ChatRoomMemberToolControllerTest {
     @DisplayName("오픈채팅방 관리자 생성: request body 값이 유효하지 않음 > 400")
     @Test
     void createEmptyFields(@Autowired MockMvc mvc) throws Exception {
-        given(klipAccountService.getKlipUser(any()))
+        given(klipAccountService.getKlipUser(any(Address.class)))
                 .willReturn(new KlipAccount(1L, "2538023320", "testemail@test.com", "010-1234-5678"));
         String body = """
                       {

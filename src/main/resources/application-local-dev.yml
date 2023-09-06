@@ -2,6 +2,7 @@
 # local-dev: local 환경이지만 dev 환경 인프라에 의존하는 환경. w/ vault(local-dev.properties)
 application:
   klip-membership:
+    env: local
     tool-front-url: http://membership.local.com:3000
     admin-front-url: http://membership.local.com:3000
   kakao-api:
@@ -81,7 +82,7 @@ spring:
   session:
     redis:
       repository-type: default
-      namespace: local    # 환경 별 prefix 설정. Key 예시: 'local:sessions:{sessionId}'
+      namespace: ${application.klip-membership.env}    # 환경 별 prefix 설정. Key 예시: 'local:sessions:{sessionId}'
     timeout: 30m
 
 springdoc:
