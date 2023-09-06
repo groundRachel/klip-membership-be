@@ -102,6 +102,37 @@ public class PartnerApplicationToolControllerIntegrationTest {
         assertThat(partnerApplication.getKlipDropsPartnerName()).isEqualTo("그라운드엑스");
     }
 
+    @Disabled("kubectl config set-context --current --namespace=klip-drops-dev ;" +
+              "kubectl port-forward svc/klip-drops 3100:3100")
+    @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", authorities = OAUTH2_USER)
+    @DisplayName("파트너 가입 요청 성공 : [dev] KlipDrops에 요청한 정보 없음")
+    @Test
+    void applyWithOutDrops(@Autowired MockMvc mvc) throws Exception {
+        ResultActions ra = mvc.perform(post("/tool/v1/partner-applications")
+                                               .contentType(MediaType.APPLICATION_JSON)
+                                               .content("""
+                                                        {
+                                                          "name": "(주) 그라운드엑스",
+                                                          "phoneNumber": "010-1234-5678",
+                                                          "businessRegistrationNumber": "356-88-99999"
+                                                        }
+                                                        """))
+                              .andExpect(status().isCreated())
+                              .andExpect(jsonPath("$.id").exists())
+                              .andExpect(jsonPath("$.name").value("(주) 그라운드엑스"))
+                              .andExpect(jsonPath("$.createdAt").exists());
+        partnerApplicationRepository.flush();
+
+        Integer applicationId = getId(ra);
+        PartnerApplication partnerApplication = partnerApplicationRepository.findById(applicationId).orElseThrow();
+        assertThat(partnerApplication.getBusinessName()).isEqualTo("(주) 그라운드엑스");
+        assertThat(partnerApplication.getPhoneNumber()).isEqualTo("010-1234-5678");
+        assertThat(partnerApplication.getEmail()).isEqualTo("example@groundx.xyz");
+        assertThat(partnerApplication.getBusinessRegistrationNumber()).isEqualTo("356-88-99999");
+        assertThat(partnerApplication.getKlipDropsPartnerId()).isNull();
+        assertThat(partnerApplication.getKlipDropsPartnerName()).isNull();
+    }
+
     @WithAuthenticatedUser(memberId = 0, email = "example@groundx.xyz", authorities = OAUTH2_USER)
     @DisplayName("파트너 가입 요청: 잘못된 전화번호 형식 400")
     @Test
