@@ -35,6 +35,11 @@ public class PartnerApplicationDto {
             OffsetDateTime createdAt
     ) {}
 
+    @Schema(description = "[TOOL] 가입 상태 조회 응답 DTO", accessMode = AccessMode.READ_ONLY)
+    public record SignUpStatusResult(
+            @NonNull @Schema(requiredMode = RequiredMode.REQUIRED) SignUpStatus status
+    ) {}
+
     @Schema(description = "[ADMIN] 파트너 신청, 거절 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record PartnerApplicationRow(
             @NonNull Integer id,
