@@ -24,17 +24,26 @@ public class NftService {
 
     @Transactional(readOnly = true)
     public List<Summary> getNftList(MemberId partnerId) {
-        Partner partner = partnerRepository.findById(partnerId.value())
-                                           .orElseThrow(() -> new PartnerNotFoundException(partnerId));
+        Partner partner = tryGetPartner(partnerId);
 
+        verifyKlipDropsPartner(partner);
         Integer klipDropsPartnerId = partner.getKlipDropsPartnerId();
-        if (klipDropsPartnerId == null) {
-            throw new PartnerUnlinkedToKlipDropsPartnerException(partnerId);
-        }
 
         // TODO: 다른 채팅에 등록된 Drop은 filter out
 
         KlipDropsDrops dropsByPartner = klipDropsService.getDropsByPartner(klipDropsPartnerId);
         return nftAssembler.toNftSummaries(dropsByPartner);
+    }
+
+    private Partner tryGetPartner(MemberId partnerId) {
+        return partnerRepository.findById(partnerId.value())
+                                .orElseThrow(() -> new PartnerNotFoundException(partnerId));
+    }
+
+    private void verifyKlipDropsPartner(Partner partner) {
+        Integer klipDropsPartnerId = partner.getKlipDropsPartnerId();
+        if (klipDropsPartnerId == null) {
+            throw new PartnerUnlinkedToKlipDropsPartnerException(partner.getMemberId());
+        }
     }
 }
