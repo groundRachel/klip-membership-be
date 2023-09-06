@@ -126,15 +126,15 @@ public class PartnerApplicationService {
     }
 
     @Transactional
-    public SignUpStatus getSignUpStatus(AuthenticatedUser user) {
+    public PartnerApplicationDto.SignUpStatusResult getSignUpStatus(AuthenticatedUser user) {
         if (partnerRepository.existsByEmail(user.getEmail())) {
-            return SignUpStatus.SIGNED_UP;
+            return new PartnerApplicationDto.SignUpStatusResult(SignUpStatus.SIGNED_UP);
         }
 
         if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED))) {
-            return SignUpStatus.PENDING;
+            return new PartnerApplicationDto.SignUpStatusResult(SignUpStatus.PENDING);
         }
 
-        return SignUpStatus.NON_MEMBER;
+        return new PartnerApplicationDto.SignUpStatusResult(SignUpStatus.NON_MEMBER);
     }
 }

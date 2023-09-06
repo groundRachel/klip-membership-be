@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
-import com.klipwallet.membership.dto.partnerapplication.SignUpStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
@@ -45,12 +44,12 @@ public class PartnerApplicationToolController {
         return partnerApplicationService.apply(body, user);
     }
 
-    @Operation(summary = "가입 상태 조회")
+    @Operation(summary = "가입 상태 조회", description = "파트너가 구글 인증 직후 호출하는 API. 파트너 가입 여부를 알 수 있음.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     @GetMapping("/me")
-    public SignUpStatus getSignUpStatus(@AuthenticationPrincipal AuthenticatedUser user) {
+    public PartnerApplicationDto.SignUpStatusResult getSignUpStatus(@AuthenticationPrincipal AuthenticatedUser user) {
         return partnerApplicationService.getSignUpStatus(user);
     }
 }
