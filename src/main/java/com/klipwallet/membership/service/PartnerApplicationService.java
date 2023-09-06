@@ -24,6 +24,7 @@ import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerApplicationCreated;
+import com.klipwallet.membership.exception.klipdrops.KlipDropsParnterNotFoundByBusinessNumberException;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
 import com.klipwallet.membership.exception.member.PartnerApplicationNotFoundException;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
@@ -61,7 +62,11 @@ public class PartnerApplicationService {
     public void getAndSetKlipDropsPartnerInfo(PartnerApplicationCreated event) {
         PartnerApplication partnerApplication = tryGetPartnerApplication(event.getPartnerApplicationId());
 
-        KlipDropsPartner partner = klipDropsService.getPartnerByBusinessRegistrationNumber(partnerApplication.getBusinessRegistrationNumber());
+        String businessRegistrationNumber = partnerApplication.getBusinessRegistrationNumber();
+        KlipDropsPartner partner = klipDropsService.getPartnerByBusinessRegistrationNumber(businessRegistrationNumber);
+        if (partner == null) {
+            throw new KlipDropsParnterNotFoundByBusinessNumberException(partnerApplication.getId(), businessRegistrationNumber);
+        }
         partnerApplication.setKlipDropsInfo(partner.partnerId(), partner.name());
         partnerApplicationRepository.save(partnerApplication);
     }
@@ -80,8 +85,9 @@ public class PartnerApplicationService {
     }
 
     @Transactional
-    public Integer getPartnerApplicationNumber(Status status) {
-        return partnerApplicationRepository.countByStatus(status);
+    public PartnerApplicationDto.PartnerApplicationCount getPartnerApplicationNumber(Status status) {
+        Long countByStatus = partnerApplicationRepository.countByStatus(status);
+        return new PartnerApplicationDto.PartnerApplicationCount(countByStatus);
     }
 
     private Sort toSort(Status status) {
