@@ -507,7 +507,7 @@ class NoticeAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.value").value(LIVE.toDisplay()));
+           .andExpect(jsonPath("$.status").value(LIVE.toDisplay()));
 
         // status = live & livedAt exists & change updatedAt/updatedBy
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
@@ -535,7 +535,7 @@ class NoticeAdminControllerIntegrationTest {
                             .contentType(APPLICATION_JSON)
                             .content(body))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.value").value(INACTIVE.toDisplay()));
+           .andExpect(jsonPath("$.status").value(INACTIVE.toDisplay()));
 
         // status = live & livedAt exists & change updatedAt/updatedBy
         mvc.perform(get("/admin/v1/notices/{0}", noticeId))
