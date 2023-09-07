@@ -60,9 +60,11 @@ public class LocalConfig implements CommandLineRunner {
 
         Partner winnie = new Partner(5, 15, "winnie.byun", "010-2955-4858", "000-00-55555",
                                   "winnie.byun@groundx.xyz", "116061336006046612273", superAdmin.getMemberId());
+        partnerRepository.save(winnie);
+
         Partner ted = new Partner(6, 16, "ted.jeong", "010-6440-2491", "000-00-666666",
                                      "ted.jeong@groundx.xyz", "11111111111", superAdmin.getMemberId());
-        partnerRepository.save(winnie);
+        partnerRepository.save(ted);
     }
 
     private void registerAdmin(String mail, Admin superAdmin) {
