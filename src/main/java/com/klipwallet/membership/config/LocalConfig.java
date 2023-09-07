@@ -45,7 +45,7 @@ public class LocalConfig implements CommandLineRunner {
         Partner jordan = new Partner(1, 11, "jordan.jung", "010-2738-3987", "000-00-00000",
                                      "jordan.jung@groundx.xyz", "115419318504487812056", superAdmin.getMemberId());
         partnerRepository.save(jordan);
-        Partner rachel = new Partner(2, 12, "rachel.lee", "010-7289-7072", "000-00-00000",
+        Partner rachel = new Partner(2, 12, "rachel.lee", "010-7289-7072", "000-00-11111",
                                      "rachel.lee@groundx.xyz", "105434102953836621752", superAdmin.getMemberId());
         partnerRepository.save(rachel);
 
