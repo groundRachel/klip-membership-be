@@ -17,6 +17,6 @@ public class DbKlipAccountService implements KlipAccountService {
     @Override
     public KlipUser getKlipUser(KakaoId kakaoId) {
         // FIXME @Jordan Fake
-        return new KlipAccount(641L, kakaoId.getId(), "jordan.jung@groundx.xyz", "01026382580");
+        return new KlipAccount(641L, kakaoId.getId(), "jordan.jung@groundx.xyz", "01026383987");
     }
 }
