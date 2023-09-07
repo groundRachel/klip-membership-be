@@ -1,22 +1,40 @@
 package com.klipwallet.membership.config;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.DelegatingOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.klipwallet.membership.config.security.KakaoOAuth2AuthorizationRequestResolver;
 import com.klipwallet.membership.config.security.KakaoOAuth2UserService;
@@ -27,8 +45,10 @@ import com.klipwallet.membership.service.AdminService;
 import com.klipwallet.membership.service.OperatorInvitable;
 import com.klipwallet.membership.service.PartnerService;
 
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+@SuppressWarnings("Convert2MethodRef")
 @Slf4j
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
@@ -48,17 +68,15 @@ public class SecurityConfig {
     /**
      * {@code local} 환경에서 {@code /h2-console} 접근을 위한 보안 약화 설정
      */
-    @SuppressWarnings("Convert2MethodRef")
     @Order(-1)
     @Profile("local")
     @Bean
     public SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
-        // /h2-console
-        http.securityMatcher(antMatcher("/h2-console/**"))
+        http.securityMatcher(toH2Console()) // /h2-console
             .csrf(c -> c.disable())
             .headers(h -> h.frameOptions(f -> f.sameOrigin()))
             .authorizeHttpRequests(
-                    a -> a.requestMatchers(antMatcher("/h2-console/**")).permitAll())
+                    a -> a.requestMatchers(toH2Console()).permitAll())
             .requestCache(r -> r.disable())
             .securityContext(s -> s.disable())
             .sessionManagement(s -> s.disable())
@@ -71,17 +89,23 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Profile({"local", "local-dev", "dev"})
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                         .requestMatchers(antMatcher("/login.html"));
+    }
+
     /**
      * authorizeHttpRequests 설정 시 주의해야할 사항이 있음.
      * <p>requestMatchers 순서대로 권한검사를 하니 세사한 권한이 먼저 정의되어야함.</p>
      */
-    @SuppressWarnings("Convert2MethodRef")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   @SuppressWarnings("unused") ProblemDetailEntryPoint problemDetailEntryPoint,
-                                                   DelegatingOAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService,
-                                                   KakaoOAuth2AuthorizationRequestResolver kakaoOAuth2AuthorizationRequestResolver,
-                                                   KlipMembershipOAuth2SuccessHandler kakaoOAuth2SuccessHandler) throws Exception {
+                                                   AuthenticationEntryPoint customAuthenticationEntryPoint,
+                                                   OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService,
+                                                   OAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolver,
+                                                   AuthenticationSuccessHandler customOAuth2SuccessHandler) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faqs/**"),
@@ -102,9 +126,9 @@ public class SecurityConfig {
                                            antMatcher("/usero")).permitAll()
                           .anyRequest().authenticated())
             .oauth2Login(
-                    o -> o.successHandler(kakaoOAuth2SuccessHandler)
+                    o -> o.successHandler(customOAuth2SuccessHandler)
                           .authorizationEndpoint(
-                                  a -> a.authorizationRequestResolver(kakaoOAuth2AuthorizationRequestResolver))
+                                  a -> a.authorizationRequestResolver(customOAuth2AuthorizationRequestResolver))
                           .userInfoEndpoint(
                                   u -> u.userService(oauth2UserService)))
             .anonymous(a -> a.disable())
@@ -113,7 +137,7 @@ public class SecurityConfig {
             .rememberMe(r -> r.disable())
             .exceptionHandling(
                     e -> e.accessDeniedPage("/error/403")
-                    // .authenticationEntryPoint(problemDetailEntryPoint) FIXME @Jordan FE 붙이면 주석 제거
+                          .authenticationEntryPoint(customAuthenticationEntryPoint)
             );
         return http.build();
     }
@@ -141,9 +165,81 @@ public class SecurityConfig {
     }
 
     @Bean
-    ProblemDetailEntryPoint problemDetailEntryPoint(ObjectMapper objectMapper) {
-        return new ProblemDetailEntryPoint(objectMapper);
+    CorsConfiguration baseCorsConfiguration(KlipMembershipProperties properties) {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of(properties.getToolFrontUrl(), properties.getAdminFrontUrl()));
+        configuration.setAllowedMethods(Arrays.stream(HttpMethod.values()).map(HttpMethod::toString).toList());
+        return configuration;
     }
+
+    @Profile({"local", "local-dev"})
+    @Primary
+    @Bean
+    CorsConfigurationSource localCorsConfigurationSource(CorsConfiguration baseCorsConfiguration) {
+        baseCorsConfiguration.addAllowedOrigin("http://localhost:3000");
+        baseCorsConfiguration.addAllowedOrigin("http://127.0.0.1:3000");
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", baseCorsConfiguration);
+        return source;
+    }
+
+    @Profile({"!local & !local-dev"})
+    @Bean
+    CorsConfigurationSource defaultCorsConfigurationSource(CorsConfiguration baseCorsConfiguration) {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", baseCorsConfiguration);
+        return source;
+    }
+
+    /**
+     * 인증 실패 시 처리하는 {@link AuthenticationEntryPointConfig} 구성
+     * <div>
+     * <b>case 1. Local 환경인 경우:</b>
+     * <p>
+     * delegatingAuthenticationEntryPoint = loginUrlAuthenticationEntryPoint(text/html) problemDetailEntryPoint(application/json, default)
+     * 로 구성됨
+     * </p>
+     * <b>case 2. 그 외 환경인 경우</b>
+     * <p>
+     * problemDetailEntryPoint 단독으로 구성
+     * </p>
+     * </div>
+     */
+    @Configuration(proxyBeanMethods = false)
+    public static class AuthenticationEntryPointConfig {
+        @NonNull
+        private static MediaTypeRequestMatcher mediaTypeMatcher(MediaType... mediaTypes) {
+            MediaTypeRequestMatcher requestMatcher = new MediaTypeRequestMatcher(mediaTypes);
+            requestMatcher.setUseEquals(true);
+            return requestMatcher;
+        }
+
+        @Bean
+        ProblemDetailEntryPoint problemDetailEntryPoint(ObjectMapper objectMapper, MessageSource messageSource) {
+            return new ProblemDetailEntryPoint(objectMapper, messageSource);
+        }
+
+        @Profile("local")
+        @Primary
+        @Bean
+        DelegatingAuthenticationEntryPoint delegatingAuthenticationEntryPoint(ProblemDetailEntryPoint problemDetailEntryPoint,
+                                                                              LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint) {
+            LinkedHashMap<RequestMatcher, AuthenticationEntryPoint> entryPoints = new LinkedHashMap<>(2);
+            entryPoints.put(mediaTypeMatcher(MediaType.APPLICATION_JSON), problemDetailEntryPoint);
+            entryPoints.put(mediaTypeMatcher(MediaType.TEXT_HTML), loginUrlAuthenticationEntryPoint);
+            DelegatingAuthenticationEntryPoint bean = new DelegatingAuthenticationEntryPoint(entryPoints);
+            bean.setDefaultEntryPoint(problemDetailEntryPoint);
+            return bean;
+        }
+
+        @Profile("local")
+        @Bean
+        LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint() {
+            return new LoginUrlAuthenticationEntryPoint("/login.html");
+        }
+    }
+
 }
 
 /*

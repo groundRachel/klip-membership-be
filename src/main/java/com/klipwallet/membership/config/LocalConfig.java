@@ -41,9 +41,28 @@ public class LocalConfig implements CommandLineRunner {
     }
 
     private void registerPartner(Admin superAdmin) {
-        Partner jordan = new Partner(1, 10, "jordan.jung", "010-1111-2222", "000-00-00000",
+        // TODO @Jordan properties로 분리
+        Partner jordan = new Partner(1, 11, "jordan.jung", "010-2738-3987", "000-00-00000",
                                      "jordan.jung@groundx.xyz", "115419318504487812056", superAdmin.getMemberId());
         partnerRepository.save(jordan);
+
+        Partner sello = new Partner(2, 12, "sello.lee", "010-4433-4405", "000-00-22222",
+                                    "sello.lee@groundx.xyz", "100531700171845510030", superAdmin.getMemberId());
+        partnerRepository.save(sello);
+
+        Partner twinsen = new Partner(3, 13, "twinsen.kim", "010-9787-2848", "000-00-33333",
+                                    "twinsen.kim@groundx.xyz", "116227101269935559902", superAdmin.getMemberId());
+        partnerRepository.save(twinsen);
+
+        Partner ian = new Partner(4, 14, "ian.han", "010-3201-6272", "000-00-44444",
+                                      "ian.han@groundx.xyz", "105028407626939104183", superAdmin.getMemberId());
+        partnerRepository.save(ian);
+
+        Partner winnie = new Partner(5, 15, "winnie.byun", "010-2955-4858", "000-00-55555",
+                                  "winnie.byun@groundx.xyz", "116061336006046612273", superAdmin.getMemberId());
+        Partner ted = new Partner(6, 16, "ted.jeong", "010-6440-2491", "000-00-666666",
+                                     "ted.jeong@groundx.xyz", "11111111111", superAdmin.getMemberId());
+        partnerRepository.save(winnie);
     }
 
     private void registerAdmin(String mail, Admin superAdmin) {
