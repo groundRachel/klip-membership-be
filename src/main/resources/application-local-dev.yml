@@ -3,8 +3,8 @@
 application:
   klip-membership:
     env: local
-    tool-front-url: http://membership.local.com:3000
-    admin-front-url: http://membership.local.com:3000
+    tool-front-url: http://membership.local.klipwallet.com:3000
+    admin-front-url: http://membership-admin.local.klipwallet.com:3000
   kakao-api:
     admin-key: ${kakao_admin_key}  # from Vault /klip/common
     #domain-id:   from Vault /klip/klip-membership

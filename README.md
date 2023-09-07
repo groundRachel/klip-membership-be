@@ -14,16 +14,16 @@ Or IDE Run: IntelliJ Keymap(⌃⌥R)
 ### Local 개발을 위한 hosts 설정
 
 ```
-127.0.0.1	membership-api.local.com membership-admin-api.local.com
-127.0.0.1	membership.local.com membership-admin.local.com
+127.0.0.1	membership-api.local.klipwallet.com membership.local.klipwallet.com
+127.0.0.1	membership-admin-api.local.klipwallet.com membership-admin.local.klipwallet.com
 ```
 
 | Origin                                     | Description                       |
 |--------------------------------------------|-----------------------------------|
-| http://membership.local.com:3000           | Klip Membership Tool Front@local  |
-| http://membership-api.local.com:8080       | Klip Membership Tool API@local    |
-| http://membership-admin.local.com:3000     | Klip Membership Admin Front@local |
-| http://membership-admin-api.local.com:8080 | Klip Membership Admin API@local   |
+| http://membership.local.klipwallet.com:3000           | Klip Membership Tool Front@local  |
+| http://membership-api.local.klipwallet.com:8080       | Klip Membership Tool API@local    |
+| http://membership-admin.local.klipwallet.com:3000     | Klip Membership Admin Front@local |
+| http://membership-admin-api.local.klipwallet.com:8080 | Klip Membership Admin API@local   |
 
 > Hosts 변조 유틸리티 for macOS
 > * [Gas Mask](https://github.com/2ndalpha/gasmask)

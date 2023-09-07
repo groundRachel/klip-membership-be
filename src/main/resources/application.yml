@@ -41,6 +41,10 @@ server:
   error:
     whitelabel:
       enabled: false
+  servlet:
+    session:
+      cookie:
+        name: KMSESSION
 
 spring:
   cloud:
