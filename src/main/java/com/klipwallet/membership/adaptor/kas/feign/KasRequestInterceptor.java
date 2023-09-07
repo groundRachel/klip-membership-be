@@ -7,7 +7,7 @@ import org.springframework.http.HttpHeaders;
 import com.klipwallet.membership.config.KasApiProperties;
 
 public class KasRequestInterceptor implements RequestInterceptor {
-    private static final String headerChainId = "x-chain-id";
+    private static final String HEADER_CHAIN_ID = "x-chain-id";
     private final String chainId;
     private final String authorizationValue;
 
@@ -19,6 +19,6 @@ public class KasRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
         template.header(HttpHeaders.AUTHORIZATION, authorizationValue);
-        template.header(headerChainId, chainId);
+        template.header(HEADER_CHAIN_ID, chainId);
     }
 }

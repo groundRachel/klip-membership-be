@@ -11,8 +11,8 @@ application:
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
   kas-api:
     th-url: https://th-api.qa-2.klaytn.com
-    authorization: ${kas_authorization_key} # from local.properties
-    chainId: ${kas_chain_id} # from local.properties
+    #    authorization: # from Vault /klip/klip-membership
+    chainId: 8217
   bgms:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev

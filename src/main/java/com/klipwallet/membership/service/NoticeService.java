@@ -240,7 +240,7 @@ public class NoticeService {
     @Transactional
     public NoticeDto.Status changeStatus(Integer noticeId, NoticeDto.Status command, AuthenticatedUser user) {
         Notice notice = tryGetNotice(noticeId);
-        notice.changeStatus(command.value(), user.getMemberId());
+        notice.changeStatus(command.status(), user.getMemberId());
         Notice saved = noticeRepository.save(notice);
         return new NoticeDto.Status(saved.getStatus());
     }

@@ -1,5 +1,6 @@
 package com.klipwallet.membership.entity.kas;
 
+import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
+import com.klipwallet.membership.entity.Address;
 
 @Embeddable
 @Value
@@ -44,5 +46,9 @@ public class NftToken {
         this.transactionHash = transactionHash;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isOwner(@Nonnull Address candidate) {
+        return this.owner.equalsIgnoreCase(candidate.getValue());
     }
 }

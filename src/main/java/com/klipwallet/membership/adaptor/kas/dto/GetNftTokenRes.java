@@ -2,7 +2,7 @@ package com.klipwallet.membership.adaptor.kas.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record GetNftToken (
+public record GetNftTokenRes(
         @JsonProperty("tokenId")
         String tokenId,
         @JsonProperty("owner")
@@ -17,6 +17,6 @@ public record GetNftToken (
         int createdAt,
         @JsonProperty("updatedAt")
         int updatedAt
-){
+) {
 }
 
