@@ -172,7 +172,7 @@ public class SecurityConfig {
         return configuration;
     }
 
-    @Profile({"local", "local-dev"})
+    @Profile({"local", "local-dev", "dev"})
     @Primary
     @Bean
     CorsConfigurationSource localCorsConfigurationSource(CorsConfiguration baseCorsConfiguration) {
@@ -184,7 +184,8 @@ public class SecurityConfig {
         return source;
     }
 
-    @Profile({"!local & !local-dev"})
+    @Profile({"!local & !local-dev & !dev"})
+    @Primary
     @Bean
     CorsConfigurationSource defaultCorsConfigurationSource(CorsConfiguration baseCorsConfiguration) {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
