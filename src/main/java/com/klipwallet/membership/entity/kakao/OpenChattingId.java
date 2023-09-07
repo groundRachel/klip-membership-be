@@ -13,19 +13,19 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 @Embeddable
 @Value
 @ToString
-public class OpenChatRoomId {
+public class OpenChattingId {
     @JsonValue
-    @Column(name = "openChatRoomId", nullable = false)
+    @Column(name = "openChattingId", nullable = false)
     String id;
 
     @SuppressWarnings("ProtectedMemberInFinalClass")
     @ForJpa
-    protected OpenChatRoomId() {
+    protected OpenChattingId() {
         this(null);
     }
 
     @JsonCreator
-    public OpenChatRoomId(String id) {
+    public OpenChattingId(String id) {
         this.id = id;
     }
 }

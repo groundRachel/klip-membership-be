@@ -39,7 +39,7 @@ public class KlipMembershipOAuth2SuccessHandler implements AuthenticationSuccess
                 switch (action) {
                     case NONE -> log.warn("OneTimeAction is none. {}", request);
                     case INVITE_OPERATOR -> tryInviteOperator(request, response, authentication, invitationCode);
-                    // TODO @Jordan case JOIN_CHATROOM -> tryJonChatroom();
+                    // TODO @Jordan case JOIN_OPENCHATTING -> tryJoinOpenChatting();
                     default -> log.error("OneTimeAction is invalid. {}", request);
                 }
             }

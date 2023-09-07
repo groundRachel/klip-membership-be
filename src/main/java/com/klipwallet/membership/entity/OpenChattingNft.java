@@ -16,25 +16,25 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-public class ChatRoomNft extends BaseEntity<ChatRoomNft> {
+public class OpenChattingNft extends BaseEntity<OpenChattingNft> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private Long chatRoomId;
+    private Long openChattingId;
     @Column(nullable = false)
     private Long dropId;
     @Column(nullable = false)
-    private String contractAddress;
+    private String klipDropsSca;
 
     @ForJpa
-    protected ChatRoomNft() {
+    protected OpenChattingNft() {
     }
 
-    public ChatRoomNft(Long chatRoomId, Long dropId, Address contractAddress, MemberId creatorId) {
-        this.chatRoomId = chatRoomId;
+    public OpenChattingNft(Long openChattingId, Long dropId, Address klipDropsSca, MemberId creatorId) {
+        this.openChattingId = openChattingId;
         this.dropId = dropId;
-        this.contractAddress = contractAddress.getValue();
+        this.klipDropsSca = klipDropsSca.getValue();
         this.createBy(creatorId);
     }
 }
