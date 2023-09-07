@@ -17,10 +17,10 @@ import com.klipwallet.membership.service.InvitationRegistry;
 @Profile("!local")
 @Component
 public class RedisInvitationRegistry implements InvitationRegistry {
-    private final RedisOperations<String, OperatorInvitation> redisOperations;
+    private final RedisOperations<String, Object> redisOperations;
     private final DeployEnv env;
 
-    public RedisInvitationRegistry(RedisOperations<String, OperatorInvitation> redisOperations,
+    public RedisInvitationRegistry(RedisOperations<String, Object> redisOperations,
                                    KlipMembershipProperties properties) {
         this.redisOperations = redisOperations;
         this.env = properties.getEnv();
@@ -48,7 +48,7 @@ public class RedisInvitationRegistry implements InvitationRegistry {
     @Override
     @Nullable
     public OperatorInvitation lookup(String invitationCode) {
-        return redisOperations.boundValueOps(toRedisKey(invitationCode)).get();
+        return (OperatorInvitation) redisOperations.boundValueOps(toRedisKey(invitationCode)).get();
     }
 
     @Override
