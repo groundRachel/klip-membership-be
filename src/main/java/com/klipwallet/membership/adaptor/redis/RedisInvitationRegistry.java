@@ -48,7 +48,7 @@ public class RedisInvitationRegistry implements InvitationRegistry {
     @Override
     @Nullable
     public OperatorInvitation lookup(String invitationCode) {
-        return (OperatorInvitation) redisTemplate.boundValueOps(toRedisKey(invitationCode)).get();
+        return redisTemplate.boundValueOps(toRedisKey(invitationCode)).get();
     }
 
     @Override
