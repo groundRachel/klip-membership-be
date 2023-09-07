@@ -49,7 +49,7 @@ public class NoticeToolController {
         return noticeService.getLivedDetail(noticeId);
     }
 
-    @Operation(summary = "Tool 고정 공지 조회", description = "고정 공지가 존재 하지 않으면 최신 공지가 노출된다.")
+    @Operation(summary = "Tool 고정 공지 조회", description = "고정 공지가 존재 하지 않으면 최신 공지가 노출된다. 공지가 하나 없으면 404.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "고정 공지 조회 성공"),
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 고정 공지", content = @Content(schema = @Schema(ref = "Error404")))
