@@ -14,7 +14,7 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 
 @Tag(name = "Admin.AdminProfile", description = "Admin 프로필 정보 관리 API")
 @RestController
-@RequestMapping("/admin/v1/profiles")
+@RequestMapping("/admin/v1/profile")
 @RequiredArgsConstructor
 public class AdminProfileAdminController {
 
