@@ -48,6 +48,7 @@ public class KlipMembershipOAuth2SuccessHandler implements AuthenticationSuccess
             }
             response.sendRedirect(properties.getToolFrontUrl());
         } catch (Exception cause) {
+            log.error("Error onAuthenticationSuccess.", cause);
             response.sendRedirect("%s/landing/invite-operator/result?status=error&httpStatus=500&code=500000&err=Error".formatted(
                     properties.getToolFrontUrl()));
         }

@@ -17,12 +17,12 @@ import com.klipwallet.membership.service.InvitationRegistry;
 @Profile("!local")
 @Component
 public class RedisInvitationRegistry implements InvitationRegistry {
-    private final RedisOperations<String, Object> redisOperations;
+    private final RedisOperations<String, OperatorInvitation> redisTemplate;
     private final DeployEnv env;
 
-    public RedisInvitationRegistry(RedisOperations<String, Object> redisOperations,
+    public RedisInvitationRegistry(RedisOperations<String, OperatorInvitation> redisOperations,
                                    KlipMembershipProperties properties) {
-        this.redisOperations = redisOperations;
+        this.redisTemplate = redisOperations;
         this.env = properties.getEnv();
     }
 
@@ -34,7 +34,7 @@ public class RedisInvitationRegistry implements InvitationRegistry {
     @NonNull
     public String save(OperatorInvitation invitation) {
         String invitationCode = UUID.randomUUID().toString().replace("-", "");
-        redisOperations.boundValueOps(toRedisKey(invitationCode)).set(invitation, DEFAULT_TIMEOUT);
+        redisTemplate.boundValueOps(toRedisKey(invitationCode)).set(invitation, DEFAULT_TIMEOUT);
         return invitationCode;
     }
 
@@ -48,11 +48,11 @@ public class RedisInvitationRegistry implements InvitationRegistry {
     @Override
     @Nullable
     public OperatorInvitation lookup(String invitationCode) {
-        return (OperatorInvitation) redisOperations.boundValueOps(toRedisKey(invitationCode)).get();
+        return (OperatorInvitation) redisTemplate.boundValueOps(toRedisKey(invitationCode)).get();
     }
 
     @Override
     public void delete(String invitationCode) {
-        redisOperations.delete(toRedisKey(invitationCode));
+        redisTemplate.delete(toRedisKey(invitationCode));
     }
 }

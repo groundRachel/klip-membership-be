@@ -1,6 +1,5 @@
 package com.klipwallet.membership.config;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -100,12 +98,14 @@ public class SecurityConfig {
      * authorizeHttpRequests 설정 시 주의해야할 사항이 있음.
      * <p>requestMatchers 순서대로 권한검사를 하니 세사한 권한이 먼저 정의되어야함.</p>
      */
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    AuthenticationEntryPoint customAuthenticationEntryPoint,
                                                    OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService,
                                                    OAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolver,
-                                                   AuthenticationSuccessHandler customOAuth2SuccessHandler) throws Exception {
+                                                   AuthenticationSuccessHandler customOAuth2SuccessHandler,
+                                                   CorsConfigurationSource customCorsConfigurationSource) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faqs/**"),
@@ -131,6 +131,7 @@ public class SecurityConfig {
                                   a -> a.authorizationRequestResolver(customOAuth2AuthorizationRequestResolver))
                           .userInfoEndpoint(
                                   u -> u.userService(oauth2UserService)))
+            .cors(c -> c.configurationSource(customCorsConfigurationSource))
             .anonymous(a -> a.disable())
             .httpBasic(h -> h.disable())
             .formLogin(f -> f.disable())
@@ -167,8 +168,10 @@ public class SecurityConfig {
     @Bean
     CorsConfiguration baseCorsConfiguration(KlipMembershipProperties properties) {
         CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
         configuration.setAllowedOrigins(List.of(properties.getToolFrontUrl(), properties.getAdminFrontUrl()));
-        configuration.setAllowedMethods(Arrays.stream(HttpMethod.values()).map(HttpMethod::toString).toList());
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
         return configuration;
     }
 
