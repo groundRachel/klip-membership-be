@@ -175,12 +175,15 @@ public class SecurityConfig {
         return configuration;
     }
 
+    @SuppressWarnings("HttpUrlsUsage")
     @Profile({"local", "local-dev", "dev"})
     @Primary
     @Bean
     CorsConfigurationSource localCorsConfigurationSource(CorsConfiguration baseCorsConfiguration) {
         baseCorsConfiguration.addAllowedOrigin("http://localhost:3000");
         baseCorsConfiguration.addAllowedOrigin("http://127.0.0.1:3000");
+        baseCorsConfiguration.addAllowedOrigin("http://membership.local.klipwallet.com:3000");
+        baseCorsConfiguration.addAllowedOrigin("http://membership-admin.local.klipwallet.com:3000");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", baseCorsConfiguration);
