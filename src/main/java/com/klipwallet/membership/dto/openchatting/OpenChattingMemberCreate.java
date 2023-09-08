@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.chatroom;
+package com.klipwallet.membership.dto.openchatting;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,12 +7,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 
-import com.klipwallet.membership.entity.ChatRoom;
-import com.klipwallet.membership.entity.ChatRoomMember;
-import com.klipwallet.membership.entity.ChatRoomMember.Role;
+import com.klipwallet.membership.entity.OpenChatting;
+import com.klipwallet.membership.entity.OpenChattingMember;
+import com.klipwallet.membership.entity.OpenChattingMember.Role;
 
 @Schema(description = "채팅방 멤버 생성 DTO", accessMode = AccessMode.WRITE_ONLY)
-public record ChatRoomMemberCreate(
+public record OpenChattingMemberCreate(
         @Schema(description = "클립 회원 Id")
         @NotNull
         Long klipId,
@@ -37,7 +37,7 @@ public record ChatRoomMemberCreate(
         Role role
 ) {
     @JsonIgnore
-    public ChatRoomMember toChatRoomMember(ChatRoom chatRoom) {
-        return new ChatRoomMember(chatRoom.getId(), klipId, kakaoUserId, operatorId, nickname, profileImageUrl, role);
+    public OpenChattingMember toOpenChattingMember(OpenChatting openChatting) {
+        return new OpenChattingMember(openChatting.getId(), klipId, kakaoUserId, operatorId, nickname, profileImageUrl, role);
     }
 }

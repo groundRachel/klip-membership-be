@@ -1,22 +1,22 @@
-package com.klipwallet.membership.dto.chatroom;
+package com.klipwallet.membership.dto.openchatting;
 
 import jakarta.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import com.klipwallet.membership.entity.Address;
-import com.klipwallet.membership.entity.ChatRoomNft;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.OpenChattingNft;
 
-public record ChatRoomNftCreate(
+public record OpenChattingNftCreate(
         @Schema(description = "Drop id")
         @NotNull
         Long dropId,
         @Schema(description = "Drop SCA")
         @NotNull
-        Address contractAddress
+        Address klipDropsSca
 ) {
-    public ChatRoomNft toChatRoomNft(Long chatRoomId, MemberId creatorId) {
-        return new ChatRoomNft(chatRoomId, dropId, contractAddress, creatorId);
+    public OpenChattingNft toOpenChattingNft(Long openChattingId, MemberId creatorId) {
+        return new OpenChattingNft(openChattingId, dropId, klipDropsSca, creatorId);
     }
 }

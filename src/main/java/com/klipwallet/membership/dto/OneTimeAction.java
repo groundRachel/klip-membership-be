@@ -24,7 +24,7 @@ public enum OneTimeAction implements Statusable {
     /**
      * 오픈채팅 참여
      */
-    JOIN_CHATROOM(2);
+    JOIN_OPENCHATTING(2);
 
     private final byte code;
 

@@ -30,7 +30,7 @@ import com.klipwallet.membership.service.AdminService;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
-@Tag(name = "Admin.Admin", description = "Admin 어드민 API")
+@Tag(name = "Admin.Admin", description = "Super Admin이 Admin 어드민을 관리하는 API")
 @RestController
 @RequestMapping("/admin/v1/admins")
 @RequiredArgsConstructor

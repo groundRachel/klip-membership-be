@@ -78,4 +78,9 @@ public class AdminDto {
             @Schema(description = "마지막 수정 관리자", requiredMode = RequiredMode.REQUIRED)
             MemberSummary updater) {
     }
+
+    @Schema(description = "Admin의 기본 정보 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    public record Profile(
+            @NonNull @Schema(requiredMode = RequiredMode.REQUIRED) String email
+    ) {}
 }

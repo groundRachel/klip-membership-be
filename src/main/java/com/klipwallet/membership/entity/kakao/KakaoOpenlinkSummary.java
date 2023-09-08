@@ -11,20 +11,20 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 
 @Embeddable
 @Value
-public class OpenChatRoomSummary {
-    @Column(name = "chatroom_id", nullable = false)
+public class KakaoOpenlinkSummary {
+    @Column(name = "openlink_id", nullable = false)
     Long id;
-    @Column(name = "chatroom_url", nullable = false)
+    @Column(name = "openlink_url", nullable = false)
     String url;
 
     @SuppressWarnings("ProtectedMemberInFinalClass")
     @ForJpa
-    protected OpenChatRoomSummary() {
+    protected KakaoOpenlinkSummary() {
         this(null, null);
     }
 
     @JsonCreator
-    public OpenChatRoomSummary(@JsonProperty("id") Long id, @JsonProperty("url") String url) {
+    public KakaoOpenlinkSummary(@JsonProperty("id") Long id, @JsonProperty("url") String url) {
         this.id = id;
         this.url = url;
     }

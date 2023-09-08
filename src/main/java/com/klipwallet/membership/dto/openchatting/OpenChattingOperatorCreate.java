@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.chatroom;
+package com.klipwallet.membership.dto.openchatting;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,12 +7,12 @@ import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import com.klipwallet.membership.entity.ChatRoom;
-import com.klipwallet.membership.entity.ChatRoomMember;
-import com.klipwallet.membership.entity.ChatRoomMember.Role;
+import com.klipwallet.membership.entity.OpenChatting;
+import com.klipwallet.membership.entity.OpenChattingMember;
+import com.klipwallet.membership.entity.OpenChattingMember.Role;
 import com.klipwallet.membership.entity.Operator;
 
-public record ChatRoomOperatorCreate(
+public record OpenChattingOperatorCreate(
         @Schema(description = "운영자 Id")
         @NotNull
         Long operatorId,
@@ -24,7 +24,8 @@ public record ChatRoomOperatorCreate(
         String profileImageUrl
 ) {
     @JsonIgnore
-    public ChatRoomMember toChatRoomMember(ChatRoom chatRoom, Operator operator, Role role) {
-        return new ChatRoomMember(chatRoom.getId(), operator.getKlipId(), operator.getKakaoUserId(), operatorId, nickname, profileImageUrl, role);
+    public OpenChattingMember toOpenChattingMember(OpenChatting openChatting, Operator operator, Role role) {
+        return new OpenChattingMember(openChatting.getId(), operator.getKlipId(), operator.getKakaoUserId(), operatorId, nickname, profileImageUrl,
+                                      role);
     }
 }

@@ -102,7 +102,7 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 ├── build: Gradle 빌드 결과물
 │   ├── libs: Artifact(*.jar)
 ├── config: 정적분석 등 각종 빌드 설정 파일
-├── gradle.wrapper: `gradlew`와 속성 
+├── gradle.wrapper: `gradlew`와 속성
 └── src: Source
     ├── main: Production Source
     │   ├── java: Production Java Source
@@ -181,9 +181,9 @@ on [Maven Standard Directory Layout](https://maven.apache.org/guides/introductio
 * `Partner`: 파트너(이용자)
 * `Operator`: 채팅방 운영진
 * `Admin`: 관리자(GX담당자)
-* `ChatRoom`: 채팅방
-* `ChatRoomMember`: 채팅방 참여자
-* `ChatRoomNft`: 채팅방에 입장할 수 있는 NFT 정보
+* `OpenChatting`: 채팅방
+* `OpenChattingMember`: 채팅방 참여자
+* `OpenChattingNft`: 채팅방에 입장할 수 있는 NFT 정보
 * `KakaoService`: 카카오 연동 서비스
 * `KlipAccountService`: Klip 계정 조회 서비스
 * `KlipDropService`: KlipDrops 연동 서비스
