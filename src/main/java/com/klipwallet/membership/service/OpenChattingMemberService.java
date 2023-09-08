@@ -2,18 +2,20 @@ package com.klipwallet.membership.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.klipwallet.membership.dto.openchatting.OpenChattingMemberCreate;
-import com.klipwallet.membership.dto.openchatting.OpenChattingMemberSummary;
 import com.klipwallet.membership.dto.openchatting.OpenChattingOperatorCreate;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.OpenChatting;
 import com.klipwallet.membership.entity.OpenChattingMember;
 import com.klipwallet.membership.entity.OpenChattingMember.Role;
 import com.klipwallet.membership.entity.Operator;
+import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.exception.MemberNotFoundException;
 import com.klipwallet.membership.exception.kakao.HostOpenChattingLimitExceeded;
 import com.klipwallet.membership.repository.OpenChattingMemberRepository;
@@ -27,15 +29,22 @@ public class OpenChattingMemberService {
     private final OperatorService operatorService;
     private final KakaoService kakaoService;
 
-
-    /**
-     * 외부 API 에서 사용
-     */
-    public OpenChattingMemberSummary create(OpenChattingMemberCreate command) {
-        if (command.role() == Role.NFT_HOLDER) {
-            // TODO: Check NFT
+    public OpenChattingMember createMember(OpenChatting openChatting, OpenChattingMemberCreate command, KlipUser klipUser) {
+        OpenChattingMember member;
+        try {
+            member = getOpenChattingMemberByOpenChattingIdAndKlipId(openChatting.getId(), klipUser.getKlipAccountId());
+        } catch (MemberNotFoundException e) {
+            // 최초로 채팅방에 참여하는 경우 DB 저장하기
+            if (Objects.equals(command.nickname(), "") || Objects.equals(command.profileImageUrl(), "")) {
+                throw new InvalidRequestException("nickname, profile required");
+            }
+            OpenChattingMember entity = command.toOpenChattingMember(openChatting.getId(), klipUser.getKlipAccountId(), klipUser.getKakaoUserId());
+            member = openChattingMemberRepository.save(entity);
         }
-        return null;
+
+        // 오픈채팅 참여하기
+        kakaoService.joinOpenChatting(openChatting, member);
+        return member;
     }
 
     public OpenChattingMember createHost(OpenChatting openChatting, OpenChattingOperatorCreate command, AuthenticatedUser user) {

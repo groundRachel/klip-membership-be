@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.klipwallet.membership.config.NftProperties;
 import com.klipwallet.membership.dto.openchatting.OpenChattingAssembler;
 import com.klipwallet.membership.dto.openchatting.OpenChattingCreate;
+import com.klipwallet.membership.dto.openchatting.OpenChattingMemberCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingNftCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingOperatorCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingStatus;
@@ -137,6 +138,23 @@ public class OpenChattingService {
         }
     }
 
+    @Transactional
+    public OpenChattingStatus createMember(Address sca, TokenId tokenId, OpenChattingMemberCreate command) {
+        // TODO klip A2A으로 사용자 정보 조회하기
+        KlipUser klipUser = klipAccountService.getKlipUser(new Address(""));
+        Address klaytnAddress = new Address("");
+
+        // 오픈채팅 참여 가능 여부 확인
+        OpenChattingStatus openChattingStatus = getOpenChattingStatus(sca, tokenId, klaytnAddress, klipUser);
+        if (!openChattingStatus.openChatExist()) {
+            throw new ForbiddenException(OPENCHAT_ACCESS_DENIED);
+        }
+
+        // 오픈채팅 참여하기
+        openChattingMemberService.createMember(openChattingStatus.openChatting(), command, klipUser);
+        return new OpenChattingStatus(true, openChattingStatus.openChattingUrl(), true, null);
+    }
+
     private OpenChatting getOpenChatting(Long id) {
         return openChattingRepository.findById(id).orElseThrow(() -> new NotFoundException());
     }
@@ -184,7 +202,7 @@ public class OpenChattingService {
         try {
             openChatting = getOpenChattingByTokenId(sca, tokenId);
         } catch (NotFoundException | InvalidRequestException e) {
-            return new OpenChattingStatus(false, "", false);
+            return new OpenChattingStatus(false, "", false, null);
         }
         String openChattingUrl = openChatting.getKakaoOpenlinkSummary().getUrl();
 
@@ -192,8 +210,8 @@ public class OpenChattingService {
         try {
             openChattingMemberService.getOpenChattingMemberByOpenChattingIdAndKlipId(openChatting.getId(), klipUser.getKlipAccountId());
         } catch (MemberNotFoundException e) {
-            return new OpenChattingStatus(true, openChattingUrl, false);
+            return new OpenChattingStatus(true, openChattingUrl, false, openChatting);
         }
-        return new OpenChattingStatus(true, openChattingUrl, true);
+        return new OpenChattingStatus(true, openChattingUrl, true, openChatting);
     }
 }

@@ -126,7 +126,7 @@ public class OpenChattingServiceTest {
         OpenChattingStatus status = openChattingService.getOpenChattingStatus(contractAddress, tokenId, klaytnAddress, klipUser);
 
         // then
-        assertThat(status).isEqualTo(new OpenChattingStatus(false, "", false));
+        assertThat(status).isEqualTo(new OpenChattingStatus(false, "", false, null));
     }
 
     @Test
@@ -152,7 +152,7 @@ public class OpenChattingServiceTest {
         OpenChattingStatus status = openChattingService.getOpenChattingStatus(contractAddress, tokenId, klaytnAddress, klipUser);
 
         // then
-        assertThat(status).isEqualTo(new OpenChattingStatus(true, openChattingUrl, false));
+        assertThat(status).isEqualTo(new OpenChattingStatus(true, openChattingUrl, false, openChatting));
     }
 
     @Test
@@ -181,6 +181,6 @@ public class OpenChattingServiceTest {
         OpenChattingStatus status = openChattingService.getOpenChattingStatus(contractAddress, tokenId, klaytnAddress, klipUser);
 
         // then
-        assertThat(status).isEqualTo(new OpenChattingStatus(true, openChattingUrl, true));
+        assertThat(status).isEqualTo(new OpenChattingStatus(true, openChattingUrl, true, openChatting));
     }
 }
