@@ -16,11 +16,11 @@ import com.klipwallet.membership.service.TokenService;
 @RequiredArgsConstructor
 public class KasTokenAdaptor implements TokenService {
 
-    private final KasApiClient apiClient;
+    private final ThApiClient thApiClient;
 
     @Override
     public NftToken getNftToken(Address sca, TokenId tokenId) {
-        GetNftTokenRes nftToken = apiClient.getNftToken(sca.getValue(), tokenId.getHexString());
+        GetNftTokenRes nftToken = thApiClient.getNftToken(sca.getValue(), tokenId.getHexString());
         return new NftToken(nftToken.tokenId(), nftToken.owner(), nftToken.previousOwner(), nftToken.tokenUri(),
                             nftToken.transactionHash(), nftToken.createdAt(), nftToken.updatedAt());
     }

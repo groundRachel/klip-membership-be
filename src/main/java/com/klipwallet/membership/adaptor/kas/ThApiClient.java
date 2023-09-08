@@ -9,7 +9,7 @@ import com.klipwallet.membership.adaptor.kas.dto.GetNftTokenRes;
 import com.klipwallet.membership.adaptor.kas.feign.KasFeignConfig;
 
 @FeignClient(name = "kas", configuration = KasFeignConfig.class)
-public interface KasApiClient {
+public interface ThApiClient {
     @GetMapping(value = "/v2/contract/nft/{address}/token/{token-id}")
     GetNftTokenRes getNftToken(@PathVariable("address") String nftSCA, @PathVariable(value = "token-id") String tokenId);
 }

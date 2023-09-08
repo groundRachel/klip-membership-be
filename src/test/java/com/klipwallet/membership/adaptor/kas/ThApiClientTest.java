@@ -6,17 +6,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 
 import com.klipwallet.membership.adaptor.kas.dto.GetNftTokenRes;
-import com.klipwallet.membership.exception.InvalidRequestException;
-import com.klipwallet.membership.exception.NotFoundException;
+import com.klipwallet.membership.exception.kas.KasBadRequestInternalApiException;
+import com.klipwallet.membership.exception.kas.KasNotFoundInternalApiException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
-class KasApiClientTest {
+class ThApiClientTest {
     @Autowired
-    KasApiClient kasApiClient;
+    ThApiClient thApiClient;
 
     @Description("test KasApiClient > getNftToken > Success(200)")
     @Test
@@ -24,7 +24,7 @@ class KasApiClientTest {
         var testContractAddress = "0xa9a95c5fef43830d5d67156a2582a2e793acb465";
         var testTokenId = "0x919FB9AFEAB";
 
-        GetNftTokenRes resp = kasApiClient.getNftToken(testContractAddress, testTokenId);
+        GetNftTokenRes resp = thApiClient.getNftToken(testContractAddress, testTokenId);
         assertThat(resp.tokenId()).isEqualToIgnoringCase(testTokenId);
         assertThat(resp.owner()).isNotEmpty();
         assertThat(resp.previousOwner()).isNotEmpty();
@@ -39,13 +39,13 @@ class KasApiClientTest {
     void GetNftToken_NotFound() {
         var testContractAddress = "0xa9a95c5fef43830d5d67156a2582a2e793acb465";
         var testTokenId = "0x119FB9AFEAB";
-        assertThrows(NotFoundException.class, () -> kasApiClient.getNftToken(testContractAddress, testTokenId));
+        assertThrows(KasNotFoundInternalApiException.class, () -> thApiClient.getNftToken(testContractAddress, testTokenId));
     }
 
     @Description("test KasApiClient > getNftToken > BadRequest(400)")
     @Test
     void GetNftToken_BadRequest() {
         var testTokenId = "0x119FB9AFEAB";
-        assertThrows(InvalidRequestException.class, () -> kasApiClient.getNftToken("", testTokenId));
+        assertThrows(KasBadRequestInternalApiException.class, () -> thApiClient.getNftToken("", testTokenId));
     }
 }

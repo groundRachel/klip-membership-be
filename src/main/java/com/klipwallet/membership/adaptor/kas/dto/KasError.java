@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import feign.Response;
 
 import com.klipwallet.membership.dto.InternalApiError;
-import com.klipwallet.membership.exception.InternalApiException;
-import com.klipwallet.membership.exception.InvalidRequestException;
-import com.klipwallet.membership.exception.NotFoundException;
+import com.klipwallet.membership.exception.kas.KasBadRequestInternalApiException;
+import com.klipwallet.membership.exception.kas.KasNotFoundInternalApiException;
 
 public record KasError(@JsonProperty("code") int code, @JsonProperty("message") String message, @JsonProperty("requestId") String requestId)
         implements InternalApiError {
@@ -24,11 +23,11 @@ public record KasError(@JsonProperty("code") int code, @JsonProperty("message") 
     public Exception convertException(Response response) {
         int status = response.status();
         if (status == 404) {
-            return new NotFoundException();
+            return new KasNotFoundInternalApiException(this);
         }
         if (status == 400) {
-            return new InvalidRequestException(message);
+            return new KasBadRequestInternalApiException(this);
         }
-        return new InternalApiException(this);
+        return new KasBadRequestInternalApiException(this);
     }
 }

@@ -57,6 +57,8 @@
 
     <!-- 500_200 Internal-Api -->
     <entry key="problemDetail.code.500200">내부 API 호출에서 오류가 발생하였습니다.</entry>
+    <entry key="problemDetail.code.500201">내부 API 호출에서 오류가 발생하였습니다.</entry>
+    <entry key="problemDetail.code.500202">내부 API 호출에서 오류가 발생하였습니다.</entry>
 
     <!-- 503 -->
     <entry key="problemDetail.code.503000">서비스를 사용할 수 없습니다.</entry>
