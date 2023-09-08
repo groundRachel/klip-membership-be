@@ -8,7 +8,7 @@ import com.klipwallet.membership.adaptor.AdaptorBase;
 
 @Configuration
 @EnableFeignClients(basePackageClasses = AdaptorBase.class)
-@EnableConfigurationProperties({KakaoApiProperties.class, BgmsProperties.class, KlipDropsInternalProperties.class})
+@EnableConfigurationProperties({KakaoApiProperties.class, KasApiProperties.class, BgmsProperties.class, KlipDropsInternalProperties.class})
 public class FeignConfig {
 
 }

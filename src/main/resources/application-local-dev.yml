@@ -9,6 +9,10 @@ application:
     admin-key: ${kakao_admin_key}  # from Vault /klip/common
     #domain-id:   from Vault /klip/klip-membership
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
+  kas-api:
+    th-url: https://th-api.qa-2.klaytn.com
+    #    authorization: # from Vault /klip/klip-membership
+    chainId: 8217
   bgms:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev

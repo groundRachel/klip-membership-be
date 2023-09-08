@@ -65,6 +65,8 @@ spring:
             url: \${application.bgms.api-url}
           kakao:
             url: \${application.kakao-api.openlink-url}
+          kas:
+            url: \${application.kas-api.th-url}
           klip-drops-internal:
             url: \${application.klip-drops-internal.api-url}
       compression:

@@ -19,7 +19,7 @@ public class InternalApiException extends BaseCodeException {
         this.error = error;
     }
 
-    private InternalApiException(String service, InternalApiError error) {
+    public InternalApiException(String service, InternalApiError error) {
         super(ErrorCode.INTERNAL_API_ERROR);
         this.service = service;
         this.error = error;

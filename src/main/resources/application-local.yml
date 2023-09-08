@@ -9,6 +9,10 @@ application:
     admin-key: ${kakao_admin_key} # from local.properties
     #   domain-id:   from local.properties
     openlink-url: http://kapi.kakao.com/v1/internal/talk/openchat
+  kas-api:
+    th-url: https://th-api.qa-2.klaytn.com
+    #    authorization: # from local.properties
+    chainId: 8217
   bgms:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev

@@ -12,6 +12,8 @@ import com.klipwallet.membership.adaptor.kakao.dto.JoinOpenlinkRes;
 import com.klipwallet.membership.adaptor.kakao.dto.OpenlinkSummaryRes;
 import com.klipwallet.membership.config.KakaoApiProperties;
 import com.klipwallet.membership.entity.KakaoOpenChattingOpened;
+import com.klipwallet.membership.entity.OpenChatting;
+import com.klipwallet.membership.entity.OpenChattingMember;
 import com.klipwallet.membership.entity.kakao.KakaoOpenlinkSummary;
 import com.klipwallet.membership.entity.kakao.OpenChattingHost;
 import com.klipwallet.membership.service.kakao.KakaoService;
@@ -34,9 +36,9 @@ public class KakaoAdaptor implements KakaoService {
     }
 
     @Override
-    public KakaoOpenlinkSummary joinOpenChatting(Long linkId, String nickname, String profileImage, String targetId) {
+    public KakaoOpenlinkSummary joinOpenChatting(OpenChatting openChatting, OpenChattingMember member) {
         JoinOpenlinkRes res = apiClient.joinOpenlink(
-                new JoinOpenlinkReq(targetId, nickname, profileImage, kakaoApiProperties.getDomainId(), linkId));
+                new JoinOpenlinkReq(member.getKakaoUserId(), member.getNickname(), member.getProfileImageUrl(), kakaoApiProperties.getDomainId(), openChatting.getKakaoOpenlinkSummary().getId()));
         return new KakaoOpenlinkSummary(res.linkId(), res.linkUrl());
     }
 
