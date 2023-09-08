@@ -19,7 +19,7 @@ public @interface WithKakaoUser {
     int memberId() default 0;
 
     @AliasFor(annotation = WithAuthenticatedUser.class)
-    String name() default "2959264751";
+    String name() default "2959264750";
 
     @AliasFor(annotation = WithAuthenticatedUser.class)
     String email() default "jordan.gx@kakaocorp.com";

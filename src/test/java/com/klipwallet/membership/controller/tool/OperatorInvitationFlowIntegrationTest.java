@@ -55,7 +55,7 @@ public class OperatorInvitationFlowIntegrationTest {
      */
     static final int PARTNER_ID = 9;
 
-    static final String KAKAO_ID = "2959264751";
+    static final String KAKAO_ID = "2959264750";
     static final String EMAIL = "jordan.gx@kakaocorp.com";
     static String INVITATION_URL;
 

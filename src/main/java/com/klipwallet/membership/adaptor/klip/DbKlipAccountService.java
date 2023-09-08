@@ -17,8 +17,8 @@ public class DbKlipAccountService implements KlipAccountService {
     @Override
     public KlipUser getKlipUser(KakaoId kakaoId) {
         // FIXME @Jordan Fake
-        if (kakaoId.getId().equals("2959264751")) {
-            return new KlipAccount(641L, "2959264751", "jordan.jung@groundx.xyz", "01026383987");
+        if (kakaoId.getId().equals("2959264750")) {
+            return new KlipAccount(641L, "2959264750", "jordan.jung@groundx.xyz", "01026383987");
         }
         return null;
     }
@@ -26,7 +26,7 @@ public class DbKlipAccountService implements KlipAccountService {
     @Override
     public KlipUser getKlipUserByPhoneNumber(String phoneNumber) {
         if ("01026383987".equals(phoneNumber)) {
-            return new KlipAccount(641L, "2959264751", "jordan.jung@groundx.xyz", "01026383987");
+            return new KlipAccount(641L, "2959264750", "jordan.jung@groundx.xyz", "01026383987");
         }
         return null;
     }
