@@ -109,7 +109,7 @@ class OpenChattingToolControllerTest {
                       }
                       """;
 
-        var ra = mvc.perform(post("/tool/v1/openchattings")
+        var ra = mvc.perform(post("/tool/v1/open-chattings")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isCreated())
@@ -160,7 +160,7 @@ class OpenChattingToolControllerTest {
                       }
                       """;
 
-        var ra = mvc.perform(post("/tool/v1/openchattings")
+        var ra = mvc.perform(post("/tool/v1/open-chattings")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body).locale(Locale.KOREA))
                     .andExpect(status().isBadRequest())
@@ -237,7 +237,7 @@ class OpenChattingToolControllerTest {
                         ]
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/openchattings")
+        var ra = mvc.perform(post("/tool/v1/open-chattings")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isBadRequest());
@@ -248,7 +248,7 @@ class OpenChattingToolControllerTest {
     @Test
     void openChattingList(@Autowired MockMvc mvc) throws Exception {
         createSampleOpenChattings();
-        mvc.perform(get("/tool/v1/openchattings"))
+        mvc.perform(get("/tool/v1/open-chattings"))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.totalElements").value(11L))
            .andExpect(jsonPath("$.totalPages").value(1))
@@ -258,13 +258,13 @@ class OpenChattingToolControllerTest {
            .andExpect(jsonPath("$.content[0].title").value("t11"))
            .andExpect(jsonPath("$.content[0].openChattingId").value("303890410"))
            .andExpect(jsonPath("$.content[0].openChattingUrl").value("https://open.kakao.com/o/gIRPLPDda"));
-        mvc.perform(get("/tool/v1/openchattings").param("status", Status.ACTIVATED.toDisplay()))
+        mvc.perform(get("/tool/v1/open-chattings").param("status", Status.ACTIVATED.toDisplay()))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.totalElements").value(8L))
            .andExpect(jsonPath("$.totalPages").value(1))
            .andExpect(jsonPath("$.numberOfElements").value(8))
            .andExpect(jsonPath("$.content[1].status").value(Status.ACTIVATED.toDisplay()));
-        mvc.perform(get("/tool/v1/openchattings").param("status", Status.DELETED.toDisplay()))
+        mvc.perform(get("/tool/v1/open-chattings").param("status", Status.DELETED.toDisplay()))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.totalElements").value(3L))
            .andExpect(jsonPath("$.totalPages").value(1))

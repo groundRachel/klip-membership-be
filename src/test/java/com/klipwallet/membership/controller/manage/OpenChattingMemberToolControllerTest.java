@@ -71,7 +71,7 @@ class OpenChattingMemberToolControllerTest {
                         "role": 1
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/openchattings/1/members")
+        var ra = mvc.perform(post("/tool/v1/open-chattings/1/members")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isCreated())
@@ -94,7 +94,7 @@ class OpenChattingMemberToolControllerTest {
                         "role": 1
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/openchattings/1/members")
+        var ra = mvc.perform(post("/tool/v1/open-chattings/1/members")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body)
                     )
