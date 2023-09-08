@@ -27,6 +27,7 @@ public interface KlipDropsInternalApiClient {
                                      @RequestParam(value = "page", required = false) Integer page,
                                      @RequestParam(value = "size", required = false) Integer size);
 
+    // TODO [Drops] Consider changing this PUT
     @Description(value = "최대길이 100")
     @GetMapping(value = "/v1/drops")
     @CollectionFormat(feign.CollectionFormat.CSV)
