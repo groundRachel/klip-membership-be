@@ -13,6 +13,7 @@ application:
     api-url: https://www.biztalk-api.com
     id: groundx_prod_dev
     password: ${bgms_pw}  # from Vault /klip/common
+    sender-key: ${bgms_sender_key}  # from Vault /klip/common
   klip-drops-internal:
     api-url: http://localhost:3100 # kubectl port-forward svc/klip-drops 3100:3100
   email:

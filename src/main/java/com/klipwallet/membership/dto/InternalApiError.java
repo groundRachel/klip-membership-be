@@ -7,6 +7,18 @@ package com.klipwallet.membership.dto;
  * </p>
  */
 public interface InternalApiError {
+    InternalApiError UNKNOWN = new InternalApiError() {
+        @Override
+        public String getCode() {
+            return "unknown";
+        }
+
+        @Override
+        public String getMessage() {
+            return "unknown";
+        }
+    };
+
     /**
      * API 오류 코드
      */

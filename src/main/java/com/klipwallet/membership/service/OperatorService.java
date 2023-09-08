@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.klipwallet.membership.config.KlipMembershipProperties;
 import com.klipwallet.membership.dto.operator.OperatorSummary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.InviteOperatorNotifiable;
 import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
@@ -28,7 +29,6 @@ import com.klipwallet.membership.exception.operator.OperatorInvitationNotMatched
 import com.klipwallet.membership.exception.operator.OperatorNotFoundException;
 import com.klipwallet.membership.repository.OperatorRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
-import com.klipwallet.membership.service.kakao.KakaoBizMessageService;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class OperatorService implements OperatorInvitable {
     private final PartnerRepository partnerRepository;
     private final KlipAccountService klipAccountService;
     private final InvitationRegistry invitationRegistry;
-    private final KakaoBizMessageService kakaoBizMessageService;
+    private final InvitationNotifier invitationNotifier;
 
     /**
      * 운영진 가입
@@ -61,7 +61,7 @@ public class OperatorService implements OperatorInvitable {
         // 운영진 가입 여부 체크
         checkAlreadyJoined(klipUser);
         // 초대한 파트너
-        Partner partner = tryGetPartner(invitation.getPartnerId());
+        Partner partner = tryGetPartner(invitation.getInviterPartnerId());
         Operator saved = createOperator(klipUser, partner);
         // 초대 정보 Clear
         clearInvitation(invitationCode);
@@ -101,7 +101,7 @@ public class OperatorService implements OperatorInvitable {
     }
 
     private void verifyInviter(OperatorInvitation invitation, KlipUser klipUser, AuthenticatedUser kakaoUser) {
-        String inviterMobileNumber = invitation.getMobileNumber();
+        String inviterMobileNumber = invitation.getInviteeMobileNumber();
         verifyInviterMobileNumber(inviterMobileNumber, klipUser.getPhone(),
                                   "Not matched inviterMobileNumber: {} and klipPhoneNumber: {}");
         verifyInviterMobileNumber(inviterMobileNumber, kakaoUser.getKakaoPhoneNumber(),
@@ -141,17 +141,25 @@ public class OperatorService implements OperatorInvitable {
     /**
      * {@inheritDoc}
      *
-     * @param partnerId
-     * @param phoneNumber 휴대폰 번호
+     * @param inviterPartnerId 초대한 파트너 아이디
+     * @param phoneNumber      초대 받은 운영진의 휴대폰 번호
      * @return 초대 URL
      */
     @Override
-    public String inviteOperator(MemberId partnerId, String phoneNumber) {
+    public String inviteOperator(MemberId inviterPartnerId, String phoneNumber) {
         // 초대 만료와 코드 관리를 위해서 필요함.
-        String code = invitationRegistry.save(new OperatorInvitation(partnerId, phoneNumber));
+        phoneNumber = PhoneNumberUtils.toFormalKrMobileNumber(phoneNumber);
+        String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, phoneNumber));
+        Partner inviterPartner = tryGetPartner(inviterPartnerId);
+        return sendNotification(inviterPartner, phoneNumber, code);
+    }
+
+    @NonNull
+    private String sendNotification(Partner partner, String phoneNumber, String code) {
         String invitationUrl = toInvitationUrl(code);
-        // TODO @Jordan 카카오 알림톡 발송 on Async
-        kakaoBizMessageService.sendNotificationTalk(phoneNumber, null);
+
+        InviteOperatorNotifiable command = new InviteOperatorNotifiable(phoneNumber, invitationUrl, partner.getName());
+        invitationNotifier.notifyToInviteOperator(command);
         return invitationUrl;
     }
 

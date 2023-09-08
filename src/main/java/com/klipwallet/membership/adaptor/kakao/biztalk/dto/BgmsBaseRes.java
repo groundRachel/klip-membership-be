@@ -1,4 +1,4 @@
-package com.klipwallet.membership.adaptor.kakao.biztalk;
+package com.klipwallet.membership.adaptor.kakao.biztalk.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -10,10 +10,10 @@ import com.klipwallet.membership.dto.InternalApiError;
 @Getter
 @RequiredArgsConstructor
 @ToString
-abstract class BgmsBaseRes implements InternalApiError {
+public class BgmsBaseRes implements InternalApiError {
     static final String CODE_SUCCESS = "1000";
     /**
-     * 비즈톡 G/W 접수결과 코드
+     * 비즈톡 G/W 접수결과 코드(결과 코드는 결과 코드표에서 확인)
      */
     private final String responseCode;
     /**
@@ -22,7 +22,7 @@ abstract class BgmsBaseRes implements InternalApiError {
     private final String msg;
 
     @JsonIgnore
-    boolean isSuccessful() {
+    public boolean isSuccessful() {
         return responseCode.equals(CODE_SUCCESS);
     }
 

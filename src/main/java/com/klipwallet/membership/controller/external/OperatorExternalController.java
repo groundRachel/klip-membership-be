@@ -1,4 +1,4 @@
-package com.klipwallet.membership.controller.tool;
+package com.klipwallet.membership.controller.external;
 
 import jakarta.servlet.http.HttpSession;
 

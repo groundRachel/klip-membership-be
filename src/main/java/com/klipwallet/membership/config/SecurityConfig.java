@@ -43,7 +43,6 @@ import com.klipwallet.membership.service.AdminService;
 import com.klipwallet.membership.service.OperatorInvitable;
 import com.klipwallet.membership.service.PartnerService;
 
-import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @SuppressWarnings("Convert2MethodRef")
@@ -70,11 +69,11 @@ public class SecurityConfig {
     @Profile("local")
     @Bean
     public SecurityFilterChain localFilterChain(HttpSecurity http) throws Exception {
-        http.securityMatcher(toH2Console()) // /h2-console
+        http.securityMatcher(antMatcher("/h2-console/**")) // /h2-console
             .csrf(c -> c.disable())
             .headers(h -> h.frameOptions(f -> f.sameOrigin()))
             .authorizeHttpRequests(
-                    a -> a.requestMatchers(toH2Console()).permitAll())
+                    a -> a.requestMatchers(antMatcher("/h2-console/**")).permitAll())
             .requestCache(r -> r.disable())
             .securityContext(s -> s.disable())
             .sessionManagement(s -> s.disable())

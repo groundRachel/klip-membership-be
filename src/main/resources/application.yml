@@ -1,6 +1,8 @@
 # noinspection SpringBootApplicationYaml
 application:
   version: ${G_APPLICATION_VERSION}  # from build.gradle.kts
+  bgms:
+    invite-operator-template-code: receive_welcome_card_02
   developer:
     super-admin: gene.goh@groundx.xyz
     emails:

@@ -9,13 +9,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.OperatorInvitable;
@@ -31,11 +29,10 @@ public class LocalController {
 
     @Operation(summary = "Tool 운영진 초대", description = "local 환경에서 편의성 용도로만 사용할 수 있다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "운영진 초대 URL 반환"),
+            @ApiResponse(responseCode = "200", description = "운영진 초대 URL 반환"),
     })
     @PostMapping("/tool/v1/operators/invite-local")
     @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
     public InviteResult inviteOperator(@RequestParam String phone, @AuthenticationPrincipal AuthenticatedUser partner) {
         String invitationUrl = operatorInvitable.inviteOperator(partner.getMemberId(), phone);
         return new InviteResult(invitationUrl);

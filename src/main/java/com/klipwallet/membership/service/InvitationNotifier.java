@@ -1,5 +1,6 @@
 package com.klipwallet.membership.service;
 
+import com.klipwallet.membership.entity.InviteOperatorNotifiable;
 import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.OpenChatting;
 
@@ -18,8 +19,8 @@ public interface InvitationNotifier {
      */
     void notifyToInviteOpenChatting(OpenChatting openChatting, KlipUser klipUser);
 
-    //    /**
-    //     * 오픈 채팅 운영자 초대 알림 발송
-    //     */
-    //    void notifyToInviteOperator(Partner partner, OperatorCandidate candidate);
+    /**
+     * 오픈 채팅 운영자 초대 알림 발송
+     */
+    void notifyToInviteOperator(InviteOperatorNotifiable candidate);
 }

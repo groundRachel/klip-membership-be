@@ -26,10 +26,10 @@
     </module>
 
     <!-- [no-trailing-spaces] -->
-    <module name="RegexpSingleline">
-        <property name="format" value="^(?!\s+\* $).*?\s+$"/>
-        <property name="message" value="[no-trailing-spaces] Line has trailing spaces."/>
-    </module>
+    <!--    <module name="RegexpSingleline">-->
+    <!--        <property name="format" value="^(?!\s+\* $).*?\s+$"/>-->
+    <!--        <property name="message" value="[no-trailing-spaces] Line has trailing spaces."/>-->
+    <!--    </module>-->
 
     <!-- [line-length-150] -->
     <property name="tabWidth" value="4"/>

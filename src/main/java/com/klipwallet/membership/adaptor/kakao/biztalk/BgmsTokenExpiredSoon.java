@@ -11,7 +11,7 @@ import com.klipwallet.membership.entity.DomainEvent;
  * 사용자 토큰이 곧 만료되므로 background로 토큰을 재발급 시도.
  * </p>
  *
- * @see BgmsInvitationNotificationAdaptor
+ * @see BgmsNotificationAdaptor
  */
 @EqualsAndHashCode(callSuper = true)
 @Value

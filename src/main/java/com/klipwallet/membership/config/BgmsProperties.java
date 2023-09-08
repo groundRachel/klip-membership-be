@@ -24,11 +24,23 @@ public class BgmsProperties {
      */
     @NotEmpty
     String password;
+    /**
+     * Sender Key
+     */
+    @NotEmpty
+    String senderKey;
+    /**
+     * 운영진 초대 BGMS 템플릿 코드
+     */
+    @NotEmpty
+    String inviteOperatorTemplateCode;
 
     @ConstructorBinding
-    public BgmsProperties(String apiUrl, String id, String password) {
+    public BgmsProperties(String apiUrl, String id, String password, String senderKey, String inviteOperatorTemplateCode) {
         this.apiUrl = apiUrl;
         this.id = id;
         this.password = password;
+        this.senderKey = senderKey;
+        this.inviteOperatorTemplateCode = inviteOperatorTemplateCode;
     }
 }
