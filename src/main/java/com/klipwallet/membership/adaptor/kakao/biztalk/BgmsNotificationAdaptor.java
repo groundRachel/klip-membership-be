@@ -14,9 +14,9 @@ import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsGetResultAllRes.R
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsSendAlimTalkReq;
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsSendAlimTalkReq.Button;
 import com.klipwallet.membership.config.BgmsProperties;
-import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.InviteOperatorNotifiable;
 import com.klipwallet.membership.entity.KlipUser;
+import com.klipwallet.membership.entity.OpenChatting;
 import com.klipwallet.membership.exception.InternalApiException;
 import com.klipwallet.membership.service.InvitationNotifier;
 
@@ -43,7 +43,7 @@ public class BgmsNotificationAdaptor implements InvitationNotifier {
      * </p>
      */
     @Override
-    public void notifyToInviteChatRoom(ChatRoom chatRoom, KlipUser klipUser) {
+    public void notifyToInviteOpenChatting(OpenChatting openChatting, KlipUser klipUser) {
         BgmsToken token = prepareToken();
         // TODO @Jordan
     }

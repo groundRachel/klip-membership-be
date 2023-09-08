@@ -1,6 +1,5 @@
 package com.klipwallet.membership.service;
 
-import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.InviteOperatorNotifiable;
 import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.OpenChatting;
