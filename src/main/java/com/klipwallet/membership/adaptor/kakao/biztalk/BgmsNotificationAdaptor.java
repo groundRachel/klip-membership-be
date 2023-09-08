@@ -5,9 +5,12 @@ import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsBaseRes;
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsGetResultAllRes;
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsGetResultAllRes.Response;
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsSendAlimTalkReq;
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsSendAlimTalkReq.Button;
 import com.klipwallet.membership.config.BgmsProperties;
@@ -20,6 +23,7 @@ import com.klipwallet.membership.service.InvitationNotifier;
 /**
  * BGMS(Biztalk Global Message System)로 구현된 초대 알리미
  */
+@Profile("!local")
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -54,40 +58,43 @@ public class BgmsNotificationAdaptor implements InvitationNotifier {
             if (!res.isSuccessful()) {
                 throw InternalApiException.biztalk(res);
             }
+            verifyResponse(token, req);
         } catch (Exception cause) {
             throw InternalApiException.biztalk(cause);
         }
     }
 
+    private void verifyResponse(BgmsToken token, BgmsSendAlimTalkReq req) {
+        BgmsGetResultAllRes result = bgmsApiClient.getResultAll(token.getToken());
+        for (Response response : result.getResponses()) {
+            if (!req.msgIdx().equals(response.getMsgIdx())) {
+                continue;
+            }
+            if (!response.isSuccessful()) {
+                log.error("Fail to notifyToInviteOperator: {}", response);
+            }
+            return;
+        }
+        throw new IllegalStateException("Not Found Response of notifyToInviteOperator. %s".formatted(req.msgIdx()));
+    }
+
     @NonNull
     private BgmsSendAlimTalkReq toBgmsSendAlimTalkReq(InviteOperatorNotifiable command) {
+        // FIXME @Jordan 현재 웰컴카드로 구현되어 있음. 이것을 변경해야함.
         String msgIdx = generateUuid();
         String senderKey = properties.getSenderKey();
         //@checkstyle:off
         String message = """
-                         [클립 드롭스] 닥터자르트 쿠폰 번호 발급 안내
+                         Klip 가입을 환영합니다!
+                         첫 번째 디지털 자산 웰컴 카드가 지급되었습니다.
                                                   
-                         안녕하세요, 클립 드롭스입니다.
-                                                  
-                         닥터자르트 NFT 에어드롭 특별 혜택으로 안내된 닥터자르트 공식몰 전제품 #{30%} 할인 쿠폰이 발급되었습니다. (쿠폰 번호: drjartnft)
-                                                  
-                         [쿠폰 사용 방법]
-                         ☞ 공식몰 > 구매할 제품 장바구니 추가 > 주문하기 > 구매 창 하단 쿠폰 번호(drjartnft) 입력 > 결제 계속하기
-                                                  
-                         [안내 사항]
-                         • 쿠폰 사용 기한: 2023년 1월 31일까지
-                         • 1,000개 한정, 선착순 1인 1회 증정
-                         • 구매 금액 2만 원 이상 적용 가능
-                         • 신규 가입자 10% 쿠폰(Welcome)은 NFT 쿠폰 번호(drjartnft) 선 입력 후 적용 가능합니다.
-                                                  
-                         ※ 이 메시지는 고객님이 참여한 닥터자르트 NFT 에어드롭 특별 혜택으로 지급된 쿠폰 안내 메시지입니다.""";
+                         - 카드 확인: 메뉴 > 카드""";
         //@checkstyle:on
 
         String templateCode = properties.getInviteOperatorTemplateCode();
-        String title = "클립 멤버십 서비스 관리자 초대";
         String url = command.invitationUrl();
-        Button button = Button.wl("서비스 이용 동의하러 가기", url, url);
-        return BgmsSendAlimTalkReq.recipient(msgIdx, senderKey, command.inviteeMobileNumber(), message, templateCode, title, button);
+        Button button = Button.wl("Klip에서 확인하기", url, null);
+        return BgmsSendAlimTalkReq.recipient(msgIdx, senderKey, command.inviteeMobileNumber(), message, templateCode, button);
     }
 
     private String generateUuid() {

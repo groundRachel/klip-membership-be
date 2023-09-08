@@ -74,14 +74,13 @@ public record BgmsSendAlimTalkReq(String msgIdx,
      * @param recipient 수신자 번호 예) 01012345678, 010-1234-5678
      * @param message   발신 메시지 내용* (공백 포함2345 1000자로 제한) 가변 영역이 있을 경우 해당 가변 영역의 내용도 실제 보 낼 내용으로 치환 되어야 한다. 예) 템플릿 : 안녕하세요 #{고객명}님. message:안녕하세요 비즈톡님.
      * @param tmpltCode 등록한 템플릿의 템플릿 코드*
-     * @param title     템플릿 내용 중 강조 표기할 핵심 정보
      * @param button    버튼 정보
      */
     public static BgmsSendAlimTalkReq recipient(String msgIdx, String senderKey, String recipient, String message,
-                                                String tmpltCode, String title, Button button) {
+                                                String tmpltCode, Button button) {
 
         return new BgmsSendAlimTalkReq(msgIdx, "82", senderKey, recipient, null, null, message,
-                                       tmpltCode, title, "PUSH", null, null, new Attach(List.of(button)));
+                                       tmpltCode, null, "PUSH", null, null, new Attach(List.of(button)));
     }
 
     private void verifyTarget(String recipient, String appUserId) {
@@ -151,13 +150,13 @@ public record BgmsSendAlimTalkReq(String msgIdx,
      * @param chatEvent     봇전환시연결할봇이벤트 명
      */
     public record Button(@NonNull String name,
-                  @NonNull ButtonType type,
-                  @JsonProperty("scheme_android") String schemeAndroid,
-                  @JsonProperty("scheme_ios") String schemeIos,
-                  @JsonProperty("url_mobile") String urlMobile,
-                  @JsonProperty("url_pc") String urlPc,
-                  @JsonProperty("chat_extra") String chatExtra,
-                  @JsonProperty("chat_event") String chatEvent) {
+                         @NonNull ButtonType type,
+                         @JsonProperty("scheme_android") String schemeAndroid,
+                         @JsonProperty("scheme_ios") String schemeIos,
+                         @JsonProperty("url_mobile") String urlMobile,
+                         @JsonProperty("url_pc") String urlPc,
+                         @JsonProperty("chat_extra") String chatExtra,
+                         @JsonProperty("chat_event") String chatEvent) {
 
         public static Button wl(String name, @NonNull String urlMobile, String urlPc) {
             return new Button(name, ButtonType.WL, null, null, urlMobile, urlPc, null, null);

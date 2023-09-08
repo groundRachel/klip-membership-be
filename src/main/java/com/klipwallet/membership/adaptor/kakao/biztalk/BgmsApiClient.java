@@ -2,11 +2,13 @@ package com.klipwallet.membership.adaptor.kakao.biztalk;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsBaseRes;
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsGetResultAllRes;
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsSendAlimTalkReq;
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsTokenReq;
 import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsTokenRes;
@@ -37,4 +39,16 @@ public interface BgmsApiClient {
      */
     @PostMapping(value = "/v2/kko/sendAlimTalk", consumes = MediaType.APPLICATION_JSON_VALUE)
     BgmsBaseRes sendAlimTalk(@RequestHeader(HEADER_BT_TOKEN) String token, @RequestBody BgmsSendAlimTalkReq req);
+
+    /**
+     * 전송 결과 일괄 요청
+     * <p>
+     * 해당 BSID({@link com.klipwallet.membership.config.BgmsProperties#getId()})로 전송 요청한 메시지 중 발송 처리된 메시지의 결과를 가져온다. (1회 최대 500건)
+     * </p>
+     *
+     * @param token BGMS 사용자 토큰
+     * @return 전송 결과 목록
+     */
+    @GetMapping(value = "/v2/kko/getResultAll", consumes = MediaType.APPLICATION_JSON_VALUE)
+    BgmsGetResultAllRes getResultAll(@RequestHeader(HEADER_BT_TOKEN) String token);
 }

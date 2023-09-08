@@ -148,6 +148,7 @@ public class OperatorService implements OperatorInvitable {
     @Override
     public String inviteOperator(MemberId inviterPartnerId, String phoneNumber) {
         // 초대 만료와 코드 관리를 위해서 필요함.
+        phoneNumber = PhoneNumberUtils.toFormalKrMobileNumber(phoneNumber);
         String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, phoneNumber));
         Partner inviterPartner = tryGetPartner(inviterPartnerId);
         return sendNotification(inviterPartner, phoneNumber, code);

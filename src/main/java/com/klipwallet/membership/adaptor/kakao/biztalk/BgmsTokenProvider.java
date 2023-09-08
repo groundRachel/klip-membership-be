@@ -35,7 +35,7 @@ public class BgmsTokenProvider {
      * 기본(=MAX) 사용자 토큰의 만료시간은 24시간.
      * </p>
      */
-    BgmsToken prepareToken() {
+    public BgmsToken prepareToken() {
         return findValidToken().orElseGet(this::newTokenOnLock);
     }
 
