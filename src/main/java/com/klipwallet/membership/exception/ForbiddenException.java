@@ -15,7 +15,11 @@ public class ForbiddenException extends BaseCodeException {
     /**
      * 권한이 부족한 User 객체.
      */
-    private final AuthenticatedUser user;
+    private AuthenticatedUser user;
+
+    public ForbiddenException(ErrorCode code) {
+        super(code);
+    }
 
     public ForbiddenException(AuthenticatedUser user) {
         super(ErrorCode.FORBIDDEN);

@@ -14,6 +14,7 @@ import com.klipwallet.membership.entity.OpenChatting;
 import com.klipwallet.membership.entity.OpenChattingMember;
 import com.klipwallet.membership.entity.OpenChattingMember.Role;
 import com.klipwallet.membership.entity.Operator;
+import com.klipwallet.membership.exception.MemberNotFoundException;
 import com.klipwallet.membership.exception.kakao.HostOpenChattingLimitExceeded;
 import com.klipwallet.membership.repository.OpenChattingMemberRepository;
 import com.klipwallet.membership.service.kakao.KakaoService;
@@ -66,5 +67,9 @@ public class OpenChattingMemberService {
         if (count > HOST_OPEN_CHATTING_LIMIT) {
             throw new HostOpenChattingLimitExceeded(hostId, count);
         }
+    }
+
+    public OpenChattingMember getOpenChattingMemberByOpenChattingIdAndKlipId(Long openChattingId, Long klipId) {
+        return openChattingMemberRepository.findByOpenChattingIdAndKlipId(openChattingId, klipId).orElseThrow(() -> new MemberNotFoundException());
     }
 }

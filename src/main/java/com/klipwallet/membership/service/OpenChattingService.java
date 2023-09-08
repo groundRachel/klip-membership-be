@@ -21,22 +21,34 @@ import com.klipwallet.membership.dto.openchatting.OpenChattingAssembler;
 import com.klipwallet.membership.dto.openchatting.OpenChattingCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingNftCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingOperatorCreate;
+import com.klipwallet.membership.dto.openchatting.OpenChattingStatus;
 import com.klipwallet.membership.dto.openchatting.OpenChattingSummary;
 import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.OpenChatting;
 import com.klipwallet.membership.entity.OpenChatting.Status;
 import com.klipwallet.membership.entity.OpenChattingNft;
 import com.klipwallet.membership.entity.Operator;
+import com.klipwallet.membership.entity.TokenId;
 import com.klipwallet.membership.entity.kakao.KakaoId;
 import com.klipwallet.membership.entity.kakao.KakaoOpenlinkSummary;
 import com.klipwallet.membership.entity.kakao.OpenChattingHost;
+import com.klipwallet.membership.entity.kas.NftToken;
+import com.klipwallet.membership.exception.ForbiddenException;
+import com.klipwallet.membership.exception.InvalidRequestException;
+import com.klipwallet.membership.exception.MemberNotFoundException;
+import com.klipwallet.membership.exception.NotFoundException;
 import com.klipwallet.membership.exception.kakao.OperatorAlreadyExistsException;
+import com.klipwallet.membership.exception.kas.KasBadRequestInternalApiException;
+import com.klipwallet.membership.exception.kas.KasNotFoundInternalApiException;
 import com.klipwallet.membership.exception.operator.OperatorDuplicatedException;
 import com.klipwallet.membership.repository.OpenChattingNftRepository;
 import com.klipwallet.membership.repository.OpenChattingRepository;
 import com.klipwallet.membership.service.kakao.KakaoService;
+
+import static com.klipwallet.membership.exception.ErrorCode.OPENCHAT_ACCESS_DENIED;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +62,8 @@ public class OpenChattingService {
     private final OpenChattingRepository openChattingRepository;
     private final OpenChattingNftRepository openChattingNftRepository;
     private final OpenChattingAssembler openChattingAssembler;
+    private final KlipAccountService klipAccountService;
+    private final TokenService tokenService;
 
     @Transactional
     public OpenChattingSummary create(OpenChattingCreate command, AuthenticatedUser user) {
@@ -121,5 +135,65 @@ public class OpenChattingService {
                 operatorIds.add(command.operatorId());
             }
         }
+    }
+
+    private OpenChatting getOpenChatting(Long id) {
+        return openChattingRepository.findById(id).orElseThrow(() -> new NotFoundException());
+    }
+
+    private OpenChattingNft getOpenChattingNft(Address sca, Long dropId) {
+        return openChattingNftRepository.findByKlipDropsScaAndDropId(sca.getValue(), dropId).orElseThrow(() -> new NotFoundException());
+    }
+
+    private OpenChatting getOpenChattingByTokenId(Address sca, TokenId tokenId) {
+        OpenChattingNft nft = getOpenChattingNft(sca, tokenId.getKlipDropId());
+        return getOpenChatting(nft.getOpenChattingId());
+    }
+
+    @Transactional(readOnly = true)
+    public OpenChattingStatus getOpenChattingStatusByRequestKey(Address sca, TokenId tokenId, String requestKey) {
+        // TODO klip A2A으로 사용자 정보 조회하기
+        KlipUser klipUser = klipAccountService.getKlipUser(new Address(""));
+        Address klaytnAddress = new Address("");
+
+        return getOpenChattingStatus(sca, tokenId, klaytnAddress, klipUser);
+    }
+
+    @Transactional(readOnly = true)
+    public OpenChattingStatus getOpenChattingStatusByKlaytnAddress(Address sca, TokenId tokenId, Address klaytnAddress) {
+        // TODO klip A2A으로 사용자 정보 조회하기
+        KlipUser klipUser = klipAccountService.getKlipUser(klaytnAddress);
+
+        return getOpenChattingStatus(sca, tokenId, klaytnAddress, klipUser);
+    }
+
+    public OpenChattingStatus getOpenChattingStatus(Address sca, TokenId tokenId, Address klaytnAddress, KlipUser klipUser) {
+        // 토큰 소유 여부 확인
+        NftToken token = null;
+        try {
+            token = tokenService.getNftToken(sca, tokenId);
+        } catch (KasNotFoundInternalApiException | KasBadRequestInternalApiException e) {
+            throw new ForbiddenException(OPENCHAT_ACCESS_DENIED);
+        }
+        if (!token.isOwner(klaytnAddress)) {
+            throw new ForbiddenException(OPENCHAT_ACCESS_DENIED);
+        }
+
+        // 토큰 관련 오픈채팅 조회
+        OpenChatting openChatting;
+        try {
+            openChatting = getOpenChattingByTokenId(sca, tokenId);
+        } catch (NotFoundException | InvalidRequestException e) {
+            return new OpenChattingStatus(false, "", false);
+        }
+        String openChattingUrl = openChatting.getKakaoOpenlinkSummary().getUrl();
+
+        // 참여자 정보 조회하기
+        try {
+            openChattingMemberService.getOpenChattingMemberByOpenChattingIdAndKlipId(openChatting.getId(), klipUser.getKlipAccountId());
+        } catch (MemberNotFoundException e) {
+            return new OpenChattingStatus(true, openChattingUrl, false);
+        }
+        return new OpenChattingStatus(true, openChattingUrl, true);
     }
 }
