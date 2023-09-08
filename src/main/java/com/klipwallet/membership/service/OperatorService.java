@@ -143,27 +143,27 @@ public class OperatorService implements OperatorInvitable {
      * {@inheritDoc}
      *
      * @param inviterPartnerId 초대한 파트너 아이디
-     * @param phoneNumber      초대 받은 운영진의 휴대폰 번호
+     * @param inviteePhoneNumber      초대 받은 운영진의 휴대폰 번호
      * @return 초대 URL
      */
     @Override
     public String inviteOperator(MemberId inviterPartnerId, String phoneNumber) {
         // 초대 만료와 코드 관리를 위해서 필요함.
-        phoneNumber = PhoneNumberUtils.toFormalKrMobileNumber(phoneNumber);
-        KlipUser invitee = klipAccountService.getKlipUserByPhoneNumber(phoneNumber);
+        String inviteePhoneNumber = PhoneNumberUtils.toFormalKrMobileNumber(phoneNumber);
+        KlipUser invitee = klipAccountService.getKlipUserByPhoneNumber(inviteePhoneNumber);
         if (invitee == null) {
-            throw new OperatorInviteeNotExistsOnKlipException(phoneNumber);
+            throw new OperatorInviteeNotExistsOnKlipException(inviteePhoneNumber);
         }
-        String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, phoneNumber));
+        String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, inviteePhoneNumber));
         Partner inviterPartner = tryGetPartner(inviterPartnerId);
-        return sendNotification(inviterPartner, invitee, code);
+        return sendNotification(inviterPartner, inviteePhoneNumber, code);
     }
 
     @NonNull
-    private String sendNotification(Partner partner, KlipUser klipUser, String code) {
+    private String sendNotification(Partner partner, String inviteePhoneNumber, String code) {
         String invitationUrl = toInvitationUrl(code);
 
-        InviteOperatorNotifiable command = new InviteOperatorNotifiable(klipUser.getKakaoUserId(), invitationUrl, partner.getName());
+        InviteOperatorNotifiable command = new InviteOperatorNotifiable(inviteePhoneNumber, invitationUrl, partner.getName());
         invitationNotifier.notifyToInviteOperator(command);
         return invitationUrl;
     }

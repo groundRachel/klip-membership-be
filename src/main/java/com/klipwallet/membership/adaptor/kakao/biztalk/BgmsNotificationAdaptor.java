@@ -94,7 +94,7 @@ public class BgmsNotificationAdaptor implements InvitationNotifier {
         String templateCode = properties.getInviteOperatorTemplateCode();
         String url = command.invitationUrl();
         Button button = Button.wl("Klip에서 확인하기", url, null);
-        return BgmsSendAlimTalkReq.recipient(msgIdx, senderKey, command.kakaoUserId(), message, templateCode, button);
+        return BgmsSendAlimTalkReq.byRecipient(msgIdx, senderKey, command.inviteePhoneNumber(), message, templateCode, button);
     }
 
     private String generateUuid() {
