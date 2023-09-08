@@ -146,7 +146,7 @@ public class OpenChattingService {
 
         // 오픈채팅 참여 가능 여부 확인
         OpenChattingStatus openChattingStatus = getOpenChattingStatus(sca, tokenId, klaytnAddress, klipUser);
-        if (!openChattingStatus.openChatExist()) {
+        if (!openChattingStatus.openChattingExist()) {
             throw new ForbiddenException(OPENCHAT_ACCESS_DENIED);
         }
 
