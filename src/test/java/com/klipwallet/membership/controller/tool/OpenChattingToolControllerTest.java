@@ -1,5 +1,6 @@
 package com.klipwallet.membership.controller.tool;
 
+import java.util.List;
 import java.util.Locale;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +19,19 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.klipwallet.membership.config.security.WithPartnerUser;
+import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.MemberId;
+import com.klipwallet.membership.entity.OpenChatting;
+import com.klipwallet.membership.entity.OpenChatting.Status;
 import com.klipwallet.membership.entity.Operator;
+import com.klipwallet.membership.entity.kakao.KakaoOpenlinkSummary;
 import com.klipwallet.membership.repository.OpenChattingMemberRepository;
+import com.klipwallet.membership.repository.OpenChattingRepository;
 import com.klipwallet.membership.service.OperatorService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,6 +44,8 @@ class OpenChattingToolControllerTest {
 
     @Autowired
     OpenChattingMemberRepository openChattingMemberRepository;
+    @Autowired
+    OpenChattingRepository openChattingRepository;
     @MockBean
     OperatorService operatorService;
     @Value("${user-id}")
@@ -57,6 +66,8 @@ class OpenChattingToolControllerTest {
     public void clearOperators() {
         openChattingMemberRepository.deleteAll();
         openChattingMemberRepository.flush();
+        openChattingRepository.deleteAll();
+        openChattingRepository.flush();
     }
 
     @WithPartnerUser
@@ -232,8 +243,65 @@ class OpenChattingToolControllerTest {
                     .andExpect(status().isBadRequest());
     }
 
+    @WithPartnerUser
+    @DisplayName("오픈채팅방 목록 조회 > 200")
     @Test
-    void openChattingkList() {
-        // TODO @Jordan
+    void openChattingList(@Autowired MockMvc mvc) throws Exception {
+        createSampleOpenChattings();
+        mvc.perform(get("/tool/v1/openchattings"))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.totalElements").value(11L))
+           .andExpect(jsonPath("$.totalPages").value(1))
+           .andExpect(jsonPath("$.numberOfElements").value(11))
+           .andExpect(jsonPath("$.content.length()").value(11L))
+           .andExpect(jsonPath("$.content[0].id").isNotEmpty())
+           .andExpect(jsonPath("$.content[0].title").value("t11"))
+           .andExpect(jsonPath("$.content[0].openChattingId").value("303890410"))
+           .andExpect(jsonPath("$.content[0].openChattingUrl").value("https://open.kakao.com/o/gIRPLPDda"));
+        mvc.perform(get("/tool/v1/openchattings").param("status", Status.ACTIVATED.toDisplay()))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.totalElements").value(8L))
+           .andExpect(jsonPath("$.totalPages").value(1))
+           .andExpect(jsonPath("$.numberOfElements").value(8))
+           .andExpect(jsonPath("$.content[1].status").value(Status.ACTIVATED.toDisplay()));
+        mvc.perform(get("/tool/v1/openchattings").param("status", Status.DELETED.toDisplay()))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.totalElements").value(3L))
+           .andExpect(jsonPath("$.totalPages").value(1))
+           .andExpect(jsonPath("$.numberOfElements").value(3))
+           .andExpect(jsonPath("$.content[0].status").value(Status.DELETED.toDisplay()));
+    }
+
+    private void createSampleOpenChattings() {
+        List<OpenChatting> openChattings = List.of(
+                new OpenChatting("t1", "https://cover1.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(1)),
+                new OpenChatting("t2", "https://cover2.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(2)),
+                new OpenChatting("t3", "https://cover3.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(3)),
+                new OpenChatting("t4", "https://cover4.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(4)),
+                new OpenChatting("t5", "https://cover5.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(5)),
+                new OpenChatting("t6", "https://cover6.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(6)),
+                new OpenChatting("t7", "https://cover7.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(7)),
+                new OpenChatting("t8", "https://cover8.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(8)),
+                new OpenChatting("t9", "https://cover9.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(9)),
+                new OpenChatting("t10", "https://cover10.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(10)),
+                new OpenChatting("t11", "https://cover11.jpg", new KakaoOpenlinkSummary(303890410L, "https://open.kakao.com/o/gIRPLPDda"),
+                                 new Address("0xa005e82487fb629923b9598offdrc2e9499focab"), new MemberId(11))
+        );
+        List<OpenChatting> results = openChattingRepository.saveAll(openChattings);
+        results.get(3).deleteBy(new MemberId(3));
+        results.get(4).deleteBy(new MemberId(4));
+        results.get(10).deleteBy(new MemberId(4));
+        openChattingRepository.saveAll(results);
+        openChattingRepository.flush();
     }
 }
