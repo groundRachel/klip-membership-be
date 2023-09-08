@@ -7,7 +7,7 @@ import lombok.Value;
  */
 @SuppressWarnings("ClassCanBeRecord")
 @Value
-public class OpenChatRoomHost {
+public class OpenChattingHost {
     KakaoId kakaoId;
     String nickname;
     String profileImageUrl;

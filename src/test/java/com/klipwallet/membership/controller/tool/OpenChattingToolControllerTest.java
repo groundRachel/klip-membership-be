@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.klipwallet.membership.config.security.WithPartnerUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Operator;
-import com.klipwallet.membership.repository.ChatRoomMemberRepository;
+import com.klipwallet.membership.repository.OpenChattingMemberRepository;
 import com.klipwallet.membership.service.OperatorService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -33,10 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:kakao-api-test.properties")
 @Slf4j
-class ChatRoomToolControllerTest {
+class OpenChattingToolControllerTest {
 
     @Autowired
-    ChatRoomMemberRepository chatRoomMemberRepository;
+    OpenChattingMemberRepository openChattingMemberRepository;
     @MockBean
     OperatorService operatorService;
     @Value("${user-id}")
@@ -55,15 +55,15 @@ class ChatRoomToolControllerTest {
     }
 
     public void clearOperators() {
-        chatRoomMemberRepository.deleteAll();
-        chatRoomMemberRepository.flush();
+        openChattingMemberRepository.deleteAll();
+        openChattingMemberRepository.flush();
     }
 
     @WithPartnerUser
     @DisplayName("오픈채팅방 생성 > 201")
     @Test
     @Disabled("실제 오픈채팅방 생성되어 Disabled")
-    void createChatRoom(@Autowired MockMvc mvc) throws Exception {
+    void createOpenChatting(@Autowired MockMvc mvc) throws Exception {
         Operator host = new Operator(324L, kakaoUserId, new MemberId(23));
         given(operatorService.tryGetOperator(1L)).willReturn(host);
         Operator operator = new Operator(325L, kakaoPartnerId, new MemberId(23));
@@ -72,45 +72,46 @@ class ChatRoomToolControllerTest {
                       {
                         "title": "NFT 오픈채팅방",
                         "description": "NFT 홀더들을 위한 오픈채팅방 입니다.",
-                        "coverImageUrl": "https://membership.dev.klipwallet.com/klip-membership/test.jpg",
+                        "coverImageUrl": "https://klip-media.dev.klaytn.com/klip-membership/test.jpg",
                         "host": {
                                     "operatorId": 1,
                                     "nickname": "방장 닉네임",
-                                    "profileImageUrl": "https://membership.dev.klipwallet.com/klip-membership/test.jpg"
+                                    "profileImageUrl": "https://klip-media.dev.klaytn.com/klip-membership/test.jpg"
                                 },
                         "operators": [
                             {
                                 "operatorId": 2,
                                 "nickname": "운영자 2 닉네임",
-                                "profileImageUrl": "https://membership.dev.klipwallet.com/klip-membership/test.jpg"
+                                "profileImageUrl": "https://klip-media.dev.klaytn.com/klip-membership/test.jpg"
                             }
                         ],
                         "nfts": [
                             {
                                 "dropId": 39700080005,
-                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "klipDropsSca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             },
                             {
                                 "dropId": 39700080005,
-                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "klipDropsSca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             }
                         ]
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/chat-rooms")
+
+        var ra = mvc.perform(post("/tool/v1/openchattings")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").isString())
-                    .andExpect(jsonPath("$.openChatRoomId").isString())
-                    .andExpect(jsonPath("$.openChatRoomUrl").isString())
+                    .andExpect(jsonPath("$.openChattingId").isString())
+                    .andExpect(jsonPath("$.openChattingUrl").isString())
                     .andExpect(jsonPath("$.title").value("NFT 오픈채팅방"));
     }
 
     @WithPartnerUser
     @DisplayName("오픈채팅방 생성: 제목 없음 > 400")
     @Test
-    void createChatRoomCheckNull(@Autowired MockMvc mvc) throws Exception {
+    void createOpenChattingCheckNull(@Autowired MockMvc mvc) throws Exception {
         Operator operator = new Operator(324L, "2238023120", new MemberId(23));
         given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
@@ -138,17 +139,17 @@ class ChatRoomToolControllerTest {
                         "nfts": [
                             {
                                 "dropId": null,
-                                "contractAddress": null
+                                "klipDropsSca": null
                             },
                             {
                                 "dropId": 39700080005,
-                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "klipDropsSca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             }
                         ]
                       }
                       """;
 
-        var ra = mvc.perform(post("/tool/v1/chat-rooms")
+        var ra = mvc.perform(post("/tool/v1/openchattings")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body).locale(Locale.KOREA))
                     .andExpect(status().isBadRequest())
@@ -166,14 +167,14 @@ class ChatRoomToolControllerTest {
                             jsonPath("$.errors[?(@.field == 'operators[0].profileImageUrl')].message").value(
                                     "operators[0].profileImageUrl: '공백일 수 없습니다'"))
                     .andExpect(jsonPath("$.errors[?(@.field == 'nfts[0].dropId')].message").value("nfts[0].dropId: '널이어서는 안됩니다'"))
-                    .andExpect(jsonPath("$.errors[?(@.field == 'nfts[0].contractAddress')].message").value("nfts[0].contractAddress: '널이어서는 안됩니다'"));
+                    .andExpect(jsonPath("$.errors[?(@.field == 'nfts[0].klipDropsSca')].message").value("nfts[0].klipDropsSca: '널이어서는 안됩니다'"));
 
     }
 
     @WithPartnerUser
     @DisplayName("오픈채팅방 생성: 운영자 인원 제한 초과 > 400")
     @Test
-    void createChatRoomExceedOperatorLimit(@Autowired MockMvc mvc) throws Exception {
+    void createOpenChattingExceedOperatorLimit(@Autowired MockMvc mvc) throws Exception {
         Operator operator = new Operator(324L, "2238023120", new MemberId(23));
         given(operatorService.tryGetOperator(any())).willReturn(operator);
         String body = """
@@ -216,23 +217,23 @@ class ChatRoomToolControllerTest {
                         "nfts": [
                             {
                                 "dropId": 39700080005,
-                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "klipDropsSca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             },
                             {
                                 "dropId": 39700080005,
-                                "contractAddress": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
+                                "klipDropsSca": "0xa9A95C5feF43830D5d67156a2582A2E793aCb465"
                             }
                         ]
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/chat-rooms")
+        var ra = mvc.perform(post("/tool/v1/openchattings")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isBadRequest());
     }
 
     @Test
-    void chatRoomList() {
+    void openChattingkList() {
         // TODO @Jordan
     }
 }

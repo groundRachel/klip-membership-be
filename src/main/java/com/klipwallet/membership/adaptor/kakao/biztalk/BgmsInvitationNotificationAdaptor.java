@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.klipwallet.membership.config.BgmsProperties;
-import com.klipwallet.membership.entity.ChatRoom;
 import com.klipwallet.membership.entity.KlipUser;
+import com.klipwallet.membership.entity.OpenChatting;
 import com.klipwallet.membership.service.InvitationNotifier;
 
 /**
@@ -31,7 +31,7 @@ public class BgmsInvitationNotificationAdaptor implements InvitationNotifier {
      * </p>
      */
     @Override
-    public void notifyToInviteChatRoom(ChatRoom chatRoom, KlipUser klipUser) {
+    public void notifyToInviteOpenChatting(OpenChatting openChatting, KlipUser klipUser) {
         BgmsToken token = prepareToken();
         // TODO @Jordan
     }

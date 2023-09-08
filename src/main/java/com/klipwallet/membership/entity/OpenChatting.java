@@ -17,7 +17,7 @@ import lombok.ToString;
 import org.springframework.lang.Nullable;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
-import com.klipwallet.membership.entity.kakao.OpenChatRoomSummary;
+import com.klipwallet.membership.entity.kakao.KakaoOpenlinkSummary;
 
 import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 
@@ -28,14 +28,14 @@ import static com.klipwallet.membership.entity.Statusable.requireVerifiedCode;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-public class ChatRoom extends BaseEntity<ChatRoom> {
+public class OpenChatting extends BaseEntity<OpenChatting> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
     /**
      * 연동된 카카오 오픈 채팅방 아이디
      */
-    private OpenChatRoomSummary openChatRoomSummary;
+    private KakaoOpenlinkSummary kakaoOpenlinkSummary;
     private String title;
     /**
      * 채팅방 커버 이미지
@@ -45,32 +45,32 @@ public class ChatRoom extends BaseEntity<ChatRoom> {
      * NFT Contract Address
      */
     @Embedded
-    @AttributeOverride(name = "value", column = @Column(name = "contractAddress"))
+    @AttributeOverride(name = "value", column = @Column(name = "klipDropsSca"))
     private Address contractAddress;
     private Status status;
     private Source source;
 
     @ForJpa
-    protected ChatRoom() {
+    protected OpenChatting() {
     }
 
     /**
      * 채팅방 생성을 위한 기본 생성자.
      */
-    public ChatRoom(String title, String coverImage, OpenChatRoomSummary openChatRoomSummary, Address nftSca, MemberId creatorId) {
+    public OpenChatting(String title, String coverImage, KakaoOpenlinkSummary kakaoOpenlinkSummary, Address nftSca, MemberId creatorId) {
         this.title = title;
         this.coverImage = coverImage;
-        this.openChatRoomSummary = openChatRoomSummary;
+        this.kakaoOpenlinkSummary = kakaoOpenlinkSummary;
         this.status = Status.ACTIVATED;
         this.source = Source.KLIP_DROPS;
         this.contractAddress = nftSca;
         this.createBy(creatorId);
         // 카카오 오픈 채팅방을 바로 삭제하는 경우(Rollback)를 위한 이벤트
-        super.registerEvent(new KakaoOpenChatRoomOpened(openChatRoomSummary));
+        super.registerEvent(new KakaoOpenChattingOpened(kakaoOpenlinkSummary));
     }
 
     @Getter
-    @Schema(name = "ChatRoom.Status", description = "채팅방 상태", example = "activated")
+    @Schema(name = "OpenChatting.Status", description = "채팅방 상태", example = "activated")
     public enum Status implements Statusable {
         /**
          * 활성화
@@ -105,7 +105,7 @@ public class ChatRoom extends BaseEntity<ChatRoom> {
     }
 
     @Getter
-    @Schema(name = "ChatRoom.Source", description = "채팅방 소스", example = "klipDrops")
+    @Schema(name = "OpenChatting.Source", description = "채팅방 소스", example = "klipDrops")
     public enum Source implements Statusable {
         /**
          * For KLAYTN NFT

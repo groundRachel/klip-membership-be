@@ -15,15 +15,15 @@ import lombok.ToString;
 import org.springframework.lang.Nullable;
 
 import com.klipwallet.membership.adaptor.jpa.ForJpa;
-import com.klipwallet.membership.entity.ChatRoom.Source;
+import com.klipwallet.membership.entity.OpenChatting.Source;
 
 @Entity
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
-public class ChatRoomMember {
+public class OpenChattingMember {
     @Column(nullable = false)
-    private Long chatRoomId;
+    private Long openChattingId;
     @Column(nullable = false)
     private Long klipId;
     @Column(nullable = false)
@@ -41,12 +41,12 @@ public class ChatRoomMember {
     private Long id;
 
     @ForJpa
-    protected ChatRoomMember() {
+    protected OpenChattingMember() {
     }
 
-    public ChatRoomMember(Long chatRoomId, Long klipId, String kakaoUserId, Long operatorId, String nickname, String profileImageUrl,
-                          Role role) {
-        this.chatRoomId = chatRoomId;
+    public OpenChattingMember(Long openChattingId, Long klipId, String kakaoUserId, Long operatorId, String nickname, String profileImageUrl,
+                              Role role) {
+        this.openChattingId = openChattingId;
         this.klipId = klipId;
         this.kakaoUserId = kakaoUserId;
         this.operatorId = operatorId;
@@ -56,7 +56,7 @@ public class ChatRoomMember {
     }
 
     @Getter
-    @Schema(name = "ChatRoomMember.Role", description = "채팅방 멤버 역할", example = "host")
+    @Schema(name = "OpenChattingMember.Role", description = "채팅방 멤버 역할", example = "host")
     public enum Role implements Statusable {
         HOST(0),
         OPERATOR(1),

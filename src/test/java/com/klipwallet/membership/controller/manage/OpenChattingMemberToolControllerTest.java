@@ -19,9 +19,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.klipwallet.membership.adaptor.klip.KlipAccount;
 import com.klipwallet.membership.config.security.WithPartnerUser;
-import com.klipwallet.membership.dto.chatroom.ChatRoomMemberSummary;
+import com.klipwallet.membership.dto.openchatting.OpenChattingMemberSummary;
 import com.klipwallet.membership.entity.Address;
-import com.klipwallet.membership.repository.ChatRoomMemberRepository;
+import com.klipwallet.membership.repository.OpenChattingMemberRepository;
 import com.klipwallet.membership.service.KlipAccountService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -33,10 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Disabled("관리자가 아닌 일반 멤버 사용시에만 CREATE API 사용, 이후 구현 완료후 Enabled") // TODO: @Ian
-class ChatRoomMemberToolControllerTest {
+class OpenChattingMemberToolControllerTest {
 
     @Autowired
-    ChatRoomMemberRepository chatRoomMemberRepository;
+    OpenChattingMemberRepository openChattingMemberRepository;
 
     @MockBean
     KlipAccountService klipAccountService;
@@ -44,23 +44,23 @@ class ChatRoomMemberToolControllerTest {
     @Autowired
     ObjectMapper om;
 
-    private Long lastChatRoomMemberId;
+    private Long lastOpenChattingMemberId;
 
     @BeforeEach
-    void setUp() {clearChatRoomMembers();}
+    void setUp() {clearOpenChattingMembers();}
 
     @AfterEach
-    void tearDown() {clearChatRoomMembers();}
+    void tearDown() {clearOpenChattingMembers();}
 
-    private void clearChatRoomMembers() {
-        chatRoomMemberRepository.deleteAll();
-        chatRoomMemberRepository.flush();
+    private void clearOpenChattingMembers() {
+        openChattingMemberRepository.deleteAll();
+        openChattingMemberRepository.flush();
     }
 
     @WithPartnerUser
     @DisplayName("오픈채팅방 멤버 생성 > 201")
     @Test
-    void createChatRoomMember(@Autowired MockMvc mvc) throws Exception {
+    void createOpenChattingMember(@Autowired MockMvc mvc) throws Exception {
         given(klipAccountService.getKlipUser(any(Address.class)))
                 .willReturn(new KlipAccount(1L, "2538023320", "testemail@test.com", "010-1234-5678"));
         String body = """
@@ -71,13 +71,13 @@ class ChatRoomMemberToolControllerTest {
                         "role": 1
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/chat-room/1/members")
+        var ra = mvc.perform(post("/tool/v1/openchattings/1/members")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.id").isString());
 
-        setLastChatRoomMemberId(ra);
+        setLastOpenChattingMemberId(ra);
     }
 
     @WithPartnerUser
@@ -94,7 +94,7 @@ class ChatRoomMemberToolControllerTest {
                         "role": 1
                       }
                       """;
-        var ra = mvc.perform(post("/tool/v1/chat-room/1/members")
+        var ra = mvc.perform(post("/tool/v1/openchattings/1/members")
                                      .contentType(MediaType.APPLICATION_JSON)
                                      .content(body)
                     )
@@ -108,9 +108,9 @@ class ChatRoomMemberToolControllerTest {
     }
 
 
-    private void setLastChatRoomMemberId(ResultActions ra) throws IOException {
+    private void setLastOpenChattingMemberId(ResultActions ra) throws IOException {
         MvcResult mvcResult = ra.andReturn();
-        ChatRoomMemberSummary summary = om.readValue(mvcResult.getResponse().getContentAsString(), ChatRoomMemberSummary.class);
-        lastChatRoomMemberId = summary.id();
+        OpenChattingMemberSummary summary = om.readValue(mvcResult.getResponse().getContentAsString(), OpenChattingMemberSummary.class);
+        lastOpenChattingMemberId = summary.id();
     }
 }
