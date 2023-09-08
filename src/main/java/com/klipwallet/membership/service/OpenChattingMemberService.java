@@ -51,12 +51,13 @@ public class OpenChattingMemberService {
         List<OpenChattingMember> openChattingMembers = new ArrayList<>();
         for (OpenChattingOperatorCreate openChattingOperatorCreate : commands) {
             Operator operator = operatorService.tryGetOperator(openChattingOperatorCreate.operatorId());
-            kakaoService.joinOpenChatting(openChatting.getKakaoOpenlinkSummary().getId(), openChattingOperatorCreate.nickname(),
-                                          openChattingOperatorCreate.profileImageUrl(),
-                                          operator.getKakaoUserId());
-            openChattingMembers.add(openChattingOperatorCreate.toOpenChattingMember(openChatting, operator, Role.OPERATOR));
+
+            OpenChattingMember openChattingMember = openChattingOperatorCreate.toOpenChattingMember(openChatting, operator, Role.OPERATOR);
+            openChattingMembers.add(openChattingMember);
+
+            kakaoService.joinOpenChatting(openChatting, openChattingMember);
         }
-        return openChattingMemberRepository.saveAll(openChattingMembers);
+       return openChattingMemberRepository.saveAll(openChattingMembers);
     }
 
 
