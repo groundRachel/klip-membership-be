@@ -9,6 +9,10 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,12 +21,12 @@ import com.klipwallet.membership.dto.openchatting.OpenChattingAssembler;
 import com.klipwallet.membership.dto.openchatting.OpenChattingCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingNftCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingOperatorCreate;
-import com.klipwallet.membership.dto.openchatting.OpenChattingRow;
 import com.klipwallet.membership.dto.openchatting.OpenChattingSummary;
 import com.klipwallet.membership.entity.Address;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.OpenChatting;
+import com.klipwallet.membership.entity.OpenChatting.Status;
 import com.klipwallet.membership.entity.OpenChattingNft;
 import com.klipwallet.membership.entity.Operator;
 import com.klipwallet.membership.entity.kakao.KakaoId;
@@ -60,9 +64,27 @@ public class OpenChattingService {
         registerOperators(saved, command.operators(), user);
         registerNfts(saved, command.nfts(), user);
         return new OpenChattingSummary(saved.getId(), saved.getKakaoOpenlinkSummary().getId(), saved.getKakaoOpenlinkSummary().getUrl(),
-                                       saved.getTitle(),
-                                       user.getMemberId().value(),
-                                       saved.getCreatedAt().atZone(ZoneId.systemDefault()).toOffsetDateTime());
+                                       saved.getTitle(), saved.getStatus(),
+                                       saved.getCreatedAt().atZone(ZoneId.systemDefault()).toOffsetDateTime(), null);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OpenChattingSummary> getOpenChattingsByStatus(Status status, Pageable pageable) {
+        Sort orderByCreatedAtDesc = Sort.sort(OpenChatting.class).by(OpenChatting::getCreatedAt).descending();
+        return getPaginationOpenChattingSummaries(status, pageable, orderByCreatedAtDesc);
+    }
+
+    private Page<OpenChattingSummary> getPaginationOpenChattingSummaries(Status status, Pageable pageable, Sort forceSort) {
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), forceSort);
+        Page<OpenChatting> openChattings = getPaginationOpenChattings(status, pageRequest);
+        return openChattingAssembler.toSummaries(openChattings);
+    }
+
+    private Page<OpenChatting> getPaginationOpenChattings(Status status, Pageable pageRequest) {
+        if (status == null) {
+            return openChattingRepository.findAll(pageRequest);
+        }
+        return openChattingRepository.findAllByStatus(status, pageRequest);
     }
 
     private OpenChatting createOpenChatting(OpenChattingCreate command, KakaoOpenlinkSummary summary, Address contractAddress, MemberId memberId) {
@@ -86,11 +108,6 @@ public class OpenChattingService {
         openChattingNftRepository.saveAll(nfts);
     }
 
-    @Transactional(readOnly = true)
-    public List<OpenChattingRow> getAllOpenChattings() {
-        List<OpenChatting> entities = openChattingRepository.findAll();
-        return openChattingAssembler.toRows(entities);
-    }
 
     private void checkOperators(List<OpenChattingOperatorCreate> operatorsCommand, Long hostOperatorId) {
         Set<Long> operatorIds = new HashSet<>();

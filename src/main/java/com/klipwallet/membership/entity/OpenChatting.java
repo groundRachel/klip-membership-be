@@ -36,6 +36,7 @@ public class OpenChatting extends BaseEntity<OpenChatting> {
      * 연동된 카카오 오픈 채팅방 아이디
      */
     private KakaoOpenlinkSummary kakaoOpenlinkSummary;
+    @Column(nullable = false)
     private String title;
     /**
      * 채팅방 커버 이미지
@@ -46,8 +47,11 @@ public class OpenChatting extends BaseEntity<OpenChatting> {
      */
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name = "klipDropsSca"))
-    private Address contractAddress;
+    private Address klipDropsSca;
+
+    @Column(nullable = false)
     private Status status;
+    @Column(nullable = false)
     private Source source;
 
     @ForJpa
@@ -63,10 +67,26 @@ public class OpenChatting extends BaseEntity<OpenChatting> {
         this.kakaoOpenlinkSummary = kakaoOpenlinkSummary;
         this.status = Status.ACTIVATED;
         this.source = Source.KLIP_DROPS;
-        this.contractAddress = nftSca;
+        this.klipDropsSca = nftSca;
         this.createBy(creatorId);
         // 카카오 오픈 채팅방을 바로 삭제하는 경우(Rollback)를 위한 이벤트
         super.registerEvent(new KakaoOpenChattingOpened(kakaoOpenlinkSummary));
+    }
+
+    public boolean isActivated() {
+        return status == Status.ACTIVATED;
+    }
+
+    public boolean isDeleted() {
+        return status == Status.DELETED;
+    }
+
+    public void deleteBy(MemberId updater) {
+        if (isDeleted()) {
+            return;
+        }
+        this.status = Status.DELETED;
+        updateBy(updater);
     }
 
     @Getter
@@ -77,13 +97,9 @@ public class OpenChatting extends BaseEntity<OpenChatting> {
          */
         ACTIVATED(1),
         /**
-         * 비활성화
-         */
-        DEACTIVATED(2),
-        /**
          * 삭제
          */
-        DELETED(3);
+        DELETED(2);
 
         private final byte code;
 

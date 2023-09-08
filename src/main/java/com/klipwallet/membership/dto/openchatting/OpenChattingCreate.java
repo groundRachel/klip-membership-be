@@ -33,10 +33,10 @@ public record OpenChattingCreate(
         @Schema(description = "오픈채팅방 방장 정보")
         @Valid @NotNull
         OpenChattingOperatorCreate host,
-        @Schema(description = "오픈채팅방 운영자 정보")
+        @Schema(description = "오픈채팅방 운영자 정보", requiredMode = RequiredMode.NOT_REQUIRED)
         @NonNull @Size(max = MAX_OPERATOR_SIZE)
         List<@Valid OpenChattingOperatorCreate> operators,
-        @Schema(description = "오픈채팅방에 연결되는 드롭 아이디")
+        @Schema(description = "오픈채팅방에 연결되는 드롭 아이디", requiredMode = RequiredMode.NOT_REQUIRED)
         @NotNull
         List<@Valid OpenChattingNftCreate> nfts
 ) {

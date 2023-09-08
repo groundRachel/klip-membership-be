@@ -27,7 +27,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 @Tag(name = "Tool.OpenChattingMember", description = "Tool 채팅방 멤버 API")
 @RestController
-@RequestMapping("/tool/v1/openchattings/{openChattingId}/members")
+@RequestMapping("/tool/v1/open-chattings/{openChattingId}/members")
 @RequiredArgsConstructor
 @Slf4j
 public class OpenChattingMemberToolController {
