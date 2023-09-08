@@ -4,9 +4,16 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsBaseRes;
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsSendAlimTalkReq;
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsTokenReq;
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsTokenRes;
 
 @FeignClient(name = "bgms")
 public interface BgmsApiClient {
+    String HEADER_BT_TOKEN = "bt-token";
 
     /**
      * 사용자 토큰 요청
@@ -19,4 +26,15 @@ public interface BgmsApiClient {
      */
     @PostMapping(value = "/v2/auth/getToken", consumes = MediaType.APPLICATION_JSON_VALUE)
     BgmsTokenRes getToken(@RequestBody BgmsTokenReq req);
+
+
+    /**
+     * 카카오 알림톡 전송을 요청한다.
+     *
+     * @param token BGMS 사용자 토큰
+     * @param req   요청 RequestBody
+     * @return 카카오 알림톡 발송 요청 응답 정보. 이 응답이 성공이라고, 카카오 알림 발송이 성공한 것은 아니다.(비동기)
+     */
+    @PostMapping(value = "/v2/kko/sendAlimTalk", consumes = MediaType.APPLICATION_JSON_VALUE)
+    BgmsBaseRes sendAlimTalk(@RequestHeader(HEADER_BT_TOKEN) String token, @RequestBody BgmsSendAlimTalkReq req);
 }

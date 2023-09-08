@@ -24,7 +24,7 @@ public class OperatorInvitation implements Serializable {
     /**
      * 운영진을 초대한 파트너 아이디
      */
-    MemberId partnerId;
+    MemberId inviterPartnerId;
     /**
      * 초대 받은 운영진의 휴대폰 번호
      * <p>
@@ -34,12 +34,12 @@ public class OperatorInvitation implements Serializable {
      *
      * @see com.klipwallet.membership.entity.utils.PhoneNumberUtils#isFormalKrMobileNumber(String)
      */
-    String mobileNumber;
+    String inviteeMobileNumber;
 
-    public OperatorInvitation(@NonNull @JsonProperty("partnerId") MemberId partnerId,
-                              @NonNull @JsonProperty("mobileNumber") String mobileNumber) {
-        this.partnerId = partnerId;
-        this.mobileNumber = verifiedMobileNumber(mobileNumber);
+    public OperatorInvitation(@NonNull @JsonProperty("inviterPartnerId") MemberId inviterPartnerId,
+                              @NonNull @JsonProperty("inviteeMobileNumber") String inviteeMobileNumber) {
+        this.inviterPartnerId = inviterPartnerId;
+        this.inviteeMobileNumber = verifiedMobileNumber(inviteeMobileNumber);
     }
 
     private String verifiedMobileNumber(String mobileNumber) {

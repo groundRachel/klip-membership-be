@@ -13,6 +13,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsTokenReq;
+import com.klipwallet.membership.adaptor.kakao.biztalk.dto.BgmsTokenRes;
 import com.klipwallet.membership.config.BgmsProperties;
 import com.klipwallet.membership.exception.InternalApiException;
 

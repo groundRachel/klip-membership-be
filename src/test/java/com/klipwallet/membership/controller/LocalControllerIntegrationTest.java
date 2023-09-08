@@ -18,11 +18,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class LocalControllerIntegrationTest {
-    @WithPartnerUser
+    @WithPartnerUser(memberId = 9)
     @Test
     void inviteOperator(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(post("/tool/v1/operators/invite-local")
-                            .param("phone", "01011112222"))
+                            .param("phone", "01026383987"))
            .andDo(print())
            .andExpect(status().isCreated())
            .andExpect(jsonPath("$.invitationUrl").value(startsWith("http")));
