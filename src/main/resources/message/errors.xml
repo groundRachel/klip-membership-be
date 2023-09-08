@@ -12,6 +12,7 @@
     <entry key="problemDetail.code.400006">파일 업로드 제한 사이즈를 초과했습니다. limit: {0,number} KB, upload: {1,number} KB</entry>
     <entry key="problemDetail.code.400007">운영진 초대자와 현재 접속자가 일치하지 않습니다.</entry>
     <entry key="problemDetail.code.400008">방장이 될 수 있는 오픈채팅방의 갯수 제한이 넘었습니다. Host ID: {0,number,#}, Count: {0,number,#}</entry>
+    <entry key="problemDetail.code.400009">초대한 운영진은 Klip 이용자가 아닙니다. {0}</entry>
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>

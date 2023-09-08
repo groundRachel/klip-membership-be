@@ -71,15 +71,15 @@ public record BgmsSendAlimTalkReq(String msgIdx,
      *
      * @param msgIdx    메시지 일련번호* (메시지 고유값) 전송 시스템에서는 고유한지 확인하지 않으므로 사용자 측에서 고유한 값으로 관리되어야 한다.
      * @param senderKey 카카오* 발신 프로필 키
-     * @param recipient 수신자 번호 예) 01012345678, 010-1234-5678
+     * @param appUserId 앱유저 아이디 (recipient 또는 appUserId 중 1가지 필수 입력)
      * @param message   발신 메시지 내용* (공백 포함2345 1000자로 제한) 가변 영역이 있을 경우 해당 가변 영역의 내용도 실제 보 낼 내용으로 치환 되어야 한다. 예) 템플릿 : 안녕하세요 #{고객명}님. message:안녕하세요 비즈톡님.
      * @param tmpltCode 등록한 템플릿의 템플릿 코드*
      * @param button    버튼 정보
      */
-    public static BgmsSendAlimTalkReq recipient(String msgIdx, String senderKey, String recipient, String message,
+    public static BgmsSendAlimTalkReq recipient(String msgIdx, String senderKey, String appUserId, String message,
                                                 String tmpltCode, Button button) {
 
-        return new BgmsSendAlimTalkReq(msgIdx, "82", senderKey, recipient, null, null, message,
+        return new BgmsSendAlimTalkReq(msgIdx, "82", senderKey, null, appUserId, null, message,
                                        tmpltCode, null, "PUSH", null, null, new Attach(List.of(button)));
     }
 

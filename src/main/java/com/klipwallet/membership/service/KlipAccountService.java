@@ -8,4 +8,6 @@ public interface KlipAccountService {
     KlipUser getKlipUser(Address klaytnAddress);
 
     KlipUser getKlipUser(KakaoId kakaoId);
+
+    KlipUser getKlipUserByPhoneNumber(String phoneNumber);
 }

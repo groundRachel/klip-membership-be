@@ -26,6 +26,7 @@ import com.klipwallet.membership.exception.operator.OperationAlreadyJoinedExcept
 import com.klipwallet.membership.exception.operator.OperatorInvitationCodeExpiredException;
 import com.klipwallet.membership.exception.operator.OperatorInvitationExpiredException;
 import com.klipwallet.membership.exception.operator.OperatorInvitationNotMatchedException;
+import com.klipwallet.membership.exception.operator.OperatorInviteeNotExistsOnKlipException;
 import com.klipwallet.membership.exception.operator.OperatorNotFoundException;
 import com.klipwallet.membership.repository.OperatorRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
@@ -149,16 +150,20 @@ public class OperatorService implements OperatorInvitable {
     public String inviteOperator(MemberId inviterPartnerId, String phoneNumber) {
         // 초대 만료와 코드 관리를 위해서 필요함.
         phoneNumber = PhoneNumberUtils.toFormalKrMobileNumber(phoneNumber);
+        KlipUser invitee = klipAccountService.getKlipUserByPhoneNumber(phoneNumber);
+        if (invitee == null) {
+            throw new OperatorInviteeNotExistsOnKlipException(phoneNumber);
+        }
         String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, phoneNumber));
         Partner inviterPartner = tryGetPartner(inviterPartnerId);
-        return sendNotification(inviterPartner, phoneNumber, code);
+        return sendNotification(inviterPartner, invitee, code);
     }
 
     @NonNull
-    private String sendNotification(Partner partner, String phoneNumber, String code) {
+    private String sendNotification(Partner partner, KlipUser klipUser, String code) {
         String invitationUrl = toInvitationUrl(code);
 
-        InviteOperatorNotifiable command = new InviteOperatorNotifiable(phoneNumber, invitationUrl, partner.getName());
+        InviteOperatorNotifiable command = new InviteOperatorNotifiable(klipUser.getKakaoUserId(), invitationUrl, partner.getName());
         invitationNotifier.notifyToInviteOperator(command);
         return invitationUrl;
     }
