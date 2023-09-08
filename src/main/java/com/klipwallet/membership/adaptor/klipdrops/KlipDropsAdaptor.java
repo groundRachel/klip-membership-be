@@ -1,5 +1,8 @@
 package com.klipwallet.membership.adaptor.klipdrops;
 
+import java.util.List;
+import java.util.Objects;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +15,21 @@ import com.klipwallet.membership.service.KlipDropsService;
 @RequiredArgsConstructor
 public class KlipDropsAdaptor implements KlipDropsService {
     private final KlipDropsInternalApiClient klipDropsInternalApiClient;
+
+    @Override // TODO cache
+    public List<KlipDropsPartner> getAllPartners(String search) {
+        String cursor = "";
+        Integer size = 1000;
+        return klipDropsInternalApiClient.getAllPartners(null, search, cursor, size).klipDropsPartners();
+    }
+
+    @Override
+    public KlipDropsPartner getPartnerById(Integer partnerId) {
+        return this.getAllPartners(null).stream()
+                   .filter(p -> Objects.equals(p.partnerId(), partnerId))
+                   .findFirst()
+                   .orElse(null);
+    }
 
     @Override
     public KlipDropsPartner getPartnerByBusinessRegistrationNumber(String businessRegistrationNumber) {

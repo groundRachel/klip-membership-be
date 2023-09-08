@@ -1,5 +1,6 @@
 package com.klipwallet.membership.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -31,4 +32,12 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
             where a.status = :status
            """)
     Page<PartnerSummaryView> findAllPartners(@Param("status") PartnerApplication.Status status, Pageable pageable);
+
+    @Query("""
+           select distinct klipDropsPartnerId
+           from Partner
+           where klipDropsPartnerId is not null
+           order by klipDropsPartnerId asc
+           """)
+    List<Integer> findAllKlipDropsIds();
 }

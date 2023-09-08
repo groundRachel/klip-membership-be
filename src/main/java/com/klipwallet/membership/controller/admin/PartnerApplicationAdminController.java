@@ -16,6 +16,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.klipwallet.membership.dto.klipdrops.KlipDropsDto;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationCount;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
@@ -56,11 +58,35 @@ public class PartnerApplicationAdminController {
         return partnerApplicationService.getPartnerApplicationNumber(status);
     }
 
+    @Operation(summary = "Klip Drops 파트너 목록 조회",
+               description = "Klip Drops 파트너 ID 변경을 위한 목록 조회. 현재 prod 환경은 partner 수가 200개 미만임. 따라서 1회로 모든 데이터를 조회함.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공")
+    })
+    @GetMapping("/klipdrops/partners")
+    public List<KlipDropsDto.Partner> getKlipDropsPartners(@RequestParam(required = false) String search) {
+        return partnerApplicationService.getKlipDropsPartners(search);
+    }
+
+    @Operation(summary = "가입 요청서의 Klip Drops 파트너 ID 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "가입 요청의 사업자 번호와 Klip Drops 파트너의 사업자 번호가 일치하지 않음",
+                         content = @Content(schema = @Schema(ref = "Error400"))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너 가입 요청 또는 파트너 ID", content = @Content(schema = @Schema(ref = "Error404")))
+    })
+    @PatchMapping("{partnerApplicationId}/klipdrops/partners/{klipDropsPartnerId}")
+    public void changeKlipDropsPartnerId(
+            @Parameter(description = "변경 할 가입 요청 ID", required = true, example = "3") @PathVariable Integer partnerApplicationId,
+            @Parameter(description = "Klip Drops Partner ID", required = true, example = "1") @PathVariable Integer klipDropsPartnerId) {
+        partnerApplicationService.updateKlipDropsPartnerId(partnerApplicationId, klipDropsPartnerId);
+    }
+
     @Operation(summary = "요청한 파트너 승인")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "승인 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404"))),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너 가입 요청", content = @Content(schema = @Schema(ref = "Error404"))),
             @ApiResponse(responseCode = "409", description = "서버 상태와 충돌", content = @Content(schema = @Schema(ref = "Error409")))
     })
     @PostMapping("/{applicationId}/approve")
@@ -74,7 +100,7 @@ public class PartnerApplicationAdminController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "거절 성공"),
             @ApiResponse(responseCode = "400", description = "Invalid request body", content = @Content(schema = @Schema(ref = "Error400"))),
-            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너 가입 요청", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PostMapping("/{applicationId}/reject")
     public void rejectPartner(@Parameter(description = "거절 할 파트너 요청 Id", required = true, example = "3") @PathVariable Integer applicationId,

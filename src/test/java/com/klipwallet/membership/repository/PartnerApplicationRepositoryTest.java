@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Disabled("Test가 깨져서 우선 비활성화 처리함.") // FIXME @Jordan
 @DataJpaTest
-class PartnerApplicationApplicationRepositoryTest {
+class PartnerApplicationRepositoryTest {
     @Autowired
     PartnerApplicationRepository partnerApplicationRepository;
 
@@ -45,4 +45,5 @@ class PartnerApplicationApplicationRepositoryTest {
         assertThat(findUser.getProcessorId()).isEqualTo(new MemberId(2));
         assertThat(saved).isEqualTo(findUser);
     }
+
 }

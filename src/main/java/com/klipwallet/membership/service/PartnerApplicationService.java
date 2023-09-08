@@ -1,5 +1,7 @@
 package com.klipwallet.membership.service;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,8 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
+import com.klipwallet.membership.dto.klipdrops.KlipDropsAssembler;
+import com.klipwallet.membership.dto.klipdrops.KlipDropsDto;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationAssembler;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
 import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Application;
@@ -25,6 +29,7 @@ import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerApplicationCreated;
 import com.klipwallet.membership.exception.klipdrops.KlipDropsParnterNotFoundByBusinessNumberException;
+import com.klipwallet.membership.exception.klipdrops.KlipDropsParnterNotFoundByPartnerIdException;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
 import com.klipwallet.membership.exception.member.PartnerApplicationNotFoundException;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
@@ -41,6 +46,7 @@ public class PartnerApplicationService {
     private final PartnerApplicationAssembler partnerApplicationAssembler;
     private final PartnerRepository partnerRepository;
     private final KlipDropsService klipDropsService;
+    private final KlipDropsAssembler klipDropsAssembler;
 
     private void verifyApply(AuthenticatedUser user) {
         if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED, APPROVED))) {
@@ -136,5 +142,69 @@ public class PartnerApplicationService {
         }
 
         return new PartnerApplicationDto.SignUpStatusResult(SignUpStatus.NON_MEMBER);
+    }
+
+    @Transactional
+    public void updateKlipDropsPartnerId(Integer partnerApplicationId, Integer klipDropsPartnerId) {
+        PartnerApplication partnerApplication = tryGetPartnerApplication(partnerApplicationId);
+        KlipDropsPartner klipDropsPartner = klipDropsService.getPartnerById(klipDropsPartnerId);
+
+        verifyKlipDropsPartnerUpdatable(klipDropsPartnerId, klipDropsPartner);
+
+        partnerApplication.setKlipDropsInfo(klipDropsPartner.partnerId(), klipDropsPartner.name());
+        partnerApplicationRepository.save(partnerApplication);
+    }
+
+    private void verifyKlipDropsPartnerUpdatable(Integer klipDropsPartnerId, KlipDropsPartner klipDropsPartner) {
+        if (klipDropsPartner == null) {
+            throw new KlipDropsParnterNotFoundByPartnerIdException(klipDropsPartnerId);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<KlipDropsDto.Partner> getKlipDropsPartners(String search) {
+        List<KlipDropsPartner> klipDropsPartners = klipDropsService.getAllPartners(search);
+        if (klipDropsPartners == null || klipDropsPartners.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Integer> klipDropsIdsFromRepo = partnerRepository.findAllKlipDropsIds();
+        if (klipDropsIdsFromRepo == null || klipDropsIdsFromRepo.isEmpty()) {
+            return klipDropsAssembler.toPartners(klipDropsPartners);
+        }
+
+        List<KlipDropsPartner> unusedPartners = filterUnusedPartners(klipDropsPartners, klipDropsIdsFromRepo);
+        return klipDropsAssembler.toPartners(unusedPartners);
+    }
+
+    private List<KlipDropsPartner> filterUnusedPartners(List<KlipDropsPartner> klipDropsPartners, List<Integer> klipDropsIdsFromRepo) {
+        List<KlipDropsPartner> unusedPartners = new LinkedList<>();
+
+        int repoIndex = 0;
+        Integer currentRepoId = getId(klipDropsIdsFromRepo, repoIndex);
+
+        for (KlipDropsPartner klipDropsPartner : klipDropsPartners) {
+            Integer fetchedId = klipDropsPartner.partnerId();
+
+            while (fetchedId > currentRepoId) {
+                repoIndex++;
+                currentRepoId = getId(klipDropsIdsFromRepo, repoIndex);
+            }
+
+            if (fetchedId.equals(currentRepoId)) {
+                repoIndex++;
+                currentRepoId = getId(klipDropsIdsFromRepo, repoIndex);
+            } else {
+                unusedPartners.add(klipDropsPartner);
+            }
+        }
+        return unusedPartners;
+    }
+
+    private Integer getId(List<Integer> klipDropsIdsFromRepo, int repoIndex) {
+        if (repoIndex < klipDropsIdsFromRepo.size()) {
+            return klipDropsIdsFromRepo.get(repoIndex);
+        }
+        return Integer.MAX_VALUE;
     }
 }
