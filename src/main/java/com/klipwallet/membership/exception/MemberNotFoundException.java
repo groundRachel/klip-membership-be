@@ -8,4 +8,5 @@ public class MemberNotFoundException extends NotFoundException {
     public MemberNotFoundException() {
         super(ErrorCode.MEMBER_NOT_FOUND);
     }
+
 }

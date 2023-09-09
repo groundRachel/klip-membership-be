@@ -42,30 +42,30 @@ public class LocalConfig implements CommandLineRunner {
 
     private void registerPartner(Admin superAdmin) {
         // TODO @Jordan properties로 분리
-        Partner jordan = new Partner(1, 11, "jordan.jung", "010-2638-2580", "000-00-00000",
+        Partner jordan = new Partner(1, 11, "Jordan Company", "010-2638-2580", "000-00-00000",
                                      "jordan.jung@groundx.xyz", "115419318504487812056", superAdmin.getMemberId());
         partnerRepository.save(jordan);
-        Partner rachel = new Partner(2, 12, "rachel.lee", "010-7289-7072", "000-00-11111",
+        Partner rachel = new Partner(2, 12, "Rachel Company", "010-7289-7072", "000-00-11111",
                                      "rachel.lee@groundx.xyz", "105434102953836621752", superAdmin.getMemberId());
         partnerRepository.save(rachel);
 
-        Partner sello = new Partner(3, 13, "sello.lee", "010-4433-4405", "000-00-22222",
+        Partner sello = new Partner(3, 13, "Sello Company", "010-4433-4405", "000-00-22222",
                                     "sello.lee@groundx.xyz", "100531700171845510030", superAdmin.getMemberId());
         partnerRepository.save(sello);
 
-        Partner twinsen = new Partner(4, 14, "twinsen.kim", "010-9787-2848", "000-00-33333",
+        Partner twinsen = new Partner(4, 14, "Twinsen Company", "010-9787-2848", "000-00-33333",
                                       "twinsen.kim@groundx.xyz", "116227101269935559902", superAdmin.getMemberId());
         partnerRepository.save(twinsen);
 
-        Partner ian = new Partner(5, 15, "ian.han", "010-3201-6272", "000-00-44444",
+        Partner ian = new Partner(5, 15, "Ian Company", "010-3201-6272", "000-00-44444",
                                   "ian.han@groundx.xyz", "105028407626939104183", superAdmin.getMemberId());
         partnerRepository.save(ian);
 
-        Partner winnie = new Partner(6, 16, "winnie.byun", "010-2955-4858", "000-00-55555",
+        Partner winnie = new Partner(6, 16, "Winnie Company", "010-2955-4858", "000-00-55555",
                                      "winnie.byun@groundx.xyz", "116061336006046612273", superAdmin.getMemberId());
         partnerRepository.save(winnie);
 
-        Partner ted = new Partner(7, 17, "ted.jeong", "010-6440-2491", "000-00-666666",
+        Partner ted = new Partner(7, 17, "Ted Company", "010-6440-2491", "000-00-666666",
                                   "ted.jeong@groundx.xyz", "105828933857671458608", superAdmin.getMemberId());
         partnerRepository.save(ted);
     }
