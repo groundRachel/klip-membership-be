@@ -35,7 +35,7 @@ public record MemberAuthentication(
         boolean isMember,
         @Schema(description = "프로필. 멤버인 경우 존재")
         Profile profile,
-        @Schema(description = "권한 목록. 인증된 경우 존재 하며 미인증이면 빈 배열([]) 반환", requiredMode = REQUIRED, example = "[" + ROLE_PARTNER + "]",
+        @Schema(description = "권한 목록. 인증된 경우 존재 하며 미인증이면 빈 배열([]) 반환", requiredMode = REQUIRED, example = "[\"" + ROLE_PARTNER + "\"]",
                 requiredProperties = {ROLE_PARTNER, ROLE_ADMIN, ROLE_SUPER_ADMIN, OAUTH2_USER, ROLE_KLIP_KAKAO})
         @NonNull Collection<String> authorities
 ) {
