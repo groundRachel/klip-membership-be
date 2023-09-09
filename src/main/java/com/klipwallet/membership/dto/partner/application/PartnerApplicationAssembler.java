@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.partnerapplication;
+package com.klipwallet.membership.dto.partner.application;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
 import com.klipwallet.membership.dto.member.MemberAssembler;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.ApplyResult;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.ApplyResult;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.entity.PartnerApplication;
 
 @Component

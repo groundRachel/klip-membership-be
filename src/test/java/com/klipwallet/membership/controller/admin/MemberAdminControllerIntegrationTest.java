@@ -29,6 +29,7 @@ class MemberAdminControllerIntegrationTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.isAuthenticated").value(true))
            .andExpect(jsonPath("$.isMember").value(true))
+           .andExpect(jsonPath("$.partnerStatus").doesNotExist())
            .andExpect(jsonPath("$.profile.memberId").value(2))
            .andExpect(jsonPath("$.profile.name").value("jordan.jung"))
            .andExpect(jsonPath("$.profile.email").value("jordan.jung@groundx.xyz"))
@@ -45,6 +46,7 @@ class MemberAdminControllerIntegrationTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.isAuthenticated").value(true))
            .andExpect(jsonPath("$.isMember").value(true))
+           .andExpect(jsonPath("$.partnerStatus").doesNotExist())
            .andExpect(jsonPath("$.profile.memberId").value(1))
            .andExpect(jsonPath("$.profile.name").value("gene.goh"))
            .andExpect(jsonPath("$.profile.email").value("gene.goh@groundx.xyz"))
@@ -61,6 +63,7 @@ class MemberAdminControllerIntegrationTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.isAuthenticated").value(true))
            .andExpect(jsonPath("$.isMember").value(false))
+           .andExpect(jsonPath("$.partnerStatus").exists()) // 존재하지만 무시해도 된다. Tool(Partner) 경우에만 유효함
            .andExpect(jsonPath("$.profile").doesNotExist())
            .andExpect(jsonPath("$.authorities.length()").value(1))
            .andExpect(jsonPath("$.authorities[0]").value(OAUTH2_USER))
@@ -74,6 +77,7 @@ class MemberAdminControllerIntegrationTest {
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.isAuthenticated").value(false))
            .andExpect(jsonPath("$.isMember").value(false))
+           .andExpect(jsonPath("$.partnerStatus").doesNotExist())
            .andExpect(jsonPath("$.profile").doesNotExist())
            .andExpect(jsonPath("$.authorities.length()").value(0))
         ;

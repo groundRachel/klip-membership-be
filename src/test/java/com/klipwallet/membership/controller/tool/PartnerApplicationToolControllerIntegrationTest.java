@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.ApplyResult;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.ApplyResult;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
