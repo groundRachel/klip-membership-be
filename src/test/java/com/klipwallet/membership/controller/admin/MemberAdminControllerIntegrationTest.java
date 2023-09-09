@@ -27,8 +27,8 @@ class MemberAdminControllerIntegrationTest {
     void authenticationOnAdmin(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/admin/v1/members/me"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.authenticated").value(true))
-           .andExpect(jsonPath("$.member").value(true))
+           .andExpect(jsonPath("$.isAuthenticated").value(true))
+           .andExpect(jsonPath("$.isMember").value(true))
            .andExpect(jsonPath("$.profile.memberId").value(2))
            .andExpect(jsonPath("$.profile.name").value("jordan.jung"))
            .andExpect(jsonPath("$.profile.email").value("jordan.jung@groundx.xyz"))
@@ -43,8 +43,8 @@ class MemberAdminControllerIntegrationTest {
     void authenticationOnSuperAdmin(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/admin/v1/members/me"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.authenticated").value(true))
-           .andExpect(jsonPath("$.member").value(true))
+           .andExpect(jsonPath("$.isAuthenticated").value(true))
+           .andExpect(jsonPath("$.isMember").value(true))
            .andExpect(jsonPath("$.profile.memberId").value(1))
            .andExpect(jsonPath("$.profile.name").value("gene.goh"))
            .andExpect(jsonPath("$.profile.email").value("gene.goh@groundx.xyz"))
@@ -59,8 +59,8 @@ class MemberAdminControllerIntegrationTest {
     void authenticationOnGoogle(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/admin/v1/members/me"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.authenticated").value(true))
-           .andExpect(jsonPath("$.member").value(false))
+           .andExpect(jsonPath("$.isAuthenticated").value(true))
+           .andExpect(jsonPath("$.isMember").value(false))
            .andExpect(jsonPath("$.profile").doesNotExist())
            .andExpect(jsonPath("$.authorities.length()").value(1))
            .andExpect(jsonPath("$.authorities[0]").value(OAUTH2_USER))
@@ -72,8 +72,8 @@ class MemberAdminControllerIntegrationTest {
     void authenticationNoAuth(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/admin/v1/members/me"))
            .andExpect(status().isOk())
-           .andExpect(jsonPath("$.authenticated").value(false))
-           .andExpect(jsonPath("$.member").value(false))
+           .andExpect(jsonPath("$.isAuthenticated").value(false))
+           .andExpect(jsonPath("$.isMember").value(false))
            .andExpect(jsonPath("$.profile").doesNotExist())
            .andExpect(jsonPath("$.authorities.length()").value(0))
         ;

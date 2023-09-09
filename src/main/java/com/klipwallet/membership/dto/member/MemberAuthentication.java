@@ -21,8 +21,8 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 /**
  * 멤버 인증 DTO
  *
- * @param authenticated 인증 여부
- * @param member        멤버 여부
+ * @param isAuthenticated 인증 여부
+ * @param isMember        멤버 여부
  * @param profile       프로필 정보. 멤버인 경우 존재
  * @param authorities   권한 목록. 인증된 경우 존재
  */
@@ -30,9 +30,9 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 @JsonInclude(Include.NON_NULL)
 public record MemberAuthentication(
         @Schema(description = "인증 여부", requiredMode = REQUIRED)
-        boolean authenticated,
+        boolean isAuthenticated,
         @Schema(description = "멤버 여부", requiredMode = REQUIRED)
-        boolean member,
+        boolean isMember,
         @Schema(description = "프로필. 멤버인 경우 존재")
         Profile profile,
         @Schema(description = "권한 목록. 인증된 경우 존재 하며 미인증이면 빈 배열([]) 반환", requiredMode = REQUIRED, example = "[" + ROLE_PARTNER + "]",
