@@ -13,8 +13,7 @@ import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.entity.MemberId;
 
-import static com.klipwallet.membership.config.SecurityConfig.OAUTH2_USER;
-import static com.klipwallet.membership.config.SecurityConfig.ROLE_KLIP_KAKAO;
+import static com.klipwallet.membership.config.SecurityConfig.*;
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toUnmodifiableSet;
@@ -36,7 +35,8 @@ public record MemberAuthentication(
         boolean member,
         @Schema(description = "프로필. 멤버인 경우 존재")
         Profile profile,
-        @Schema(description = "권한 목록. 인증된 경우 존재 하며 미인증이면 빈 배열([]) 반환", requiredMode = REQUIRED)
+        @Schema(description = "권한 목록. 인증된 경우 존재 하며 미인증이면 빈 배열([]) 반환", requiredMode = REQUIRED, example = "[" + ROLE_PARTNER + "]",
+                requiredProperties = {ROLE_PARTNER, ROLE_ADMIN, ROLE_SUPER_ADMIN, OAUTH2_USER, ROLE_KLIP_KAKAO})
         @NonNull Collection<String> authorities
 ) {
 
