@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.PartnerApplicationService;
 
@@ -50,6 +50,6 @@ public class PartnerApplicationToolController {
     })
     @GetMapping("/me")
     public PartnerApplicationDto.SignUpStatusResult getSignUpStatus(@AuthenticationPrincipal AuthenticatedUser user) {
-        return partnerApplicationService.getSignUpStatus(user);
+        return partnerApplicationService.getSignUpStatusResult(user);
     }
 }
