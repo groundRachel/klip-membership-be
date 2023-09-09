@@ -36,7 +36,7 @@ public record MemberAuthentication(
         boolean member,
         @Schema(description = "프로필. 멤버인 경우 존재")
         Profile profile,
-        @Schema(description = "권한 목록. 인증된 경우 존재")
+        @Schema(description = "권한 목록. 인증된 경우 존재 하며 미인증이면 빈 배열([]) 반환", requiredMode = REQUIRED)
         @NonNull Collection<String> authorities
 ) {
 
@@ -66,6 +66,7 @@ public record MemberAuthentication(
      * @param name     멤버 이름. 관리자: 이메일 LocalPart, 파트너: 회사명
      * @param email    계정 이메일
      */
+    @Schema(description = "멤버 프로필 DTO. 멤버인 경우에만 노출 가능")
     public record Profile(
             @Schema(description = "멤버 아이디", requiredMode = REQUIRED, example = "9")
             @NonNull MemberId memberId,
