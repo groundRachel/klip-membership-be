@@ -83,7 +83,7 @@ public class NoticeAdminController {
         return noticeService.getDetail(noticeId);
     }
 
-    @Operation(summary = "Admin 고정 공지사항 조회")
+    @Operation(summary = "Admin 고정 공지사항 조회", description = "고정 공지가 있으면 200 응답, 없으면 204 응답")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "고정 공지 조회 성공"),
             @ApiResponse(responseCode = "204", description = "존재 하지 않는 고정 공지")
