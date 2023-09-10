@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import com.klipwallet.membership.dto.notice.NoticeDto;
 import com.klipwallet.membership.dto.notice.NoticeDto.Row;
 import com.klipwallet.membership.entity.ArticleStatus;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.exception.NoticeNotFoundException;
 import com.klipwallet.membership.service.NoticeService;
 
 import static org.springframework.http.HttpStatus.CREATED;
@@ -84,11 +86,15 @@ public class NoticeAdminController {
     @Operation(summary = "Admin 고정 공지사항 조회")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "고정 공지 조회 성공"),
-            @ApiResponse(responseCode = "404", description = "존재 하지 않는 고정 공지", content = @Content(schema = @Schema(ref = "Error404")))
+            @ApiResponse(responseCode = "204", description = "존재 하지 않는 고정 공지")
     })
     @GetMapping("/primary")
-    public NoticeDto.Row primary() {
-        return noticeService.getPrimaryNotice();
+    public ResponseEntity<NoticeDto.Row> primary() {
+        try {
+            return ResponseEntity.ok(noticeService.getPrimaryNotice());
+        } catch (NoticeNotFoundException cause) {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @Operation(summary = "Admin 공지사항 수정")
