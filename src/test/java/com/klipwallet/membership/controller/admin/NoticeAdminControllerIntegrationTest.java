@@ -87,11 +87,9 @@ class NoticeAdminControllerIntegrationTest {
         mvc.perform(post("/admin/v1/notices")
                             .contentType(ALL)
                             .content(body))
-           .andExpect(status().isFound());  // 302
-        // FIXME @Jordan 임시로 개발 편의성을 위해 302 처리 중 추후 아래 401로 변경할 예정
-        //           .andExpect(status().isUnauthorized())
-        //           .andExpect(jsonPath("$.code").value(401_000))
-        //           .andExpect(jsonPath("$.err").value("인증되지 않았습니다."));
+           .andExpect(status().isUnauthorized())
+           .andExpect(jsonPath("$.code").value(401_000))
+           .andExpect(jsonPath("$.err").value("인증되지 않았습니다."));
     }
 
     @WithPartnerUser
@@ -364,7 +362,7 @@ class NoticeAdminControllerIntegrationTest {
     }
 
     @WithAdminUser
-    @DisplayName("관리자 고정 공지 조회: 없음 > 404")
+    @DisplayName("관리자 고정 공지 조회: 없음 > 204")
     @Test
     void primaryNotExists(@Autowired MockMvc mvc) throws Exception {
         // given
@@ -373,9 +371,7 @@ class NoticeAdminControllerIntegrationTest {
                                         LIVE);
         // when/then
         mvc.perform(get("/admin/v1/notices/primary", noticeId))
-           .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value(404_004))
-           .andExpect(jsonPath("$.err").value("고정 공지를 찾을 수 없습니다."));
+           .andExpect(status().isNoContent());
     }
 
     @WithAdminUser(memberId = 24)

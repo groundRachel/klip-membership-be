@@ -143,7 +143,7 @@ public class OperatorService implements OperatorInvitable {
      * {@inheritDoc}
      *
      * @param inviterPartnerId 초대한 파트너 아이디
-     * @param inviteePhoneNumber      초대 받은 운영진의 휴대폰 번호
+     * @param phoneNumber      초대 받은 운영진의 휴대폰 번호
      * @return 초대 URL
      */
     @Override
