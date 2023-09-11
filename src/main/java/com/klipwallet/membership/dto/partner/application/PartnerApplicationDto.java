@@ -43,10 +43,14 @@ public class PartnerApplicationDto {
     ) {
     }
 
-    @Schema(description = "[ADMIN] 파트너 신청, 거절 목록 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    @Schema(description = """
+                          [ADMIN] 파트너 신청, 거절 목록 조회를 위한 DTO
+                          <신청 리스트>: id, 파트너명, 파트너 ID, 신청일시
+                          <거절 리스트>: id, 파트너명, 거절일시, 검토자""", accessMode = AccessMode.READ_ONLY)
     public record PartnerApplicationRow(
             @NonNull Integer id,
             @NonNull String businessName,
+            Integer klipDropsPartnerId,
             OffsetDateTime createdAt,
             OffsetDateTime processedAt,
             MemberSummary processor
