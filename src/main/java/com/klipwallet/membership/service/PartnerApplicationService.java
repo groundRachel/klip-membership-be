@@ -27,7 +27,7 @@ import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerApplicationCreated;
 import com.klipwallet.membership.entity.SignUpStatus;
 import com.klipwallet.membership.exception.klipdrops.KlipDropsParnterNotFoundByBusinessNumberException;
-import com.klipwallet.membership.exception.klipdrops.KlipDropsPartnerInvalidException;
+import com.klipwallet.membership.exception.klipdrops.KlipDropsPartnerNotFoundException;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
 import com.klipwallet.membership.exception.member.PartnerApplicationNotFoundException;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
@@ -159,7 +159,7 @@ public class PartnerApplicationService implements PartnerApplicationGettable {
 
     private void verifyKlipDropsPartnerUpdatable(KlipDropsPartner klipDropsPartner, Integer klipDropsPartnerId) {
         if (klipDropsPartner == null) {
-            throw new KlipDropsPartnerInvalidException(klipDropsPartnerId);
+            throw new KlipDropsPartnerNotFoundException(klipDropsPartnerId);
         }
     }
 }
