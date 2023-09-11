@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationCount;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationCount;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationRow;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.service.PartnerApplicationService;

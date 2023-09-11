@@ -5,6 +5,7 @@ import java.io.IOException;
 import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -69,12 +70,21 @@ public class OperatorInvitationFlowIntegrationTest {
     @Test
     @Order(1)
     void inviteOperator(@Autowired MockMvc mvc) throws Exception {
+        String phone = "01026383987";
+        KlipUser klipUser = inviteeKlipUser();
+        given(klipAccountService.getKlipUserByPhoneNumber(phone)).willReturn(klipUser);
+
         var ra = mvc.perform(post("/tool/v1/operators/invite-local")
-                                     .param("phone", "01026382580"))
+                                     .param("phone", phone))
                     .andDo(print())
-                    .andExpect(status().isCreated())
+                    .andExpect(status().isOk())
                     .andExpect(jsonPath("$.invitationUrl").value(startsWith("http")));
         setInvitationUrl(ra);
+    }
+
+    @NonNull
+    private KlipAccount inviteeKlipUser() {
+        return new KlipAccount(641L, KAKAO_ID, EMAIL, "01026383987");
     }
 
     private void setInvitationUrl(ResultActions ra) throws IOException {
@@ -93,7 +103,7 @@ public class OperatorInvitationFlowIntegrationTest {
         }
         String invitationCode = getInvitationCode();
 
-        KlipUser klipUser = new KlipAccount(641L, KAKAO_ID, EMAIL, "+82 10-2638-2580");
+        KlipUser klipUser = inviteeKlipUser();
         given(klipAccountService.getKlipUser(new KakaoId(KAKAO_ID))).willReturn(klipUser);
 
         HttpSession session =

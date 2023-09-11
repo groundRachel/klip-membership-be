@@ -1,15 +1,11 @@
-package com.klipwallet.membership.dto.partnerapplication;
+package com.klipwallet.membership.entity;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import org.springframework.lang.Nullable;
 
-import com.klipwallet.membership.entity.Statusable;
-
 @Getter
-@Schema(name = "PartnerApplication.SignUpStatus", description = "파트너 가입 상태", example = "approved")
 public enum SignUpStatus implements Statusable {
     /**
      * 가입 전 상태 (가입 거절 상태 포함)

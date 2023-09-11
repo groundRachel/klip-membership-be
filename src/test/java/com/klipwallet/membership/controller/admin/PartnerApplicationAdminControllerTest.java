@@ -186,8 +186,10 @@ class PartnerApplicationAdminControllerTest {
                 new PartnerApplication("(주) 그라운드엑스7", "010-1234-5678", "000-00-00008", "example8@groundx.xyz", "892085223830"),
                 new PartnerApplication("(주) 그라운드엑스8", "010-1234-5678", "000-00-00009", "example9@groundx.xyz", "992085223830")
         );
-        applications = partnerApplicationRepository.saveAll(applications);
 
+        for (PartnerApplication application : applications.subList(0, 3)) {
+            application.setKlipDropsInfo(123, "파트너이름");
+        }
         for (PartnerApplication application : applications.subList(3, 6)) {
             application.approve(processorId);
         }
@@ -223,15 +225,24 @@ class PartnerApplicationAdminControllerTest {
                             contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(3L))
+           .andExpect(jsonPath("$[0].id").isNotEmpty())
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스2"))
+           .andExpect(jsonPath("$[0].createdAt").isNotEmpty())
+           .andExpect(jsonPath("$[0].klipDropsPartnerId").isNotEmpty())
            .andExpect(jsonPath("$[0].processedAt").isEmpty())
            .andExpect(jsonPath("$[0].processor").isEmpty())
 
+           .andExpect(jsonPath("$[1].id").isNotEmpty())
            .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스1"))
+           .andExpect(jsonPath("$[1].klipDropsPartnerId").isNotEmpty())
+           .andExpect(jsonPath("$[1].createdAt").isNotEmpty())
            .andExpect(jsonPath("$[1].processedAt").isEmpty())
            .andExpect(jsonPath("$[1].processor").isEmpty())
 
+           .andExpect(jsonPath("$[2].id").isNotEmpty())
            .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스0"))
+           .andExpect(jsonPath("$[2].klipDropsPartnerId").isNotEmpty())
+           .andExpect(jsonPath("$[2].createdAt").isNotEmpty())
            .andExpect(jsonPath("$[2].processedAt").isEmpty())
            .andExpect(jsonPath("$[2].processor").isEmpty());
     }
@@ -249,12 +260,17 @@ class PartnerApplicationAdminControllerTest {
                             contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.length()").value(3L))
+           .andExpect(jsonPath("$[0].id").isNotEmpty())
            .andExpect(jsonPath("$[0].businessName").value("(주) 그라운드엑스8"))
            .andExpect(jsonPath("$[0].processedAt").isNotEmpty())
-           .andExpect(jsonPath("$[0].processor.name").isNotEmpty())
+           .andExpect(jsonPath("$[0].processor.name").value("jordan.jung"))
+
+           .andExpect(jsonPath("$[1].id").isNotEmpty())
            .andExpect(jsonPath("$[1].businessName").value("(주) 그라운드엑스7"))
            .andExpect(jsonPath("$[1].processedAt").isNotEmpty())
-           .andExpect(jsonPath("$[1].processor.name").isNotEmpty())
+           .andExpect(jsonPath("$[1].processor.name").value("jordan.jung"))
+
+           .andExpect(jsonPath("$[2].id").isNotEmpty())
            .andExpect(jsonPath("$[2].businessName").value("(주) 그라운드엑스6"))
            .andExpect(jsonPath("$[2].processedAt").isNotEmpty())
            .andExpect(jsonPath("$[2].processor.name").value("jordan.jung"));

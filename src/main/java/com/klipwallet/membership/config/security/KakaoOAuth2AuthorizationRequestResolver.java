@@ -7,6 +7,8 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -26,6 +28,7 @@ import com.klipwallet.membership.dto.OneTimeAction;
 
 import static org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
+@Slf4j
 public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
     private static final char PATH_DELIMITER = '/';
 
@@ -149,8 +152,19 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
                .redirectUri(redirectUriStr)
                .scopes(clientRegistration.getScopes())
                .state(state);
+        OAuth2AuthorizationRequest result = builder.build();
+        log.info("clientId: {}\nredirectUri: {}\nscopes: {}\nstate: {}\nadditionalParameters: {}",
+                 result.getClientId(), result.getRedirectUri(), result.getScopes(), result.getState(), result.getAdditionalParameters());
+        return result;
+    }
 
-        return builder.build();
+    @SuppressWarnings("unused")
+    private boolean isKakaoInAppBrowser(HttpServletRequest request) {
+        String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
+        if (userAgent == null) {
+            return false;
+        }
+        return userAgent.contains("KAKAOTALK");
     }
 
     private String generateState(HttpServletRequest request, OneTimeAction otAction) {

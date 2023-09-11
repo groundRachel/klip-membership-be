@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.klipwallet.membership.entity.Member.Status;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerSummaryView;
@@ -21,8 +22,6 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
     Optional<Partner> findByOauthId(String oauthId);
 
     Optional<Partner> findByEmail(String email);
-
-    Boolean existsByEmail(String email);
 
     // TODO join on partner application id (foreign key)
     @Query("""
@@ -39,4 +38,6 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
            where klipDropsPartnerId > 0
            """)
     Set<Integer> findAllKlipDropsIds();
+
+    boolean existsByEmailAndStatusIn(String email, Set<Status> statuses);
 }

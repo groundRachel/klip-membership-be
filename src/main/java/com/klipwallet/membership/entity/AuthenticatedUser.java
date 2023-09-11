@@ -8,7 +8,7 @@ import jakarta.annotation.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import static com.klipwallet.membership.config.SecurityConfig.ROLE_KLIP_KAKAO;
+import static com.klipwallet.membership.config.SecurityConfig.*;
 
 
 /**
@@ -43,6 +43,18 @@ public interface AuthenticatedUser extends OAuth2User {
 
     default boolean isKakao() {
         return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_KLIP_KAKAO));
+    }
+
+    default boolean isGoogle() {
+        return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(OAUTH2_USER));
+    }
+
+    default boolean isAdmin() {
+        return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_ADMIN));
+    }
+
+    default boolean isPartner() {
+        return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_PARTNER));
     }
 
     /**

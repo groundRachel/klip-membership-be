@@ -68,7 +68,7 @@ public class NoticeService {
     }
 
     private void checkStatus(ArticleStatus status) {
-        if (status.isEnabled()) {
+        if (!status.isEnabled()) {
             throw new InvalidRequestException("Notice status is invalid. %s".formatted(status.toDisplay()));
         }
     }

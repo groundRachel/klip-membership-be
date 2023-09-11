@@ -7,11 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.SignUpStatusResult;
-import com.klipwallet.membership.dto.partnerapplication.SignUpStatus;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.SignUpStatusResult;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
+import com.klipwallet.membership.entity.SignUpStatus;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
 
@@ -64,7 +64,7 @@ class PartnerApplicationServiceTest {
 
         // when
         KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", partnerApplication.getEmail());
-        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
+        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatusResult(klipMembershipOAuth2User);
 
         // then
         assertThat(signUpStatus.status()).isEqualTo(SignUpStatus.SIGNED_UP);
@@ -77,7 +77,7 @@ class PartnerApplicationServiceTest {
 
         // when
         KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", application.getEmail());
-        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
+        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatusResult(klipMembershipOAuth2User);
 
         // then
         assertThat(signUpStatus.status()).isEqualTo(SignUpStatus.PENDING);
@@ -87,7 +87,7 @@ class PartnerApplicationServiceTest {
     void getSignUpStatusOfUnapplied() {
         // given
         KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", "email@groundx.xyz");
-        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
+        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatusResult(klipMembershipOAuth2User);
 
         // then
         assertThat(signUpStatus.status()).isEqualTo(SignUpStatus.NON_MEMBER);
@@ -105,7 +105,7 @@ class PartnerApplicationServiceTest {
 
         // when
         KlipMembershipOAuth2User klipMembershipOAuth2User = new KlipMembershipOAuth2User(null, emptyList(), "", application.getEmail());
-        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatus(klipMembershipOAuth2User);
+        SignUpStatusResult signUpStatus = partnerApplicationService.getSignUpStatusResult(klipMembershipOAuth2User);
 
         // then
         assertThat(signUpStatus.status()).isEqualTo(SignUpStatus.NON_MEMBER);

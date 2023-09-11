@@ -237,17 +237,15 @@ class NoticeToolControllerIntegrationTest {
     }
 
     @WithPartnerUser
-    @DisplayName("Tool 고정 공지 조회: 공지가 아예 비어 있음. > 404")
+    @DisplayName("Tool 고정 공지 조회: 공지가 아예 비어 있음. > 204")
     @Test
     void primaryNotFound(@Autowired MockMvc mvc) throws Exception {
         mvc.perform(get("/tool/v1/notices/primary"))
-           .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value(404_004))
-           .andExpect(jsonPath("$.err").value("고정 공지를 찾을 수 없습니다."));
+           .andExpect(status().isNoContent());
     }
 
     @WithPartnerUser
-    @DisplayName("Tool 고정 공지 조회: 고정 공지는 있으나 Live 상태 아님. > 404")
+    @DisplayName("Tool 고정 공지 조회: 고정 공지는 있으나 Live 상태 아님. > 204")
     @ParameterizedTest
     @EnumSource(value = ArticleStatus.class, names = "LIVE", mode = Mode.EXCLUDE)
     void primaryNotLive(ArticleStatus status, @Autowired MockMvc mvc) throws Exception {
@@ -255,8 +253,6 @@ class NoticeToolControllerIntegrationTest {
         createNotice("[안내] App2App 멀티체인 확장 안내 - 폴리곤", status, true);
         // when/then
         mvc.perform(get("/tool/v1/notices/primary"))
-           .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value(404_004))
-           .andExpect(jsonPath("$.err").value("고정 공지를 찾을 수 없습니다."));
+           .andExpect(status().isNoContent());
     }
 }

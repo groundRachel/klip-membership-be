@@ -27,7 +27,7 @@ public class OperatorToolController {
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
     })
-    @PostMapping("/tool/v1/operators/invite")
+    @PostMapping("/invite")
     @ResponseBody
     public void inviteOperator(@RequestParam @PhoneNumber String phone, @AuthenticationPrincipal AuthenticatedUser partner) {
         operatorService.inviteOperator(partner.getMemberId(), phone);

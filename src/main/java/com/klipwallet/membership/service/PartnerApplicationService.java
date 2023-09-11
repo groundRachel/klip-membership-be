@@ -14,16 +14,18 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationAssembler;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.Application;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.RejectRequest;
-import com.klipwallet.membership.dto.partnerapplication.SignUpStatus;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationAssembler;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.Application;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.RejectRequest;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.SignUpStatusResult;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.PartnerApplicationCreated;
+import com.klipwallet.membership.entity.SignUpStatus;
 import com.klipwallet.membership.exception.klipdrops.KlipDropsParnterNotFoundByBusinessNumberException;
 import com.klipwallet.membership.exception.klipdrops.KlipDropsPartnerInvalidException;
 import com.klipwallet.membership.exception.member.PartnerApplicationDuplicatedException;
@@ -37,7 +39,7 @@ import static com.klipwallet.membership.entity.PartnerApplication.Status.APPROVE
 
 @Service
 @RequiredArgsConstructor
-public class PartnerApplicationService {
+public class PartnerApplicationService implements PartnerApplicationGettable {
     private final PartnerApplicationRepository partnerApplicationRepository;
     private final PartnerApplicationAssembler partnerApplicationAssembler;
     private final PartnerRepository partnerRepository;
@@ -126,17 +128,21 @@ public class PartnerApplicationService {
         partnerApplicationRepository.save(partnerApplication);
     }
 
-    @Transactional
-    public PartnerApplicationDto.SignUpStatusResult getSignUpStatus(AuthenticatedUser user) {
-        if (partnerRepository.existsByEmail(user.getEmail())) {
-            return new PartnerApplicationDto.SignUpStatusResult(SignUpStatus.SIGNED_UP);
-        }
+    @Transactional(readOnly = true)
+    public PartnerApplicationDto.SignUpStatusResult getSignUpStatusResult(AuthenticatedUser user) {
+        return new SignUpStatusResult(getSignUpStatus(user));
+    }
 
+    @Transactional(readOnly = true)
+    @Override
+    public SignUpStatus getSignUpStatus(AuthenticatedUser user) {
+        if (partnerRepository.existsByEmailAndStatusIn(user.getEmail(), Member.Status.enables())) {
+            return SignUpStatus.SIGNED_UP;
+        }
         if (partnerApplicationRepository.existsByEmailAndStatusIsIn(user.getEmail(), List.of(APPLIED))) {
-            return new PartnerApplicationDto.SignUpStatusResult(SignUpStatus.PENDING);
+            return SignUpStatus.PENDING;
         }
-
-        return new PartnerApplicationDto.SignUpStatusResult(SignUpStatus.NON_MEMBER);
+        return SignUpStatus.NON_MEMBER;
     }
 
     @Transactional

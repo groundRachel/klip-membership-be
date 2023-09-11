@@ -1,4 +1,4 @@
-package com.klipwallet.membership.dto.partnerapplication;
+package com.klipwallet.membership.dto.partner.application;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.klipwallet.membership.dto.datetime.DateTimeAssembler;
 import com.klipwallet.membership.dto.member.MemberAssembler;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.ApplyResult;
-import com.klipwallet.membership.dto.partnerapplication.PartnerApplicationDto.PartnerApplicationRow;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.ApplyResult;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.entity.PartnerApplication;
 
 @Component
@@ -29,7 +29,7 @@ public class PartnerApplicationAssembler {
     public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull Page<PartnerApplication> partnerApplications) {
 
         return partnerApplications.stream()
-                                  .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(),
+                                  .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(), p.getKlipDropsPartnerId(),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
                                                                       memberAssembler.getMemberSummary(p.getProcessorId())))

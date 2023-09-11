@@ -56,14 +56,14 @@ public class OperatorService implements OperatorInvitable {
     public OperatorSummary join(@Nullable String invitationCode, @NonNull AuthenticatedUser user) {
         // 초대 코드와 정보 유효성 체크
         OperatorInvitation invitation = verifiedInvitation(invitationCode, user);
-        KlipUser klipUser = getKlipUser(user);
-        // 운영진으로 초대 받은 사람, 조회된 Klkp 이용자, 인증한 Kakao 이용자가 동일한가?
-        verifyInviter(invitation, klipUser, user);
+        KlipUser invitee = getKlipUser(user);
+        // 운영진으로 초대 받은 사람, 초대된 Klkp 이용자, 인증한 Kakao 이용자가 동일한가?
+        verifyInviter(invitation, invitee, user);
         // 운영진 가입 여부 체크
-        checkAlreadyJoined(klipUser);
+        checkAlreadyJoined(invitee);
         // 초대한 파트너
         Partner partner = tryGetPartner(invitation.getInviterPartnerId());
-        Operator saved = createOperator(klipUser, partner);
+        Operator saved = createOperator(invitee, partner);
         // 초대 정보 Clear
         clearInvitation(invitationCode);
         return new OperatorSummary(saved);
@@ -101,12 +101,19 @@ public class OperatorService implements OperatorInvitable {
         return invitation;
     }
 
-    private void verifyInviter(OperatorInvitation invitation, KlipUser klipUser, AuthenticatedUser kakaoUser) {
-        String inviterMobileNumber = invitation.getInviteeMobileNumber();
-        verifyInviterMobileNumber(inviterMobileNumber, klipUser.getPhone(),
-                                  "Not matched inviterMobileNumber: {} and klipPhoneNumber: {}");
-        verifyInviterMobileNumber(inviterMobileNumber, kakaoUser.getKakaoPhoneNumber(),
-                                  "Not matched inviterMobileNumber: {} and kakaoPhoneNumber: {}");
+    private void verifyInviter(OperatorInvitation invitation, KlipUser invitee, AuthenticatedUser kakaoUser) {
+        verifyExistsInviteeOnKlip(invitee, invitation);
+        String invitationMobileNumber = invitation.getInviteeMobileNumber();
+        verifyInviterMobileNumber(invitationMobileNumber, invitee.getPhone(),
+                                  "Not matched invitationMobileNumber: {} and inviteePhoneNumber: {}");
+        verifyInviterMobileNumber(invitationMobileNumber, kakaoUser.getKakaoPhoneNumber(),
+                                  "Not matched invitationMobileNumber: {} and kakaoPhoneNumber: {}");
+    }
+
+    private void verifyExistsInviteeOnKlip(KlipUser invitee, OperatorInvitation invitation) {
+        if (invitee == null) {
+            throw new OperatorInviteeNotExistsOnKlipException(invitation.getInviteeMobileNumber());
+        }
     }
 
     private void verifyInviterMobileNumber(String inviterMobileNumber, String targetPhoneNumber, String errorMessage) {
@@ -143,7 +150,7 @@ public class OperatorService implements OperatorInvitable {
      * {@inheritDoc}
      *
      * @param inviterPartnerId 초대한 파트너 아이디
-     * @param inviteePhoneNumber      초대 받은 운영진의 휴대폰 번호
+     * @param phoneNumber      초대 받은 운영진의 휴대폰 번호
      * @return 초대 URL
      */
     @Override
@@ -155,6 +162,7 @@ public class OperatorService implements OperatorInvitable {
             throw new OperatorInviteeNotExistsOnKlipException(inviteePhoneNumber);
         }
         String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, inviteePhoneNumber));
+        log.info("invitationCode: {}", code);
         Partner inviterPartner = tryGetPartner(inviterPartnerId);
         return sendNotification(inviterPartner, inviteePhoneNumber, code);
     }
