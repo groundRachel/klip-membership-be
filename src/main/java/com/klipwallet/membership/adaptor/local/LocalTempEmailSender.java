@@ -1,4 +1,4 @@
-package com.klipwallet.membership.service;
+package com.klipwallet.membership.adaptor.local;
 
 import java.util.Objects;
 
@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 
+import com.klipwallet.membership.service.EmailSendable;
+
 /**
- * Local {@link EmailSendable}
+ * Local {@link com.klipwallet.membership.service.EmailSendable}
  */
 @Profile("local")
 @Component
