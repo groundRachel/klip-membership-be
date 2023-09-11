@@ -17,7 +17,8 @@ import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartners;
 @FeignClient(name = "klip-drops-internal")
 public interface KlipDropsInternalApiClient {
     @GetMapping(value = "/v1/partners")
-    KlipDropsPartners getAllPartners(@RequestParam(value = "businessRegistrationNumber") String businessRegistrationNumber,
+    KlipDropsPartners getAllPartners(@RequestParam(value = "id") Integer klipDropsPartnerId, // TODO test after implementation is done at Drops
+                                     @RequestParam(value = "businessRegistrationNumber") String businessRegistrationNumber,
                                      @RequestParam(value = "search") String search, // 검색하고자 하는 파트너 이름 혹은 파트너 번호 일부 입력
                                      @RequestParam(value = "cursor") String cursor,
                                      @RequestParam(value = "size", required = false) Integer size);

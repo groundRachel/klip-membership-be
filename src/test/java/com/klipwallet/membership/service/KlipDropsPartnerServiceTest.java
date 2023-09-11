@@ -3,10 +3,14 @@ package com.klipwallet.membership.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.spockframework.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,9 +30,9 @@ import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @Testcontainers
-class PartnerApplicationServiceWithKlipDropsTest {
+class KlipDropsPartnerServiceTest {
     @Autowired
-    private PartnerApplicationService partnerApplicationService;
+    private KlipDropsPartnerService klipDropsPartnerService;
     @Autowired
     PartnerApplicationRepository partnerApplicationRepository;
     @Autowired
@@ -77,7 +81,7 @@ class PartnerApplicationServiceWithKlipDropsTest {
         given(klipDropsService.getAllPartners("")).willReturn(null);
 
         // when
-        List<KlipDropsDto.Partner> klipDropsPartners = partnerApplicationService.getKlipDropsPartners("");
+        List<KlipDropsDto.Partner> klipDropsPartners = klipDropsPartnerService.getKlipDropsPartners("");
 
         // then
         assertThat(klipDropsPartners).isEmpty();
@@ -90,7 +94,7 @@ class PartnerApplicationServiceWithKlipDropsTest {
         given(klipDropsService.getAllPartners("")).willReturn(new ArrayList<>());
 
         // when
-        List<KlipDropsDto.Partner> klipDropsPartners = partnerApplicationService.getKlipDropsPartners("");
+        List<KlipDropsDto.Partner> klipDropsPartners = klipDropsPartnerService.getKlipDropsPartners("");
 
         // then
         assertThat(klipDropsPartners).isEmpty();
@@ -106,7 +110,7 @@ class PartnerApplicationServiceWithKlipDropsTest {
         }
 
         // when
-        List<KlipDropsDto.Partner> klipDropsPartners = partnerApplicationService.getKlipDropsPartners("");
+        List<KlipDropsDto.Partner> klipDropsPartners = klipDropsPartnerService.getKlipDropsPartners("");
 
         // then
         assertThat(klipDropsPartners).isEmpty();
@@ -114,12 +118,12 @@ class PartnerApplicationServiceWithKlipDropsTest {
 
     @DisplayName("Klip Drops 파트너 목록 조회 : Klip Drops 파트너가 있지만 Partner Application 데이터가 없는 경우")
     @Test
-    void getDropsPartnersWhenApplicationData1() {
+    void getDropsPartnersWhenNoApplicationData() {
         // given
         given(klipDropsService.getAllPartners("")).willReturn(defaultKlipDropsPartners());
 
         // when
-        List<KlipDropsDto.Partner> klipDropsPartners = partnerApplicationService.getKlipDropsPartners("");
+        List<KlipDropsDto.Partner> klipDropsPartners = klipDropsPartnerService.getKlipDropsPartners("");
 
         // then
         List<Integer> expectedPartnerIds = new ArrayList<>(defaultKlipDropsPartners().stream().map(KlipDropsPartner::partnerId).toList());
@@ -133,102 +137,72 @@ class PartnerApplicationServiceWithKlipDropsTest {
         }
     }
 
-    @DisplayName("Klip Drops 파트너 목록 조회 : Klip Drops 파트너 목록과 Partner Application 데이터가 있는 경우")
-    @Test
-    void getDropsPartnersWhenApplicationData2() {
-        record Test(
-                Integer[] partnersInRepo,
-                Integer[] expected
-        ) {}
-        Test[] tests = {new Test(new Integer[]{1, 2, 4, 7, 8}, new Integer[]{}), // 1 2 4 7 8
-                        new Test(new Integer[]{2, 7}, new Integer[]{1, 4, 8}),   // X 2 X 7 X
-                        new Test(new Integer[]{1}, new Integer[]{2, 4, 7, 8}),   // 1 X X X v
-                        new Test(new Integer[]{2}, new Integer[]{1, 4, 7, 8}),   // X 2 X X X
-                        new Test(new Integer[]{4}, new Integer[]{1, 2, 7, 8}),   // X X 4 X X
-                        new Test(new Integer[]{8}, new Integer[]{1, 2, 4, 7}),   // X X X X 8
-                        new Test(new Integer[]{1, 8}, new Integer[]{2, 4, 7}),   // 1 X X X 8
-                        new Test(new Integer[]{1, 2, 4}, new Integer[]{7, 8}),   // 1 2 4 X X
-                        new Test(new Integer[]{7, 8}, new Integer[]{1, 2, 4}),   // X X X 7 8
-                        new Test(new Integer[]{2, 4, 7}, new Integer[]{1, 8}),   // X 2 4 7 X
-                        new Test(new Integer[]{}, new Integer[]{1, 2, 4, 7, 8})  // X X X X X
-        };
+    static Stream<Pair<Integer[], Integer[]>> afterFiltered() {
+        return Stream.of(
+                // Klip Drops 파트너 목록과 Partner Application 데이터가 있는 경우
+                Pair.of(new Integer[]{1, 2, 4, 7, 8}, new Integer[]{}), // 1 2 4 7 8
+                Pair.of(new Integer[]{2, 7}, new Integer[]{1, 4, 8}),   // X 2 X 7 X
+                Pair.of(new Integer[]{1}, new Integer[]{2, 4, 7, 8}),   // 1 X X X v
+                Pair.of(new Integer[]{2}, new Integer[]{1, 4, 7, 8}),   // X 2 X X X
+                Pair.of(new Integer[]{4}, new Integer[]{1, 2, 7, 8}),   // X X 4 X X
+                Pair.of(new Integer[]{8}, new Integer[]{1, 2, 4, 7}),   // X X X X 8
+                Pair.of(new Integer[]{1, 8}, new Integer[]{2, 4, 7}),   // 1 X X X 8
+                Pair.of(new Integer[]{1, 2, 4}, new Integer[]{7, 8}),   // 1 2 4 X X
+                Pair.of(new Integer[]{7, 8}, new Integer[]{1, 2, 4}),   // X X X 7 8
+                Pair.of(new Integer[]{2, 4, 7}, new Integer[]{1, 8}),   // X 2 4 7 X
+                Pair.of(new Integer[]{}, new Integer[]{1, 2, 4, 7, 8}), // X X X X X
 
-        given(klipDropsService.getAllPartners("")).willReturn(defaultKlipDropsPartners());
-
-        for (Test test : tests) {
-            // given
-            for (Integer partnersInRepo : test.partnersInRepo) {
-                createPartner(partnersInRepo);
-            }
-            // when
-            List<KlipDropsDto.Partner> klipDropsPartners = partnerApplicationService.getKlipDropsPartners("");
-
-            // then
-            assertThat(klipDropsPartners.size()).isEqualTo(test.expected.length);
-            for (int i = 0; i < test.expected.length; i++) {
-                KlipDropsDto.Partner actualPartner = klipDropsPartners.get(i);
-                Integer expectPartnerId = test.expected[i];
-
-                assertThat(actualPartner.partnerId()).isEqualTo(expectPartnerId);
-            }
-
-            partnerApplicationRepository.deleteAll();
-            partnerApplicationRepository.flush();
-            partnerRepository.deleteAll();
-            partnerRepository.flush();
-        }
+                // Partner Application 데이터에 Klip Drops 파트너 목록에 없는 데이터가 있는 경우
+                // (KMT 가입 후 KlipDrops Partners Tool은 탈퇴하는 경우)
+                Pair.of(new Integer[]{0, 1, 2, 4, 7, 8}, new Integer[]{}),
+                Pair.of(new Integer[]{0}, new Integer[]{1, 2, 4, 7, 8}),
+                Pair.of(new Integer[]{-1, 1, 2, 4, 7, 8}, new Integer[]{}),
+                Pair.of(new Integer[]{-1}, new Integer[]{1, 2, 4, 7, 8}),
+                Pair.of(new Integer[]{-2, -1, 1, 2, 4, 7, 8}, new Integer[]{}),
+                Pair.of(new Integer[]{-2, -1}, new Integer[]{1, 2, 4, 7, 8}),
+                Pair.of(new Integer[]{-2, -1, 1}, new Integer[]{2, 4, 7, 8}),
+                Pair.of(new Integer[]{1, 2, 4, 7, 8, 9}, new Integer[]{}),
+                Pair.of(new Integer[]{9}, new Integer[]{1, 2, 4, 7, 8}),
+                Pair.of(new Integer[]{1, 2, 4, 7, 8, 10}, new Integer[]{}),
+                Pair.of(new Integer[]{10}, new Integer[]{1, 2, 4, 7, 8}),
+                Pair.of(new Integer[]{1, 2, 4, 7, 8, 10, 11}, new Integer[]{}),
+                Pair.of(new Integer[]{10, 11}, new Integer[]{1, 2, 4, 7, 8}),
+                Pair.of(new Integer[]{7, 9}, new Integer[]{1, 2, 4, 8}),
+                Pair.of(new Integer[]{7, 10}, new Integer[]{1, 2, 4, 8}),
+                Pair.of(new Integer[]{8, 9}, new Integer[]{1, 2, 4, 7}),
+                Pair.of(new Integer[]{8, 10}, new Integer[]{1, 2, 4, 7})
+        );
     }
 
-    @DisplayName("Klip Drops 파트너 목록 조회 : Partner Application 데이터에 Klip Drops 파트너 목록에 없는 데이터가 있는 경우" +
-                 "(KMT 가입 후 KlipDrops Partners Tool은 탈퇴하는 경우)")
-    @Test
-    void getDropsPartnersWhenApplicationData() {
-        record Test(
-                Integer[] partnersInRepo,
-                Integer[] expected
-        ) {}
-        Test[] tests = {new Test(new Integer[]{0, 1, 2, 4, 7, 8}, new Integer[]{}),
-                        new Test(new Integer[]{0}, new Integer[]{1, 2, 4, 7, 8}),
-                        new Test(new Integer[]{-1, 1, 2, 4, 7, 8}, new Integer[]{}),
-                        new Test(new Integer[]{-1}, new Integer[]{1, 2, 4, 7, 8}),
-                        new Test(new Integer[]{-2, -1, 1, 2, 4, 7, 8}, new Integer[]{}),
-                        new Test(new Integer[]{-2, -1}, new Integer[]{1, 2, 4, 7, 8}),
-                        new Test(new Integer[]{-2, -1, 1}, new Integer[]{2, 4, 7, 8}),
-                        new Test(new Integer[]{1, 2, 4, 7, 8, 9}, new Integer[]{}),
-                        new Test(new Integer[]{9}, new Integer[]{1, 2, 4, 7, 8}),
-                        new Test(new Integer[]{1, 2, 4, 7, 8, 10}, new Integer[]{}),
-                        new Test(new Integer[]{10}, new Integer[]{1, 2, 4, 7, 8}),
-                        new Test(new Integer[]{1, 2, 4, 7, 8, 10, 11}, new Integer[]{}),
-                        new Test(new Integer[]{10, 11}, new Integer[]{1, 2, 4, 7, 8}),
-                        new Test(new Integer[]{7, 9}, new Integer[]{1, 2, 4, 8}),
-                        new Test(new Integer[]{7, 10}, new Integer[]{1, 2, 4, 8}),
-                        new Test(new Integer[]{8, 9}, new Integer[]{1, 2, 4, 7}),
-                        new Test(new Integer[]{8, 10}, new Integer[]{1, 2, 4, 7}),
-                        };
+    @DisplayName("Klip Drops 파트너 목록 조회 : Klip Drops 파트너 목록과 Partner Application 데이터가 있는 경우")
+    @ParameterizedTest
+    @MethodSource("afterFiltered")
+    void getDropsPartnersWhenApplicationData(Pair<Integer[], Integer[]> testcase) {
+        Integer[] partnersInRepo = testcase.first();
+        Integer[] expected = testcase.second();
 
         given(klipDropsService.getAllPartners("")).willReturn(defaultKlipDropsPartners());
 
-        for (Test test : tests) {
-            // given
-            for (Integer partnersInRepo : test.partnersInRepo) {
-                createPartner(partnersInRepo);
-            }
-            // when
-            List<KlipDropsDto.Partner> klipDropsPartners = partnerApplicationService.getKlipDropsPartners("");
-
-            // then
-            assertThat(klipDropsPartners.size()).isEqualTo(test.expected.length);
-            for (int i = 0; i < test.expected.length; i++) {
-                KlipDropsDto.Partner actualPartner = klipDropsPartners.get(i);
-                Integer expectPartnerId = test.expected[i];
-
-                assertThat(actualPartner.partnerId()).isEqualTo(expectPartnerId);
-            }
-
-            partnerApplicationRepository.deleteAll();
-            partnerApplicationRepository.flush();
-            partnerRepository.deleteAll();
-            partnerRepository.flush();
+        // given
+        for (Integer partner : partnersInRepo) {
+            createPartner(partner);
         }
+        // when
+        List<KlipDropsDto.Partner> klipDropsPartners = klipDropsPartnerService.getKlipDropsPartners("");
+
+        // then
+        assertThat(klipDropsPartners.size()).isEqualTo(expected.length);
+        for (int i = 0; i < expected.length; i++) {
+            KlipDropsDto.Partner actualPartner = klipDropsPartners.get(i);
+            Integer expectPartnerId = expected[i];
+
+            assertThat(actualPartner.partnerId()).isEqualTo(expectPartnerId);
+        }
+
+        partnerApplicationRepository.deleteAll();
+        partnerApplicationRepository.flush();
+        partnerRepository.deleteAll();
+        partnerRepository.flush();
+
     }
 }

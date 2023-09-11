@@ -1,7 +1,6 @@
 package com.klipwallet.membership.adaptor.klipdrops;
 
 import java.util.List;
-import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,26 +15,28 @@ import com.klipwallet.membership.service.KlipDropsService;
 public class KlipDropsAdaptor implements KlipDropsService {
     private final KlipDropsInternalApiClient klipDropsInternalApiClient;
 
-    @Override // TODO cache
+    @Override
     public List<KlipDropsPartner> getAllPartners(String search) {
         String cursor = "";
         Integer size = 1000;
-        return klipDropsInternalApiClient.getAllPartners(null, search, cursor, size).klipDropsPartners();
+        return klipDropsInternalApiClient.getAllPartners(null, null, search, cursor, size).klipDropsPartners();
     }
 
     @Override
     public KlipDropsPartner getPartnerById(Integer partnerId) {
-        return this.getAllPartners(null).stream()
-                   .filter(p -> Objects.equals(p.partnerId(), partnerId))
-                   .findFirst()
-                   .orElse(null);
+        Integer size = 1;
+        KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(partnerId, null, "", "", size);
+        if (allPartners == null || allPartners.klipDropsPartners().isEmpty()) {
+            return null;
+        }
+        return allPartners.klipDropsPartners().get(0);
     }
 
     @Override
     public KlipDropsPartner getPartnerByBusinessRegistrationNumber(String businessRegistrationNumber) {
         Integer size = 1;
-        KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(businessRegistrationNumber, null, null, size);
-        if (allPartners.klipDropsPartners().isEmpty()) {
+        KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(null, businessRegistrationNumber, null, null, size);
+        if (allPartners == null || allPartners.klipDropsPartners().isEmpty()) {
             return null;
         }
         return allPartners.klipDropsPartners().get(0);

@@ -322,8 +322,15 @@ class PartnerApplicationAdminControllerTest {
     @Test
     void changeKlipDropsPartnerIdWhenPartnerApplicationNotFound(@Autowired MockMvc mvc) throws Exception {
         Integer partnerApplicationIdNotExist = 999;
-        mvc.perform(patch("/admin/v1/partner-applications/{0}/klipdrops/partners/{1}", partnerApplicationIdNotExist, 8888)
-                            .contentType(APPLICATION_JSON))
+        Integer anyKlipDropsPartnerId = 8888;
+        String body = """
+                      {
+                        "partnerId": %d
+                      }
+                      """.formatted(anyKlipDropsPartnerId);
+        mvc.perform(put("/admin/v1/partner-applications/{0}/klipdrops-partner", partnerApplicationIdNotExist)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
            .andExpect(status().isNotFound())
            .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_NOT_FOUND.getCode()))
            .andExpect(jsonPath("$.err").value("파트너 신청 정보를 조회할 수 없습니다. ID: %d".formatted(partnerApplicationIdNotExist)));
@@ -341,11 +348,17 @@ class PartnerApplicationAdminControllerTest {
         given(klipDropsService.getPartnerById(klipDropsPartnerIdNotExist)).willReturn(null);
 
         // when, then
-        mvc.perform(patch("/admin/v1/partner-applications/{0}/klipdrops/partners/{1}", partnerApplicationId, klipDropsPartnerIdNotExist)
-                            .contentType(APPLICATION_JSON))
+        String body = """
+                      {
+                        "partnerId": %d
+                      }
+                      """.formatted(klipDropsPartnerIdNotExist);
+        mvc.perform(put("/admin/v1/partner-applications/{0}/klipdrops-partner", partnerApplicationId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
            .andExpect(status().isNotFound())
-           .andExpect(jsonPath("$.code").value(KLIP_DROPS_PARTNER_NOT_FOUND_BY_PARTNER_ID.getCode()))
-           .andExpect(jsonPath("$.err").value("파트너 ID에 해당하는 Klip Drops 파트너를 찾을 수 없습니다. 파트너 ID: %d".formatted(klipDropsPartnerIdNotExist)));
+           .andExpect(jsonPath("$.code").value(KLIP_DROPS_PARTNER_NOT_FOUND.getCode()))
+           .andExpect(jsonPath("$.err").value("Klip Drops 파트너를 찾을 수 없습니다. 파트너 Id: %d".formatted(klipDropsPartnerIdNotExist)));
     }
 
     @WithAdminUser(memberId = 2)
@@ -362,8 +375,14 @@ class PartnerApplicationAdminControllerTest {
                 new KlipDropsPartner("", klipDropsPartnerIdExist, klipDropsPartnerName, "", ACTIVE, null, null));
 
         // when, then
-        mvc.perform(patch("/admin/v1/partner-applications/{0}/klipdrops/partners/{1}", partnerApplicationId, klipDropsPartnerIdExist)
-                            .contentType(APPLICATION_JSON))
+        String body = """
+                      {
+                        "partnerId": %d
+                      }
+                      """.formatted(klipDropsPartnerIdExist);
+        mvc.perform(put("/admin/v1/partner-applications/{0}/klipdrops-partner", partnerApplicationId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
            .andExpect(status().isOk());
         partnerApplicationRepository.flush();
 

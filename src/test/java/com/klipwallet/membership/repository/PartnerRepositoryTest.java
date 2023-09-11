@@ -1,6 +1,6 @@
 package com.klipwallet.membership.repository;
 
-import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +13,8 @@ import com.klipwallet.membership.entity.PartnerApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest         // TODO @DataJpaTest
-public class PartnerRepositoryTest {
+@SpringBootTest        // TODO @DataJpaTest
+class PartnerRepositoryTest {
     @Autowired
     PartnerApplicationRepository partnerApplicationRepository;
     @Autowired
@@ -36,7 +36,6 @@ public class PartnerRepositoryTest {
                                        "oauth" + identifier);
         PartnerApplication partnerApplicationSaved = partnerApplicationRepository.save(partnerApplication);
 
-
         Partner partner = new Partner(partnerApplicationSaved.getId(), klipDropsPartnerId, partnerApplicationSaved.getBusinessName(),
                                       partnerApplicationSaved.getPhoneNumber(), partnerApplicationSaved.getBusinessRegistrationNumber(),
                                       partnerApplicationSaved.getEmail(), partnerApplicationSaved.getOauthId(), creator);
@@ -51,7 +50,7 @@ public class PartnerRepositoryTest {
     void findAllKlipDropsIdWithNoData() {
         // given
         // when
-        List<Integer> allKlipDropsId = partnerRepository.findAllKlipDropsIds();
+        Set<Integer> allKlipDropsId = partnerRepository.findAllKlipDropsIds();
 
         // then
         assertThat(allKlipDropsId).isEmpty();
@@ -65,7 +64,7 @@ public class PartnerRepositoryTest {
         createPartner("gx3", null);
 
         // when
-        List<Integer> allKlipDropsId = partnerRepository.findAllKlipDropsIds();
+        Set<Integer> allKlipDropsId = partnerRepository.findAllKlipDropsIds();
 
         // then
         assertThat(allKlipDropsId).isEmpty();
@@ -79,12 +78,12 @@ public class PartnerRepositoryTest {
         createPartner("gx3", 8);
 
         // when
-        List<Integer> allKlipDropsId = partnerRepository.findAllKlipDropsIds();
+        Set<Integer> allKlipDropsId = partnerRepository.findAllKlipDropsIds();
 
         // then
         assertThat(allKlipDropsId.size()).isEqualTo(3);
-        assertThat(allKlipDropsId.get(0)).isEqualTo(2);
-        assertThat(allKlipDropsId.get(1)).isEqualTo(5);
-        assertThat(allKlipDropsId.get(2)).isEqualTo(8);
+        assertThat(allKlipDropsId).contains(2);
+        assertThat(allKlipDropsId).contains(5);
+        assertThat(allKlipDropsId).contains(8);
     }
 }

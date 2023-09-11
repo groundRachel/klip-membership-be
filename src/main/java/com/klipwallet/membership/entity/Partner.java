@@ -17,6 +17,7 @@ public class Partner extends Member {
     @Column(nullable = false) // TODO make foreign key
     private Integer partnerApplicationId;
 
+    @Column(unique = true)
     private Integer klipDropsPartnerId;
 
     @Column(nullable = false)

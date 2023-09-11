@@ -1,16 +1,15 @@
-package com.klipwallet.membership.dto.klipdrops;
+package com.klipwallet.membership.adaptor.klipdrops.dto;
 
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
 import com.klipwallet.membership.dto.klipdrops.KlipDropsDto.Partner;
 
 @Component
 @RequiredArgsConstructor
-public class KlipDropsAssembler {
+public class KlipDropsTranslator {
 
     public List<Partner> toPartners(List<KlipDropsPartner> klipDropsPartners) {
         return klipDropsPartners.stream()

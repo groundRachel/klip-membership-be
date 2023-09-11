@@ -58,4 +58,9 @@ public class PartnerApplicationDto {
     public record RejectRequest(
             @Schema(requiredMode = RequiredMode.REQUIRED) String rejectReason
     ) {}
+
+    @Schema(description = "", accessMode = AccessMode.WRITE_ONLY)
+    public record UpdateKlipDrops(
+            @Schema(requiredMode = RequiredMode.REQUIRED) Integer partnerId
+    ) {}
 }
