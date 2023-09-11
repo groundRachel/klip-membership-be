@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.openchatting.OpenChattingCreate;
+import com.klipwallet.membership.dto.openchatting.OpenChattingDetail;
 import com.klipwallet.membership.dto.openchatting.OpenChattingSummary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.OpenChatting.Status;
@@ -68,7 +70,20 @@ public class OpenChattingToolController {
             @Parameter(description = "필터링 할 채팅방 상태", required = false, example = "activated")
             @RequestParam(name = "status", required = false) Status status,
             @ParameterObject Pageable pageable) {
-        return openChattingService.getOpenChattingsByStatus(status, pageable);
+        return openChattingService.list(status, pageable);
+    }
+
+    @Operation(summary = "채팅방 상세 조회", description = "조회 성공")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "400", description = "invalid query", content = @Content(schema = @Schema(ref = "Error400"))),
+            @ApiResponse(responseCode = "404", description = "not found", content = @Content(schema = @Schema(ref = "Error404"))),
+    })
+    @GetMapping("/{openChattingId}")
+    public OpenChattingDetail openChattingDetail(
+            @Parameter(description = "오픈채팅방 id", required = true, example = "1")
+            @PathVariable Long openChattingId) {
+        return openChattingService.detail(openChattingId);
     }
 
 }

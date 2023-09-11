@@ -2,6 +2,8 @@ package com.klipwallet.membership.repository;
 
 import java.util.Optional;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.klipwallet.membership.entity.OpenChattingNft;
@@ -16,4 +18,5 @@ public interface OpenChattingNftRepository extends JpaRepository<OpenChattingNft
      * @return OpenChattingNft
      */
     Optional<OpenChattingNft> findByKlipDropsScaAndDropId(String klipDropsSca, Long dropId);
+    List<OpenChattingNft> findByOpenChattingId(Long openChattingId);
 }

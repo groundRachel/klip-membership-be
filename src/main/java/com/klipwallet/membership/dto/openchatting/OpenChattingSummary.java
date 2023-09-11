@@ -3,11 +3,12 @@ package com.klipwallet.membership.dto.openchatting;
 import java.time.OffsetDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 import com.klipwallet.membership.entity.OpenChatting.Status;
 
-@Schema(description = "채팅방 요약 DTO")
+@Schema(description = "오픈채팅방 요약 DTO", accessMode = AccessMode.READ_ONLY)
 public record OpenChattingSummary(
         @Schema(description = "채팅방 ID", requiredMode = RequiredMode.REQUIRED, example = "1")
         Long id,

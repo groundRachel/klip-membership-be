@@ -20,6 +20,7 @@ import com.klipwallet.membership.config.NftProperties;
 import com.klipwallet.membership.dto.openchatting.OpenChattingAssembler;
 import com.klipwallet.membership.dto.openchatting.OpenChattingCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingMemberCreate;
+import com.klipwallet.membership.dto.openchatting.OpenChattingDetail;
 import com.klipwallet.membership.dto.openchatting.OpenChattingNftCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingOperatorCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingStatus;
@@ -44,6 +45,7 @@ import com.klipwallet.membership.exception.NotFoundException;
 import com.klipwallet.membership.exception.kakao.OperatorAlreadyExistsException;
 import com.klipwallet.membership.exception.kas.KasBadRequestInternalApiException;
 import com.klipwallet.membership.exception.kas.KasNotFoundInternalApiException;
+import com.klipwallet.membership.exception.kakao.openchatting.OpenChattingNotFoundException;
 import com.klipwallet.membership.exception.operator.OperatorDuplicatedException;
 import com.klipwallet.membership.repository.OpenChattingNftRepository;
 import com.klipwallet.membership.repository.OpenChattingRepository;
@@ -84,7 +86,7 @@ public class OpenChattingService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OpenChattingSummary> getOpenChattingsByStatus(Status status, Pageable pageable) {
+    public Page<OpenChattingSummary> list(Status status, Pageable pageable) {
         Sort orderByCreatedAtDesc = Sort.sort(OpenChatting.class).by(OpenChatting::getCreatedAt).descending();
         return getPaginationOpenChattingSummaries(status, pageable, orderByCreatedAtDesc);
     }
@@ -100,6 +102,14 @@ public class OpenChattingService {
             return openChattingRepository.findAll(pageRequest);
         }
         return openChattingRepository.findAllByStatus(status, pageRequest);
+    }
+
+    @Transactional(readOnly = true)
+    public OpenChattingDetail detail(Long openChattingId) {
+        OpenChatting openChatting =
+                openChattingRepository.findById(openChattingId).orElseThrow(() -> new OpenChattingNotFoundException(openChattingId));
+        List<OpenChattingNft> nfts = openChattingNftRepository.findByOpenChattingId(openChattingId);
+        return openChattingAssembler.toDetail(openChatting, nfts);
     }
 
     private OpenChatting createOpenChatting(OpenChattingCreate command, KakaoOpenlinkSummary summary, Address contractAddress, MemberId memberId) {

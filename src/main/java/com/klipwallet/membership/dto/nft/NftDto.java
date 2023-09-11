@@ -1,7 +1,5 @@
 package com.klipwallet.membership.dto.nft;
 
-import java.math.BigInteger;
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +12,10 @@ public class NftDto {
     public record Summary(
             String name,
             String creatorName,
-            BigInteger dropId,
+            Long dropId,
             Integer totalSalesCount,
             Integer totalSupply,
             DropStatus status
-    ) {}
+    ) {
+    }
 }

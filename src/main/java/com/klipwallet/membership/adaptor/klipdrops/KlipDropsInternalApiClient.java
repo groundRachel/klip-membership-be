@@ -1,6 +1,6 @@
 package com.klipwallet.membership.adaptor.klipdrops;
 
-import java.math.BigInteger;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.cloud.openfeign.CollectionFormat;
@@ -35,5 +35,5 @@ public interface KlipDropsInternalApiClient {
     @Description(value = "최대길이 100")
     @GetMapping(value = "/v1/drops")
     @CollectionFormat(feign.CollectionFormat.CSV)
-    List<KlipDropsDrop> getDropsByIds(@RequestParam(value = "drop_ids") List<BigInteger> dropIds);
+    List<KlipDropsDrop> getDropsByIds(@RequestParam(value = "drop_ids") Collection<Long> dropIds);
 }
