@@ -58,7 +58,6 @@ public class PartnerApplicationAdminController {
         return partnerApplicationService.getPartnerApplicationNumber(status);
     }
 
-
     @Operation(summary = "가입 요청서의 Klip Drops 파트너 ID 변경")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "조회 성공"),

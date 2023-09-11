@@ -151,13 +151,13 @@ public class PartnerApplicationService implements PartnerApplicationGettable {
         PartnerApplication partnerApplication = tryGetPartnerApplication(partnerApplicationId);
         KlipDropsPartner klipDropsPartner = klipDropsService.getPartnerById(klipDropsPartnerId);
 
-        verifyKlipDropsPartnerUpdatable(klipDropsPartnerId, klipDropsPartner);
+        verifyKlipDropsPartnerUpdatable(klipDropsPartner, klipDropsPartnerId);
 
         partnerApplication.setKlipDropsInfo(klipDropsPartner.partnerId(), klipDropsPartner.name());
         partnerApplicationRepository.save(partnerApplication);
     }
 
-    private void verifyKlipDropsPartnerUpdatable(Integer klipDropsPartnerId, KlipDropsPartner klipDropsPartner) {
+    private void verifyKlipDropsPartnerUpdatable(KlipDropsPartner klipDropsPartner, Integer klipDropsPartnerId) {
         if (klipDropsPartner == null) {
             throw new KlipDropsPartnerInvalidException(klipDropsPartnerId);
         }

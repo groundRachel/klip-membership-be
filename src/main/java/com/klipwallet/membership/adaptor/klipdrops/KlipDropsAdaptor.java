@@ -19,23 +19,18 @@ public class KlipDropsAdaptor implements KlipDropsService {
     public List<KlipDropsPartner> getAllPartners(String search) {
         String cursor = "";
         Integer size = 1000;
-        return klipDropsInternalApiClient.getAllPartners(null, null, search, cursor, size).klipDropsPartners();
+        return klipDropsInternalApiClient.getAllPartners(null, search, cursor, size).klipDropsPartners();
     }
 
     @Override
     public KlipDropsPartner getPartnerById(Integer partnerId) {
-        Integer size = 1;
-        KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(partnerId, null, "", "", size);
-        if (allPartners == null || allPartners.klipDropsPartners().isEmpty()) {
-            return null;
-        }
-        return allPartners.klipDropsPartners().get(0);
+        return klipDropsInternalApiClient.getPartnerById(partnerId);
     }
 
     @Override
     public KlipDropsPartner getPartnerByBusinessRegistrationNumber(String businessRegistrationNumber) {
         Integer size = 1;
-        KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(null, businessRegistrationNumber, null, null, size);
+        KlipDropsPartners allPartners = klipDropsInternalApiClient.getAllPartners(businessRegistrationNumber, null, null, size);
         if (allPartners == null || allPartners.klipDropsPartners().isEmpty()) {
             return null;
         }

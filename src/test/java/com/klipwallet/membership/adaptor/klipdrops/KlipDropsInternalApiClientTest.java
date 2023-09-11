@@ -27,7 +27,7 @@ class KlipDropsInternalApiClientTest {
     @Test
     void getAllPartnerWithBusinessNumber() {
         String businessRegistrationNumber = "123-1234-1230";
-        KlipDropsPartners partners = klipDropsInternalApiClient.getAllPartners(null, businessRegistrationNumber, null, null, null);
+        KlipDropsPartners partners = klipDropsInternalApiClient.getAllPartners(businessRegistrationNumber, null, null, null);
 
         assertThat(partners.cursor()).isEmpty();
         assertThat(partners.klipDropsPartners().size()).isOne();
@@ -43,7 +43,7 @@ class KlipDropsInternalApiClientTest {
 
     @Test
     void getAllPartners() {
-        KlipDropsPartners partners = klipDropsInternalApiClient.getAllPartners(null, null, null, null, null);
+        KlipDropsPartners partners = klipDropsInternalApiClient.getAllPartners(null, null, null, null);
         assertThat(partners.klipDropsPartners().size()).isNotZero();
         assertThat(partners.cursor()).isNotEqualTo("0");
     }
@@ -51,13 +51,13 @@ class KlipDropsInternalApiClientTest {
     @Test
     void getAllPartnersWithSearch() {
         String searchByNum = "123";
-        KlipDropsPartners partnersByNum = klipDropsInternalApiClient.getAllPartners(null, null, searchByNum, null, null);
+        KlipDropsPartners partnersByNum = klipDropsInternalApiClient.getAllPartners(null, searchByNum, null, null);
         for (KlipDropsPartner partner : partnersByNum.klipDropsPartners()) {
             assertThat(partner.businessRegistrationNumber()).contains(searchByNum);
         }
 
         String searchByName = "Winnie";
-        KlipDropsPartners partnersByName = klipDropsInternalApiClient.getAllPartners(null, null, searchByName, null, null);
+        KlipDropsPartners partnersByName = klipDropsInternalApiClient.getAllPartners(null, searchByName, null, null);
         for (KlipDropsPartner partner : partnersByName.klipDropsPartners()) {
             assertThat(partner.name()).contains(searchByName);
         }
@@ -66,12 +66,12 @@ class KlipDropsInternalApiClientTest {
     @Test
     void getAllPartnersWithCursorAndSize() {
         Integer size = 3;
-        KlipDropsPartners partnersFirst = klipDropsInternalApiClient.getAllPartners(null, null, null, null, size);
+        KlipDropsPartners partnersFirst = klipDropsInternalApiClient.getAllPartners(null, null, null, size);
         assertThat(partnersFirst.klipDropsPartners().size()).isEqualTo(size);
         assertThat(partnersFirst.cursor()).isNotEqualTo("0");
 
         String cursor = partnersFirst.cursor();
-        KlipDropsPartners partnersSecond = klipDropsInternalApiClient.getAllPartners(null, null, null, cursor, size);
+        KlipDropsPartners partnersSecond = klipDropsInternalApiClient.getAllPartners(null, null, cursor, size);
         assertThat(partnersSecond.klipDropsPartners().size()).isEqualTo(size);
 
         List<KlipDropsPartner> partnersAll = Stream.concat(partnersFirst.klipDropsPartners().stream(),
@@ -82,6 +82,21 @@ class KlipDropsInternalApiClientTest {
 
             assertThat(now.partnerId()).isLessThan(next.partnerId());
         }
+    }
+
+    @Test
+    void getPartnerById() {
+        Integer partnerId = 1;
+        KlipDropsPartner partner = klipDropsInternalApiClient.getPartnerById(partnerId);
+
+        assertThat(partner).isNotNull();
+        assertThat(partner.businessRegistrationNumber()).isNotEmpty();
+        assertThat(partner.partnerId()).isEqualTo(partnerId);
+        assertThat(partner.name()).isNotEmpty();
+        assertThat(partner.phoneNumber()).isNotEmpty();
+        assertThat(partner.status()).isNotNull();
+        assertThat(partner.createdAt()).isBefore(OffsetDateTime.now());
+        assertThat(partner.updatedAt()).isBefore(OffsetDateTime.now());
     }
 
     @Test
