@@ -158,6 +158,7 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
         return result;
     }
 
+    @SuppressWarnings("unused")
     private boolean isKakaoInAppBrowser(HttpServletRequest request) {
         String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
         if (userAgent == null) {
