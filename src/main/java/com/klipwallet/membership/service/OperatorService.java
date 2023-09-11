@@ -155,6 +155,7 @@ public class OperatorService implements OperatorInvitable {
             throw new OperatorInviteeNotExistsOnKlipException(inviteePhoneNumber);
         }
         String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, inviteePhoneNumber));
+        log.info("invitationCode: {}", code);
         Partner inviterPartner = tryGetPartner(inviterPartnerId);
         return sendNotification(inviterPartner, inviteePhoneNumber, code);
     }
