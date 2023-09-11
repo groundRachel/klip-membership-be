@@ -13,6 +13,8 @@
     <entry key="problemDetail.code.400007">운영진 초대자와 현재 접속자가 일치하지 않습니다.</entry>
     <entry key="problemDetail.code.400008">방장이 될 수 있는 오픈채팅방의 갯수 제한이 넘었습니다. Host ID: {0,number,#}, Count: {0,number,#}</entry>
     <entry key="problemDetail.code.400009">초대한 운영진은 Klip 이용자가 아닙니다. {0}</entry>
+    <entry key="problemDetail.code.400010">가입 요청의 사업자 번호와 Klip Drops 파트너의 사업자 번호가 일치하지 않습니다. 가입 요청 ID: {0,number,#}, Klip Drops Id : {1,number,#}
+    </entry>
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>
@@ -33,8 +35,8 @@
     <entry key="problemDetail.code.404008">운영자를 찾을 수 없습니다. ID: {0,number,#}</entry>
     <entry key="problemDetail.code.404009">이용자가 존재하지 않습니다.</entry>
     <entry key="problemDetail.code.404010">Klip Drops 파트너 정보가 존재하지 않습니다. ID: {0,number,#}</entry>
-    <entry key="problemDetail.code.404011">사업자 번호에 해당하는 Klip Drops 파트너를 찾을 수 없습니다. ID: {0,number,#} 사업자번호: {1}</entry>
-
+    <entry key="problemDetail.code.404011">사업자 번호에 해당하는 Klip Drops 파트너를 찾을 수 없습니다. ID: {0,number,#}, 사업자번호: {1}</entry>
+    <entry key="problemDetail.code.404012">Klip Drops 파트너를 찾을 수 없습니다. 파트너 Id: {0,number,#}</entry>
 
     <!-- 409 -->
     <entry key="problemDetail.code.409000">서버의 현재 상태와 요청이 충돌했습니다.</entry>

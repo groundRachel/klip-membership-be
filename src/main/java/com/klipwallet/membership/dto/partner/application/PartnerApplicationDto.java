@@ -66,6 +66,10 @@ public class PartnerApplicationDto {
     @Schema(description = "[ADMIN] 파트너 신청 거절 DTO", accessMode = AccessMode.WRITE_ONLY)
     public record RejectRequest(
             @Schema(requiredMode = RequiredMode.REQUIRED) String rejectReason
-    ) {
-    }
+    ) {}
+
+    @Schema(description = "[ADMIN] 파트너의 Klip Drops Partner ID 변경", accessMode = AccessMode.WRITE_ONLY)
+    public record UpdateKlipDrops(
+            @Schema(requiredMode = RequiredMode.REQUIRED) Integer partnerId
+    ) {}
 }

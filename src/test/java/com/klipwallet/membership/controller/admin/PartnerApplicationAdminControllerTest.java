@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
@@ -20,15 +22,16 @@ import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.repository.AdminRepository;
 import com.klipwallet.membership.repository.PartnerApplicationRepository;
 import com.klipwallet.membership.repository.PartnerRepository;
+import com.klipwallet.membership.service.KlipDropsService;
 
+import static com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartnerStatus.ACTIVE;
 import static com.klipwallet.membership.entity.PartnerApplication.Status.*;
-import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_ALREADY_PROCESSED;
-import static com.klipwallet.membership.exception.ErrorCode.PARTNER_APPLICATION_NOT_FOUND;
+import static com.klipwallet.membership.exception.ErrorCode.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +45,9 @@ class PartnerApplicationAdminControllerTest {
     PartnerRepository partnerRepository;
     @Autowired
     AdminRepository adminRepository;
+
+    @MockBean
+    KlipDropsService klipDropsService;
 
     @AfterEach
     void afterEach() {
@@ -196,6 +202,16 @@ class PartnerApplicationAdminControllerTest {
         partnerRepository.flush();
     }
 
+    private PartnerApplication createApplication() {
+        PartnerApplication partnerApplication = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "356-88-00968", "example1@groundx.xyz",
+                                                                       "192085223830.apps.googleusercontent.com");
+        PartnerApplication persistent = partnerApplicationRepository.save(partnerApplication);
+        partnerApplicationRepository.flush();
+
+        return persistent;
+    }
+
+
     @WithAdminUser(memberId = 2)
     @DisplayName("파트너 가입 요청 목록 조회: 요청 상태 > 200")
     @Test
@@ -314,5 +330,80 @@ class PartnerApplicationAdminControllerTest {
                             contentType(APPLICATION_JSON))
            .andExpect(status().isOk())
            .andExpect(jsonPath("$.count").value(3));
+    }
+
+
+    @WithAdminUser(memberId = 2)
+    @DisplayName("가입 요청서의 Klip Drops 파트너 ID 변경: 존재하지 않는 가입 요청 ID > 404")
+    @Test
+    void changeKlipDropsPartnerIdWhenPartnerApplicationNotFound(@Autowired MockMvc mvc) throws Exception {
+        Integer partnerApplicationIdNotExist = 999;
+        Integer anyKlipDropsPartnerId = 8888;
+        String body = """
+                      {
+                        "partnerId": %d
+                      }
+                      """.formatted(anyKlipDropsPartnerId);
+        mvc.perform(put("/admin/v1/partner-applications/{0}/klipdrops-partner", partnerApplicationIdNotExist)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_NOT_FOUND.getCode()))
+           .andExpect(jsonPath("$.err").value("파트너 신청 정보를 조회할 수 없습니다. ID: %d".formatted(partnerApplicationIdNotExist)));
+    }
+
+    @WithAdminUser(memberId = 2)
+    @DisplayName("가입 요청서의 Klip Drops 파트너 ID 변경: 존재하지 않는 Klip Drops Partner ID > 404")
+    @Test
+    void changeKlipDropsPartnerIdWhenKlipDropsPartnerNotFound(@Autowired MockMvc mvc) throws Exception {
+        // given
+        PartnerApplication application = createApplication();
+        Integer partnerApplicationId = application.getId();
+        Integer klipDropsPartnerIdNotExist = 8888;
+
+        given(klipDropsService.getPartnerById(klipDropsPartnerIdNotExist)).willReturn(null);
+
+        // when, then
+        String body = """
+                      {
+                        "partnerId": %d
+                      }
+                      """.formatted(klipDropsPartnerIdNotExist);
+        mvc.perform(put("/admin/v1/partner-applications/{0}/klipdrops-partner", partnerApplicationId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(KLIP_DROPS_PARTNER_NOT_FOUND.getCode()))
+           .andExpect(jsonPath("$.err").value("Klip Drops 파트너를 찾을 수 없습니다. 파트너 Id: %d".formatted(klipDropsPartnerIdNotExist)));
+    }
+
+    @WithAdminUser(memberId = 2)
+    @DisplayName("가입 요청서의 Klip Drops 파트너 ID 변경: 요청 성공 > 200")
+    @Test
+    void changeKlipDropsPartnerId(@Autowired MockMvc mvc) throws Exception {
+        // given
+        PartnerApplication application = createApplication();
+        Integer partnerApplicationId = application.getId();
+        Integer klipDropsPartnerIdExist = 8888;
+        String klipDropsPartnerName = "변경된 사업자 이름";
+
+        given(klipDropsService.getPartnerById(klipDropsPartnerIdExist)).willReturn(
+                new KlipDropsPartner("", klipDropsPartnerIdExist, klipDropsPartnerName, "", ACTIVE, null, null));
+
+        // when, then
+        String body = """
+                      {
+                        "partnerId": %d
+                      }
+                      """.formatted(klipDropsPartnerIdExist);
+        mvc.perform(put("/admin/v1/partner-applications/{0}/klipdrops-partner", partnerApplicationId)
+                            .contentType(APPLICATION_JSON)
+                            .content(body))
+           .andExpect(status().isOk());
+        partnerApplicationRepository.flush();
+
+        PartnerApplication partnerApplication = partnerApplicationRepository.findById(application.getId()).orElseThrow();
+        assertThat(partnerApplication.getKlipDropsPartnerId()).isEqualTo(klipDropsPartnerIdExist);
+        assertThat(partnerApplication.getKlipDropsPartnerName()).isEqualTo(klipDropsPartnerName);
     }
 }

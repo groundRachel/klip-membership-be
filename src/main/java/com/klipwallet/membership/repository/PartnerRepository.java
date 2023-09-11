@@ -32,5 +32,12 @@ public interface PartnerRepository extends JpaRepository<Partner, Integer>, JpaS
            """)
     Page<PartnerSummaryView> findAllPartners(@Param("status") PartnerApplication.Status status, Pageable pageable);
 
+    @Query("""
+           select klipDropsPartnerId
+           from Partner
+           where klipDropsPartnerId > 0
+           """)
+    Set<Integer> findAllKlipDropsIds();
+
     boolean existsByEmailAndStatusIn(String email, Set<Status> statuses);
 }

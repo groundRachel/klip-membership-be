@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrop;
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsDrops;
+import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
 import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartners;
 
 @FeignClient(name = "klip-drops-internal")
@@ -21,6 +22,9 @@ public interface KlipDropsInternalApiClient {
                                      @RequestParam(value = "search") String search, // 검색하고자 하는 파트너 이름 혹은 파트너 번호 일부 입력
                                      @RequestParam(value = "cursor") String cursor,
                                      @RequestParam(value = "size", required = false) Integer size);
+
+    @GetMapping(value = "/v1/partners/{partnerId}")
+    KlipDropsPartner getPartnerById(@PathVariable("partnerId") Integer partnerId);
 
     @GetMapping(value = "/v1/partners/{partnerId}/drops")
     KlipDropsDrops getDropsByPartner(@PathVariable(value = "partnerId") Integer partnerId,

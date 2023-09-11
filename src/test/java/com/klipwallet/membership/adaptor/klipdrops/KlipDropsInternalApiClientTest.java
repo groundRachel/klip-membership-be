@@ -85,6 +85,21 @@ class KlipDropsInternalApiClientTest {
     }
 
     @Test
+    void getPartnerById() {
+        Integer partnerId = 1;
+        KlipDropsPartner partner = klipDropsInternalApiClient.getPartnerById(partnerId);
+
+        assertThat(partner).isNotNull();
+        assertThat(partner.businessRegistrationNumber()).isNotEmpty();
+        assertThat(partner.partnerId()).isEqualTo(partnerId);
+        assertThat(partner.name()).isNotEmpty();
+        assertThat(partner.phoneNumber()).isNotEmpty();
+        assertThat(partner.status()).isNotNull();
+        assertThat(partner.createdAt()).isBefore(OffsetDateTime.now());
+        assertThat(partner.updatedAt()).isBefore(OffsetDateTime.now());
+    }
+
+    @Test
     void getDropsByPartner() {
         Integer size = 3;
         Integer partnerId = 43; // dev 환경에 drop 8 개 있는 계
