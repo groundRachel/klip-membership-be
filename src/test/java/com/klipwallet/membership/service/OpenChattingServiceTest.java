@@ -27,7 +27,7 @@ import com.klipwallet.membership.repository.OpenChattingMemberRepository;
 import com.klipwallet.membership.repository.OpenChattingNftRepository;
 import com.klipwallet.membership.repository.OpenChattingRepository;
 
-import static com.klipwallet.membership.exception.ErrorCode.OPENCHAT_ACCESS_DENIED;
+import static com.klipwallet.membership.exception.ErrorCode.OPEN_CHATTING_ACCESS_DENIED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -87,7 +87,7 @@ public class OpenChattingServiceTest {
             openChattingService.getOpenChattingStatus(contractAddress, tokenId, klaytnAddress, klipUser);
         } catch (ForbiddenException e) {
             // then
-            assertThat( e.getErrorCode()).isEqualTo(new ForbiddenException(OPENCHAT_ACCESS_DENIED).getErrorCode());
+            assertThat( e.getErrorCode()).isEqualTo(new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED).getErrorCode());
         }
     }
 
@@ -107,7 +107,7 @@ public class OpenChattingServiceTest {
             openChattingService.getOpenChattingStatus(contractAddress, tokenId, klaytnAddress, klipUser);
         } catch (ForbiddenException e) {
             // then
-            assertThat( e.getErrorCode()).isEqualTo(new ForbiddenException(OPENCHAT_ACCESS_DENIED).getErrorCode());
+            assertThat( e.getErrorCode()).isEqualTo(new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED).getErrorCode());
         }
     }
 

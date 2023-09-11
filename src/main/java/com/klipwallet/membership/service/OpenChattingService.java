@@ -49,7 +49,7 @@ import com.klipwallet.membership.repository.OpenChattingNftRepository;
 import com.klipwallet.membership.repository.OpenChattingRepository;
 import com.klipwallet.membership.service.kakao.KakaoService;
 
-import static com.klipwallet.membership.exception.ErrorCode.OPENCHAT_ACCESS_DENIED;
+import static com.klipwallet.membership.exception.ErrorCode.OPEN_CHATTING_ACCESS_DENIED;
 
 @Service
 @RequiredArgsConstructor
@@ -145,14 +145,15 @@ public class OpenChattingService {
         Address klaytnAddress = new Address("");
 
         // 오픈채팅 참여 가능 여부 확인
-        OpenChattingStatus openChattingStatus = getOpenChattingStatus(sca, tokenId, klaytnAddress, klipUser);
-        if (!openChattingStatus.openChattingExist()) {
-            throw new ForbiddenException(OPENCHAT_ACCESS_DENIED);
+        verifyTokenOwnerToJoinOpenChatting(sca, tokenId, klaytnAddress);
+        OpenChatting openChatting = getOpenChattingByTokenId(sca, tokenId);
+        if (openChatting == null) {
+            throw new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED);
         }
 
         // 오픈채팅 참여하기
-        openChattingMemberService.createMember(openChattingStatus.openChatting(), command, klipUser);
-        return new OpenChattingStatus(true, openChattingStatus.openChattingUrl(), true, null);
+        openChattingMemberService.createMember(openChatting, command, klipUser);
+        return new OpenChattingStatus(true, openChatting.getKakaoOpenlinkSummary().getUrl(), true, null);
     }
 
     private OpenChatting getOpenChatting(Long id) {
@@ -164,9 +165,16 @@ public class OpenChattingService {
     }
 
     private OpenChatting getOpenChattingByTokenId(Address sca, TokenId tokenId) {
-        OpenChattingNft nft = getOpenChattingNft(sca, tokenId.getKlipDropId());
-        return getOpenChatting(nft.getOpenChattingId());
+        OpenChatting openChatting = null;
+        try {
+            OpenChattingNft nft = getOpenChattingNft(sca, tokenId.asKlipDropsDropId());
+            openChatting = getOpenChatting(nft.getOpenChattingId());
+        } catch (NotFoundException | InvalidRequestException e) {
+            return null;
+        }
+        return openChatting;
     }
+
 
     @Transactional(readOnly = true)
     public OpenChattingStatus getOpenChattingStatusByRequestKey(Address sca, TokenId tokenId, String requestKey) {
@@ -186,32 +194,38 @@ public class OpenChattingService {
     }
 
     public OpenChattingStatus getOpenChattingStatus(Address sca, TokenId tokenId, Address klaytnAddress, KlipUser klipUser) {
-        // 토큰 소유 여부 확인
-        NftToken token = null;
-        try {
-            token = tokenService.getNftToken(sca, tokenId);
-        } catch (KasNotFoundInternalApiException | KasBadRequestInternalApiException e) {
-            throw new ForbiddenException(OPENCHAT_ACCESS_DENIED);
-        }
-        if (!token.isOwner(klaytnAddress)) {
-            throw new ForbiddenException(OPENCHAT_ACCESS_DENIED);
-        }
+        verifyTokenOwnerToJoinOpenChatting(sca, tokenId, klaytnAddress);
 
-        // 토큰 관련 오픈채팅 조회
-        OpenChatting openChatting;
-        try {
-            openChatting = getOpenChattingByTokenId(sca, tokenId);
-        } catch (NotFoundException | InvalidRequestException e) {
+        OpenChatting openChatting = getOpenChattingByTokenId(sca, tokenId);
+        if (openChatting == null) {
             return new OpenChattingStatus(false, "", false, null);
         }
         String openChattingUrl = openChatting.getKakaoOpenlinkSummary().getUrl();
 
-        // 참여자 정보 조회하기
-        try {
-            openChattingMemberService.getOpenChattingMemberByOpenChattingIdAndKlipId(openChatting.getId(), klipUser.getKlipAccountId());
-        } catch (MemberNotFoundException e) {
+        if (!isFirstEntryToOpenChatting(openChatting.getId(), klipUser.getKlipAccountId())) {
             return new OpenChattingStatus(true, openChattingUrl, false, openChatting);
         }
         return new OpenChattingStatus(true, openChattingUrl, true, openChatting);
+    }
+
+    private void verifyTokenOwnerToJoinOpenChatting(Address sca, TokenId tokenId, Address klaytnAddress) {
+        NftToken token;
+        try {
+            token = tokenService.getNftToken(sca, tokenId);
+        } catch (KasNotFoundInternalApiException | KasBadRequestInternalApiException e) {
+            throw new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED);
+        }
+        if (!token.isOwner(klaytnAddress)) {
+            throw new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED);
+        }
+    }
+
+    private boolean isFirstEntryToOpenChatting(Long openChattingId, Long klipAccountId) {
+        try {
+            openChattingMemberService.getOpenChattingMemberByOpenChattingIdAndKlipId(openChattingId, klipAccountId);
+        } catch (MemberNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }

@@ -2,10 +2,10 @@ package com.klipwallet.membership.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.klipwallet.membership.dto.openchatting.OpenChattingMemberCreate;
 import com.klipwallet.membership.dto.openchatting.OpenChattingOperatorCreate;
@@ -15,11 +15,15 @@ import com.klipwallet.membership.entity.OpenChatting;
 import com.klipwallet.membership.entity.OpenChattingMember;
 import com.klipwallet.membership.entity.OpenChattingMember.Role;
 import com.klipwallet.membership.entity.Operator;
+import com.klipwallet.membership.exception.ForbiddenException;
 import com.klipwallet.membership.exception.InvalidRequestException;
 import com.klipwallet.membership.exception.MemberNotFoundException;
 import com.klipwallet.membership.exception.kakao.HostOpenChattingLimitExceeded;
+import com.klipwallet.membership.exception.kakao.KakaoForbiddenInternalApiException;
 import com.klipwallet.membership.repository.OpenChattingMemberRepository;
 import com.klipwallet.membership.service.kakao.KakaoService;
+
+import static com.klipwallet.membership.exception.ErrorCode.OPEN_CHATTING_ACCESS_DENIED;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +39,7 @@ public class OpenChattingMemberService {
             member = getOpenChattingMemberByOpenChattingIdAndKlipId(openChatting.getId(), klipUser.getKlipAccountId());
         } catch (MemberNotFoundException e) {
             // 최초로 채팅방에 참여하는 경우 DB 저장하기
-            if (Objects.equals(command.nickname(), "") || Objects.equals(command.profileImageUrl(), "")) {
+            if (!StringUtils.hasText(command.nickname()) || !StringUtils.hasText(command.profileImageUrl())) {
                 throw new InvalidRequestException("nickname, profile required");
             }
             OpenChattingMember entity = command.toOpenChattingMember(openChatting.getId(), klipUser.getKlipAccountId(), klipUser.getKakaoUserId());
@@ -43,7 +47,11 @@ public class OpenChattingMemberService {
         }
 
         // 오픈채팅 참여하기
-        kakaoService.joinOpenChatting(openChatting, member);
+        try {
+            kakaoService.joinOpenChatting(openChatting, member);
+        } catch (KakaoForbiddenInternalApiException e) {
+            throw new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED);
+        }
         return member;
     }
 
@@ -67,7 +75,7 @@ public class OpenChattingMemberService {
 
             kakaoService.joinOpenChatting(openChatting, openChattingMember);
         }
-       return openChattingMemberRepository.saveAll(openChattingMembers);
+        return openChattingMemberRepository.saveAll(openChattingMembers);
     }
 
 

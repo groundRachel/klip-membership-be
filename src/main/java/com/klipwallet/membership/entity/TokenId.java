@@ -40,7 +40,7 @@ public class TokenId {
      * value 35100240011
      * return 3510024
      */
-    public Long getKlipDropId() {
+    public Long asKlipDropsDropId() {
         if (this.value.length() < 4) {
             throw new InvalidRequestException();
         }
