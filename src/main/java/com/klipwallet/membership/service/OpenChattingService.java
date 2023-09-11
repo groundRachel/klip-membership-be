@@ -153,7 +153,7 @@ public class OpenChattingService {
 
         // 오픈채팅 참여하기
         openChattingMemberService.createMember(openChatting, command, klipUser);
-        return new OpenChattingStatus(true, openChatting.getKakaoOpenlinkSummary().getUrl(), true, null);
+        return new OpenChattingStatus(true, openChatting.getKakaoOpenlinkSummary().getUrl(), true);
     }
 
     private OpenChatting getOpenChatting(Long id) {
@@ -165,16 +165,16 @@ public class OpenChattingService {
     }
 
     private OpenChatting getOpenChattingByTokenId(Address sca, TokenId tokenId) {
-        OpenChatting openChatting = null;
+        OpenChatting openChatting;
         try {
             OpenChattingNft nft = getOpenChattingNft(sca, tokenId.asKlipDropsDropId());
             openChatting = getOpenChatting(nft.getOpenChattingId());
         } catch (NotFoundException | InvalidRequestException e) {
+            log.warn("getOpenChattingByTokenId error", e);
             return null;
         }
         return openChatting;
     }
-
 
     @Transactional(readOnly = true)
     public OpenChattingStatus getOpenChattingStatusByRequestKey(Address sca, TokenId tokenId, String requestKey) {
@@ -198,14 +198,14 @@ public class OpenChattingService {
 
         OpenChatting openChatting = getOpenChattingByTokenId(sca, tokenId);
         if (openChatting == null) {
-            return new OpenChattingStatus(false, "", false, null);
+            return new OpenChattingStatus(false, "", false);
         }
         String openChattingUrl = openChatting.getKakaoOpenlinkSummary().getUrl();
 
         if (!isFirstEntryToOpenChatting(openChatting.getId(), klipUser.getKlipAccountId())) {
-            return new OpenChattingStatus(true, openChattingUrl, false, openChatting);
+            return new OpenChattingStatus(true, openChattingUrl, false);
         }
-        return new OpenChattingStatus(true, openChattingUrl, true, openChatting);
+        return new OpenChattingStatus(true, openChattingUrl, true);
     }
 
     private void verifyTokenOwnerToJoinOpenChatting(Address sca, TokenId tokenId, Address klaytnAddress) {
