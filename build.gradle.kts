@@ -55,9 +55,9 @@ extra["springCloudVersion"] = "2022.0.4"
 extra["springdocVersion"] = "2.2.0"
 extra["spockVersion"] = "2.3-groovy-4.0"
 extra["newrelicLogbackVersion"] = "2.0"
-extra["snappyJavaVersion"] = "1.1.10.1"     // [HIGH] CVE-2023-34453, CVE-2023-34454, CVE-2023-34455  FIXME kafka-clients >= 3.5.1 https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html
-extra["h2.version"] = "2.2.220"             // [HIGH] CVE-2022-45868 FIXME h2 >= 2.2.220 https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html
-extra["snakeyaml.version"] = "2.0"          // [CRITICAL] CVE-2022-1471 FIXME snakeyaml >= 2.0 https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html
+extra["snappyJavaVersion"] = "1.1.10.1"     // [HIGH] CVE-2023-34453, CVE-2023-34454, CVE-2023-34455  FIXME remove if kafka-clients >= 3.5.1 https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html
+extra["h2.version"] = "2.2.220"             // [HIGH] CVE-2022-45868 FIXME Remove if h2 >= 2.2.220 https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html
+extra["snakeyaml.version"] = "2.0"          // [CRITICAL] CVE-2022-1471 FIXME Remove if snakeyaml >= 2.0 https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -79,6 +79,7 @@ dependencies {
     implementation("software.amazon.awssdk:sesv2")
     implementation("software.amazon.awssdk:cloudfront")
     implementation("org.springframework.kafka:spring-kafka")
+    // FIXME remove if kafka-clients >= 3.5.1 https://docs.spring.io/spring-boot/docs/current/reference/html/dependency-versions.html
     implementation("org.xerial.snappy:snappy-java:${property("snappyJavaVersion")}")  // -> kafka-clients: [HIGH] CVE-2023-34453, CVE-2023-34454, CVE-2023-34455
     implementation("io.lettuce:lettuce-core")    // Redis
     implementation("org.apache.commons:commons-pool2")    // Redis Pool
