@@ -7,6 +7,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
@@ -27,6 +28,7 @@ import com.klipwallet.membership.dto.OneTimeAction;
 
 import static org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
+@Slf4j
 public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
     private static final char PATH_DELIMITER = '/';
 
@@ -150,15 +152,19 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
                .redirectUri(redirectUriStr)
                .scopes(clientRegistration.getScopes())
                .state(state);
+        // builder.additionalParameters(params -> params.put("prompt", "login"));
         if (isKakaoInAppBrowser(request)) {
             /*
              * 카카오 인톡 내 브라우저에서 인증 시 필요한 파라미터. UserAgent 헤더로 분기 처리가 필요하다.
              * https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-code-additional-consent
              * https://developers.kakao.com/docs/latest/ko/kakaologin/common#authentication-auto-login
              */
-            builder.additionalParameters(params -> params.put("prompt", "none"));
+            log.info("isKakaoInAppBrowser: {}", request);
         }
-        return builder.build();
+        OAuth2AuthorizationRequest result = builder.build();
+        log.info("clientId: {}\nredirectUri: {}\nscopes: {}\nstate: {}\nadditionalParameters: {}",
+                 result.getClientId(), result.getRedirectUri(), result.getScopes(), result.getState(), result.getAdditionalParameters());
+        return result;
     }
 
     private boolean isKakaoInAppBrowser(HttpServletRequest request) {
