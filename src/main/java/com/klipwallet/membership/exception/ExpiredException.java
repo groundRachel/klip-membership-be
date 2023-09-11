@@ -7,7 +7,7 @@ public class ExpiredException extends BaseCodeException {
     }
 
     public ExpiredException(String message) {
-        super(ErrorCode.INVALID_REQUEST, message);
+        super(ErrorCode.EXPIRED, message);
     }
 
     public ExpiredException(ErrorCode code) {
