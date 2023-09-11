@@ -152,15 +152,6 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
                .redirectUri(redirectUriStr)
                .scopes(clientRegistration.getScopes())
                .state(state);
-        // builder.additionalParameters(params -> params.put("prompt", "login"));
-        if (isKakaoInAppBrowser(request)) {
-            /*
-             * 카카오 인톡 내 브라우저에서 인증 시 필요한 파라미터. UserAgent 헤더로 분기 처리가 필요하다.
-             * https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-code-additional-consent
-             * https://developers.kakao.com/docs/latest/ko/kakaologin/common#authentication-auto-login
-             */
-            log.info("isKakaoInAppBrowser: {}", request);
-        }
         OAuth2AuthorizationRequest result = builder.build();
         log.info("clientId: {}\nredirectUri: {}\nscopes: {}\nstate: {}\nadditionalParameters: {}",
                  result.getClientId(), result.getRedirectUri(), result.getScopes(), result.getState(), result.getAdditionalParameters());
