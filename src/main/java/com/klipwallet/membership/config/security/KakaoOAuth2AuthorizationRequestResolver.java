@@ -7,6 +7,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.NonNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.keygen.Base64StringKeyGenerator;
 import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -149,8 +150,23 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
                .redirectUri(redirectUriStr)
                .scopes(clientRegistration.getScopes())
                .state(state);
-
+        if (isKakaoInAppBrowser(request)) {
+            /*
+             * 카카오 인톡 내 브라우저에서 인증 시 필요한 파라미터. UserAgent 헤더로 분기 처리가 필요하다.
+             * https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#request-code-additional-consent
+             * https://developers.kakao.com/docs/latest/ko/kakaologin/common#authentication-auto-login
+             */
+            builder.additionalParameters(params -> params.put("prompt", "none"));
+        }
         return builder.build();
+    }
+
+    private boolean isKakaoInAppBrowser(HttpServletRequest request) {
+        String userAgent = request.getHeader(HttpHeaders.USER_AGENT);
+        if (userAgent == null) {
+            return false;
+        }
+        return userAgent.contains("KAKAOTALK");
     }
 
     private String generateState(HttpServletRequest request, OneTimeAction otAction) {
