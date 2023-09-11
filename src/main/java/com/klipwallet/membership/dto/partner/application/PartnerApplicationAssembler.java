@@ -29,7 +29,7 @@ public class PartnerApplicationAssembler {
     public List<PartnerApplicationRow> toPartnerApplicationRow(@NonNull Page<PartnerApplication> partnerApplications) {
 
         return partnerApplications.stream()
-                                  .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(),
+                                  .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(), p.getKlipDropsPartnerId(),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
                                                                       memberAssembler.getMemberSummary(p.getProcessorId())))
