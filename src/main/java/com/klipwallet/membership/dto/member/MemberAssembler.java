@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class MemberAssembler {
                                .orElseGet(() -> MemberSummary.deactivated(memberId));
     }
 
-    public MemberSummary getMemberSummaryIfExist(Integer memberId) {
+    public MemberSummary getMemberSummary(@Nullable Integer memberId) {
         if (memberId == null) {
             return null;
         } else {

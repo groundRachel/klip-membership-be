@@ -44,21 +44,21 @@ public class PartnerDto {
 
     @Schema(description = "[ADMIN] 파트너 상세 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record DetailByAdmin(
-            MemberId id,
-            String businessName,
-            String businessRegistrationNumber,
-            String email,
-            OffsetDateTime appliedAt,
+            @Schema(description = "Partner ID", requiredMode = RequiredMode.REQUIRED) @NonNull MemberId id,
+            @Schema(description = "파트너 사업자 이름", requiredMode = RequiredMode.REQUIRED) @NonNull String businessName,
+            @Schema(description = "파트너 사업자 번호", requiredMode = RequiredMode.REQUIRED) @NonNull String businessRegistrationNumber,
+            @Schema(description = "가입 요청한 이메일 주소", requiredMode = RequiredMode.REQUIRED) @NonNull String email,
+            @Schema(description = "가입 신청 시각", requiredMode = RequiredMode.REQUIRED) @NonNull OffsetDateTime appliedAt,
 
-            Integer klipDropsPartnerId,
-            ApproveDetail approveDetail
+            @Schema(description = "Klip Drops Partner ID") Integer klipDropsPartnerId,
+            @Schema(description = "가입 승인 정보", requiredMode = RequiredMode.REQUIRED) @NonNull ApproveDetail approveDetail
             // TODO add open chatting info
     ) {
     }
 
     public record ApproveDetail(
-            MemberSummary approvedBy,
-            OffsetDateTime approvedAt
+            @Schema(description = "승인한 사람", requiredMode = RequiredMode.REQUIRED) @NonNull MemberSummary approvedBy,
+            @Schema(description = "승인한 시각", requiredMode = RequiredMode.REQUIRED) @NonNull OffsetDateTime approvedAt
     ) {
     }
 }

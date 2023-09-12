@@ -61,15 +61,15 @@ public class PartnerApplicationDto {
 
     @Schema(description = "[ADMIN] 파트너 신청, 거절 상세 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record PartnerApplicationDetail(
-            @NonNull Integer id,
-            @NonNull String businessName,
-            @NonNull String businessRegistrationNumber,
-            Status status,
-            @NonNull String email,
-            @NonNull OffsetDateTime appliedAt,
+            @Schema(description = "파트너 신청 ID", requiredMode = RequiredMode.REQUIRED) @NonNull Integer id,
+            @Schema(description = "파트너 사업자 이름", requiredMode = RequiredMode.REQUIRED) @NonNull String businessName,
+            @Schema(description = "파트너 사업자 번호", requiredMode = RequiredMode.REQUIRED) @NonNull String businessRegistrationNumber,
+            @Schema(description = "파트너 가입 요청 상태", requiredMode = RequiredMode.REQUIRED) Status status,
+            @Schema(description = "가입 요청한 이메일 주소", requiredMode = RequiredMode.REQUIRED) @NonNull String email,
+            @Schema(description = "가입 신청 시각", requiredMode = RequiredMode.REQUIRED) @NonNull OffsetDateTime appliedAt,
 
-            KlipDropsDto.PartnerDetail klipDropsDetail,
-            RejectDetail rejectDetail
+            @Schema(description = "Klip Drops Partner ID", requiredMode = RequiredMode.REQUIRED) @NonNull KlipDropsDto.PartnerDetail klipDropsDetail,
+            @Schema(description = "가입 거절 정보") RejectDetail rejectDetail
     ) {
         public PartnerApplicationDetail withRejectDetail(RejectDetail rejectDetail) {
             return new PartnerApplicationDetail(
@@ -86,9 +86,9 @@ public class PartnerApplicationDto {
     }
 
     public record RejectDetail(
-            OffsetDateTime rejectedAt,
-            MemberSummary rejectedBy,
-            String rejectReason
+            @Schema(description = "가입 거절 시각") OffsetDateTime rejectedAt,
+            @Schema(description = "가입 거절한 Admin") MemberSummary rejectedBy,
+            @Schema(description = "가입 거절한 이유") String rejectReason
     ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청, 거절 수를 위한 DTO", accessMode = AccessMode.READ_ONLY)

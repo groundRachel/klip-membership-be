@@ -49,7 +49,7 @@ public class PartnerAssembler {
                                  partner.getEmail(),
                                  dateTimeAssembler.toOffsetDateTime(partner.getCreatedAt()),
                                  partner.getKlipDropsPartnerId(),
-                                 new ApproveDetail(memberAssembler.getMemberSummaryIfExist(partner.getProcessorId()),
+                                 new ApproveDetail(memberAssembler.getMemberSummary(partner.getProcessorId()),
                                                    dateTimeAssembler.toOffsetDateTime(partner.getProcessedAt())));
     }
 }

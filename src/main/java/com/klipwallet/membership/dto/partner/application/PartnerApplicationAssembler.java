@@ -37,25 +37,26 @@ public class PartnerApplicationAssembler {
                                   .map(p -> new PartnerApplicationRow(p.getId(), p.getBusinessName(), p.getKlipDropsPartnerId(),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getCreatedAt()),
                                                                       dateTimeAssembler.toOffsetDateTime(p.getProcessedAt()),
-                                                                      memberAssembler.getMemberSummaryIfExist((p.getProcessorId()))))
+                                                                      memberAssembler.getMemberSummary((p.getProcessorId()))))
                                   .toList();
     }
 
     public PartnerApplicationDetail toPartnerApplicationDetail(PartnerApplication partnerApplication) {
-        PartnerApplicationDetail detail = new PartnerApplicationDetail(partnerApplication.getId(),
-                                                                       partnerApplication.getBusinessName(),
-                                                                       partnerApplication.getBusinessRegistrationNumber(),
-                                                                       partnerApplication.getStatus(),
-                                                                       partnerApplication.getEmail(),
-                                                                       dateTimeAssembler.toOffsetDateTime(partnerApplication.getCreatedAt()),
-                                                                       new PartnerDetail(partnerApplication.getKlipDropsPartnerId(),
-                                                                                         partnerApplication.getKlipDropsPartnerName()),
-                                                                       null);
+        RejectDetail rejectDetail = null;
         if (partnerApplication.getStatus() == Status.REJECTED) {
-            detail = detail.withRejectDetail(new RejectDetail(dateTimeAssembler.toOffsetDateTime(partnerApplication.getProcessedAt()),
-                                                              memberAssembler.getMemberSummary(new MemberId(partnerApplication.getProcessorId())),
-                                                              partnerApplication.getRejectReason()));
+            rejectDetail = new RejectDetail(dateTimeAssembler.toOffsetDateTime(partnerApplication.getProcessedAt()),
+                                            memberAssembler.getMemberSummary(new MemberId(partnerApplication.getProcessorId())),
+                                            partnerApplication.getRejectReason());
         }
-        return detail;
+
+        return new PartnerApplicationDetail(partnerApplication.getId(),
+                                            partnerApplication.getBusinessName(),
+                                            partnerApplication.getBusinessRegistrationNumber(),
+                                            partnerApplication.getStatus(),
+                                            partnerApplication.getEmail(),
+                                            dateTimeAssembler.toOffsetDateTime(partnerApplication.getCreatedAt()),
+                                            new PartnerDetail(partnerApplication.getKlipDropsPartnerId(),
+                                                              partnerApplication.getKlipDropsPartnerName()),
+                                            rejectDetail);
     }
 }
