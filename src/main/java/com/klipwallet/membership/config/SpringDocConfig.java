@@ -195,7 +195,7 @@ public class SpringDocConfig {
     public GroupedOpenApi externalApi() {
         return GroupedOpenApi.builder()
                              .group("3. klip-membership-tool.external")
-                             .pathsToMatch("/open/**", "/internal/**")
+                             .pathsToMatch("/external/**", "/internal/**")
                              .displayName("3. 외부 제공 API")
                              .build();
     }

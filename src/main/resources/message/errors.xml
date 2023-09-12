@@ -22,6 +22,7 @@
 
     <!-- 403 -->
     <entry key="problemDetail.code.403000">권한이 부족합니다.</entry>
+    <entry key="problemDetail.code.403001">오픈채팅 접근 권한이 없습니다.</entry>
 
     <!-- 404 -->
     <entry key="problemDetail.code.404000">리소스를 찾을 수 없습니다.</entry>
@@ -62,6 +63,8 @@
     <entry key="problemDetail.code.500200">내부 API 호출에서 오류가 발생하였습니다.</entry>
     <entry key="problemDetail.code.500201">내부 API 호출에서 오류가 발생하였습니다.</entry>
     <entry key="problemDetail.code.500202">내부 API 호출에서 오류가 발생하였습니다.</entry>
+    <entry key="problemDetail.code.500203">내부 API 호출에서 오류가 발생하였습니다.</entry>
+    <entry key="problemDetail.code.500204">내부 API 호출에서 오류가 발생하였습니다.</entry>
 
     <!-- 503 -->
     <entry key="problemDetail.code.503000">서비스를 사용할 수 없습니다.</entry>

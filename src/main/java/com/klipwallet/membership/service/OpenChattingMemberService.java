@@ -5,18 +5,25 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.klipwallet.membership.dto.openchatting.OpenChattingMemberCreate;
-import com.klipwallet.membership.dto.openchatting.OpenChattingMemberSummary;
 import com.klipwallet.membership.dto.openchatting.OpenChattingOperatorCreate;
 import com.klipwallet.membership.entity.AuthenticatedUser;
+import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.OpenChatting;
 import com.klipwallet.membership.entity.OpenChattingMember;
 import com.klipwallet.membership.entity.OpenChattingMember.Role;
 import com.klipwallet.membership.entity.Operator;
+import com.klipwallet.membership.exception.ForbiddenException;
+import com.klipwallet.membership.exception.InvalidRequestException;
+import com.klipwallet.membership.exception.MemberNotFoundException;
 import com.klipwallet.membership.exception.kakao.HostOpenChattingLimitExceeded;
+import com.klipwallet.membership.exception.kakao.KakaoForbiddenInternalApiException;
 import com.klipwallet.membership.repository.OpenChattingMemberRepository;
 import com.klipwallet.membership.service.kakao.KakaoService;
+
+import static com.klipwallet.membership.exception.ErrorCode.OPEN_CHATTING_ACCESS_DENIED;
 
 @Service
 @RequiredArgsConstructor
@@ -26,15 +33,26 @@ public class OpenChattingMemberService {
     private final OperatorService operatorService;
     private final KakaoService kakaoService;
 
-
-    /**
-     * 외부 API 에서 사용
-     */
-    public OpenChattingMemberSummary create(OpenChattingMemberCreate command) {
-        if (command.role() == Role.NFT_HOLDER) {
-            // TODO: Check NFT
+    public OpenChattingMember createMember(OpenChatting openChatting, OpenChattingMemberCreate command, KlipUser klipUser) {
+        OpenChattingMember member;
+        try {
+            member = getOpenChattingMemberByOpenChattingIdAndKlipId(openChatting.getId(), klipUser.getKlipAccountId());
+        } catch (MemberNotFoundException e) {
+            // 최초로 채팅방에 참여하는 경우 DB 저장하기
+            if (!StringUtils.hasText(command.nickname()) || !StringUtils.hasText(command.profileImageUrl())) {
+                throw new InvalidRequestException("nickname, profile required");
+            }
+            OpenChattingMember entity = command.toOpenChattingMember(openChatting.getId(), klipUser.getKlipAccountId(), klipUser.getKakaoUserId());
+            member = openChattingMemberRepository.save(entity);
         }
-        return null;
+
+        // 오픈채팅 참여하기
+        try {
+            kakaoService.joinOpenChatting(openChatting, member);
+        } catch (KakaoForbiddenInternalApiException e) {
+            throw new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED);
+        }
+        return member;
     }
 
     public OpenChattingMember createHost(OpenChatting openChatting, OpenChattingOperatorCreate command, AuthenticatedUser user) {
@@ -57,7 +75,7 @@ public class OpenChattingMemberService {
 
             kakaoService.joinOpenChatting(openChatting, openChattingMember);
         }
-       return openChattingMemberRepository.saveAll(openChattingMembers);
+        return openChattingMemberRepository.saveAll(openChattingMembers);
     }
 
 
@@ -66,5 +84,9 @@ public class OpenChattingMemberService {
         if (count > HOST_OPEN_CHATTING_LIMIT) {
             throw new HostOpenChattingLimitExceeded(hostId, count);
         }
+    }
+
+    public OpenChattingMember getOpenChattingMemberByOpenChattingIdAndKlipId(Long openChattingId, Long klipId) {
+        return openChattingMemberRepository.findByOpenChattingIdAndKlipId(openChattingId, klipId).orElseThrow(() -> new MemberNotFoundException());
     }
 }
