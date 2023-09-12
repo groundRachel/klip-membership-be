@@ -128,7 +128,7 @@ public class SpringDocConfig {
 
     @SuppressWarnings("rawtypes")
     private Schema problemDetail400Schema() {
-        var pdJson = toJson(toProblemDetail(BAD_REQUEST, new InvalidRequestException(), "공지사항을 찾을 수 없습니다. ID: 3322"));
+        var pdJson = toJson(toProblemDetail(BAD_REQUEST, new InvalidRequestException(), "요청이 유효하지 않습니다."));
         return new Schema<>().type("object").example(pdJson);
     }
 
@@ -146,6 +146,12 @@ public class SpringDocConfig {
     }
 
     @SuppressWarnings("rawtypes")
+    private Schema problemDetail404Schema() {
+        var pdJson = toJson(toProblemDetail(NOT_FOUND, new NoticeNotFoundException(3322), "공지사항을 찾을 수 없습니다. ID: 3322"));
+        return new Schema<>().type("object").example(pdJson);
+    }
+
+    @SuppressWarnings("rawtypes")
     private Schema problemDetail409Schema() {
         var pdJson = toJson(toProblemDetail(CONFLICT, new ConflictException(), "이미 처리된 요청입니다. ID: 3322, 처리상태: approved, 처리자: 8, 처리시각: {3}"));
         return new Schema<>().type("object").example(pdJson);
@@ -155,12 +161,6 @@ public class SpringDocConfig {
         return new KlipMembershipOAuth2User(new MemberId(11), AuthorityUtils.createAuthorityList(ROLE_PARTNER), "정조던",
                                             "jordan.jung@groundx.xyz");
 
-    }
-
-    @SuppressWarnings("rawtypes")
-    private Schema problemDetail404Schema() {
-        var pdJson = toJson(toProblemDetail(NOT_FOUND, new NoticeNotFoundException(3322), "공지사항을 찾을 수 없습니다. ID: 3322"));
-        return new Schema<>().type("object").example(pdJson);
     }
 
     @SuppressWarnings("rawtypes")

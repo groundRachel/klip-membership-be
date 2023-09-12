@@ -13,8 +13,10 @@
     <entry key="problemDetail.code.400007">운영진 초대자와 현재 접속자가 일치하지 않습니다.</entry>
     <entry key="problemDetail.code.400008">방장이 될 수 있는 오픈채팅방의 갯수 제한이 넘었습니다. Host ID: {0,number,#}, Count: {0,number,#}</entry>
     <entry key="problemDetail.code.400009">초대한 운영진은 Klip 이용자가 아닙니다. {0}</entry>
-    <entry key="problemDetail.code.400010">가입 요청의 사업자 번호와 Klip Drops 파트너의 사업자 번호가 일치하지 않습니다. 가입 요청 ID: {0,number,#}, Klip Drops Id : {1,number,#}
+    <entry key="problemDetail.code.400010">
+        가입 요청의 사업자 번호와 Klip Drops 파트너의 사업자 번호가 일치하지 않습니다. 가입 요청 ID: {0,number,#}, Klip Drops Id : {1,number,#}
     </entry>
+    <entry key="problemDetail.code.400011">이미 등록된 운영진은 초대할 수 없습니다.</entry>
 
     <!-- 401 -->
     <entry key="problemDetail.code.401000">인증되지 않았습니다.</entry>

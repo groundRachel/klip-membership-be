@@ -12,4 +12,6 @@ public interface OperatorRepository extends JpaRepository<Operator, Long> {
      * @return 운영진 존재 여부
      */
     boolean existsByKakaoUserId(String kakaoUserId);
+
+    boolean existsByKlipId(Long klipId);
 }

@@ -26,6 +26,7 @@ import com.klipwallet.membership.exception.operator.OperationAlreadyJoinedExcept
 import com.klipwallet.membership.exception.operator.OperatorInvitationCodeExpiredException;
 import com.klipwallet.membership.exception.operator.OperatorInvitationExpiredException;
 import com.klipwallet.membership.exception.operator.OperatorInvitationNotMatchedException;
+import com.klipwallet.membership.exception.operator.OperatorInviteeAlreadyJoinedException;
 import com.klipwallet.membership.exception.operator.OperatorInviteeNotExistsOnKlipException;
 import com.klipwallet.membership.exception.operator.OperatorNotFoundException;
 import com.klipwallet.membership.repository.OperatorRepository;
@@ -154,16 +155,43 @@ public class OperatorService implements OperatorInvitable {
      */
     @Override
     public String inviteOperator(MemberId inviterPartnerId, String phoneNumber) {
-        // 초대 만료와 코드 관리를 위해서 필요함.
         String inviteePhoneNumber = PhoneNumberUtils.toFormalKrMobileNumber(phoneNumber);
+        // 운영진으로 초대할 "검증된" Klip 이용자
+        @SuppressWarnings("unused")
+        KlipUser invitee = verifiedInviteeOnKlip(inviteePhoneNumber);
+
+        // 초대 코드 발급(24시간)
+        String invitationCode = issueInvitationCode(inviterPartnerId, inviteePhoneNumber);
+
+        Partner inviter = tryGetPartner(inviterPartnerId);
+        return sendNotification(inviter, inviteePhoneNumber, invitationCode);
+    }
+
+    @NonNull
+    private String issueInvitationCode(MemberId inviterPartnerId, String inviteePhoneNumber) {
+        String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, inviteePhoneNumber));
+        log.info("invitationCode: {}", code);
+        return code;
+    }
+
+    @NonNull
+    private KlipUser verifiedInviteeOnKlip(String inviteePhoneNumber) {
         KlipUser invitee = klipAccountService.getKlipUserByPhoneNumber(inviteePhoneNumber);
+        verifyAlreadyJoinedOperator(invitee, inviteePhoneNumber);
+        return invitee;
+    }
+
+    private void verifyAlreadyJoinedOperator(KlipUser invitee, String inviteePhoneNumber) {
         if (invitee == null) {
             throw new OperatorInviteeNotExistsOnKlipException(inviteePhoneNumber);
         }
-        String code = invitationRegistry.save(new OperatorInvitation(inviterPartnerId, inviteePhoneNumber));
-        log.info("invitationCode: {}", code);
-        Partner inviterPartner = tryGetPartner(inviterPartnerId);
-        return sendNotification(inviterPartner, inviteePhoneNumber, code);
+        // 이미 등록된 운영진은 초대할 수 없습니다. klipId, kakaoUserId 둘 다 확인
+        if (operatorRepository.existsByKlipId(invitee.getKlipAccountId())) {
+            throw new OperatorInviteeAlreadyJoinedException();
+        }
+        if (operatorRepository.existsByKakaoUserId(invitee.getKakaoUserId())) {
+            throw new OperatorInviteeAlreadyJoinedException();
+        }
     }
 
     @NonNull
