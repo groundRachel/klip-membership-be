@@ -35,9 +35,9 @@ public class Operator extends BaseEntity<Operator> {
      * 디비에 저장된 클립 계정 Id
      * {@link com.klipwallet.membership.adaptor.klip.KlipAccount#getKlipAccountId()}
      */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     Long klipId;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String kakaoUserId;
     /**
      * 파트너 계정 Id

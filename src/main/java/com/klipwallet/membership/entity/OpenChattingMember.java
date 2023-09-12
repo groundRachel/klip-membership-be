@@ -18,6 +18,7 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 import com.klipwallet.membership.entity.OpenChatting.Source;
 
 @Entity
+// FIXME @Ian unique(openChattingId, operatorId)
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString

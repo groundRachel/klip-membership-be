@@ -33,8 +33,9 @@ public class AttachFile extends BaseEntity<AttachFile> {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     /**
-     * 원본 파일명(거의 사용할 일이 없으나, 파일 다운로드가 추후 구현된다면 사용될 수 있음.
+     * 원본 파일명
      */
+    @Column(nullable = false)
     private String filename;
     @Column(nullable = false)
     private MediaType contentType;

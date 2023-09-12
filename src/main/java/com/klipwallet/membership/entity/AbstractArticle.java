@@ -37,6 +37,7 @@ public class AbstractArticle<T extends AbstractArticle<T>> extends BaseEntity<T>
     /**
      * <pre>draft, live, inactive, delete</pre>
      */
+    @Column(nullable = false)
     private ArticleStatus status;
     /**
      * 최근 {@literal Live}일시

@@ -12,9 +12,9 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 @Embeddable
 @Value
 public class KakaoOpenlinkSummary {
-    @Column(name = "openlink_id", nullable = false)
+    @Column(name = "openlink_id", unique = true, nullable = false)
     Long id;
-    @Column(name = "openlink_url", nullable = false)
+    @Column(name = "openlink_url", unique = true, nullable = false)
     String url;
 
     @SuppressWarnings("ProtectedMemberInFinalClass")
