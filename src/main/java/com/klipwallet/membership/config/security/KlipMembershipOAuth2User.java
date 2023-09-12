@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -29,7 +28,6 @@ import com.klipwallet.membership.entity.Partner;
 import static com.klipwallet.membership.config.SecurityConfig.*;
 import static java.util.Collections.emptyMap;
 
-@RequiredArgsConstructor
 @ToString
 public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable {
     @Serial
