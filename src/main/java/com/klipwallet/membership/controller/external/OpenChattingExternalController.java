@@ -16,9 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,14 +67,8 @@ public class OpenChattingExternalController {
                               @Parameter(hidden = true)
                               HttpServletRequest request, HttpServletResponse response) {
         String frontUrl = properties.getToolFrontUrl();
-        //        saveAuthentication(request, response);
-        return "redirect:%s/openchat/join".formatted(frontUrl);
-    }
 
-    private void saveAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
-        SecurityContext context = SecurityContextHolder.getContextHolderStrategy().getContext();
-        securityContextRepository.saveContext(context, request, response);
+        return "redirect:%s/openchat/join".formatted(frontUrl);
     }
 
     @SuppressWarnings("unused")
