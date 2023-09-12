@@ -18,11 +18,14 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 import com.klipwallet.membership.entity.OpenChatting.Source;
 
 @Entity
-// FIXME @Ian unique(openChattingId, operatorId)
+// FIXME @Ian unique(openChattingId, kakaoUserId)
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
 public class OpenChattingMember {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    private Long id;
     @Column(nullable = false)
     private Long openChattingId;
     @Column(nullable = false)
@@ -37,9 +40,6 @@ public class OpenChattingMember {
     private String profileImageUrl;
     @Column(nullable = false)
     private Role role;
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    private Long id;
 
     @ForJpa
     protected OpenChattingMember() {
