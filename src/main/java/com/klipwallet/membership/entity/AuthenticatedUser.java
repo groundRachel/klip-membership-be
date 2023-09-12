@@ -65,6 +65,7 @@ public interface AuthenticatedUser extends OAuth2User {
     @Nullable
     String getKakaoPhoneNumber();
 
+    @SuppressWarnings("unused")
     @Nullable
     OAuth2Token getKakaoAccessToken();
 }
