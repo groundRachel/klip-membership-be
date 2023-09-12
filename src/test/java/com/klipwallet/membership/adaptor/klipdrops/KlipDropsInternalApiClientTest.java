@@ -1,7 +1,7 @@
 package com.klipwallet.membership.adaptor.klipdrops;
 
-import java.math.BigInteger;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -125,9 +125,7 @@ class KlipDropsInternalApiClientTest {
 
     @Test
     void getDropsByIds() {
-        List<BigInteger> dropIds = List.of(new BigInteger(String.valueOf(3150048)),
-                                           new BigInteger(String.valueOf(1010046)),
-                                           new BigInteger(String.valueOf(1010041)));
+        Collection<Long> dropIds = List.of(3150048L, 1010046L, 1010041L);
         List<KlipDropsDrop> dropsByIds = klipDropsInternalApiClient.getDropsByIds(dropIds);
 
         assertThat(dropsByIds.size()).isEqualTo(dropIds.size());

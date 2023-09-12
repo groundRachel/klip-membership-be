@@ -26,8 +26,9 @@ class OpenChattingRepositoryTest {
 
     @Test
     void insertAndSelect() {
-        OpenChatting entity = new OpenChatting("title", "http://coverImage", new KakaoOpenlinkSummary(1L, "yes"),
-                                               new Address("0xa005e82487fb629923b9598fffd1c2e9499f0cab"), new MemberId(1));
+        OpenChatting entity = new OpenChatting("title", "desc", "http://coverImage",
+                                               new KakaoOpenlinkSummary(1L, "yes"), new Address("0xa005e82487fb629923b9598fffd1c2e9499f0cab"),
+                                               new MemberId(1));
 
         OpenChatting saved = openChattingRepository.save(entity);
         em.flush();

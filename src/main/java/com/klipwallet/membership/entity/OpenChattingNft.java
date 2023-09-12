@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,6 +18,9 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
+@Table(uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"openChattingId", "dropId"})
+})
 public class OpenChattingNft extends BaseEntity<OpenChattingNft> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

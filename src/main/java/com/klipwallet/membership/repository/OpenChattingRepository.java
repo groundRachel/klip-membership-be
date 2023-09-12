@@ -11,9 +11,9 @@ public interface OpenChattingRepository extends JpaRepository<OpenChatting, Long
     /**
      * 상태에 따른 오픈채팅방 목록
      *
-     * @param status 오픈채팅 상태
-     * @param sort   정렬
+     * @param status   오픈채팅 상태
+     * @param pageable 정렬
      * @return 상태에 따른 오픈채팅방 목록
      */
-    Page<OpenChatting> findAllByStatus(Status status, Pageable sort);
+    Page<OpenChatting> findAllByStatus(Status status, Pageable pageable);
 }

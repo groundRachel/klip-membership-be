@@ -44,8 +44,7 @@ public class OperatorService implements OperatorInvitable {
 
     /**
      * 운영진 가입
-     * <p>
-     * 파트너가 초대 후 운영진이 특정 링크를 클릭한 후 발급해 둔 초대 코드를 바탕으로 처리한다.
+     * <p> * 파트너가 초대 후 운영진이 특정 링크를 클릭한 후 발급해 둔 초대 코드를 바탕으로 처리한다.
      * </p>
      *
      * @param invitationCode 초대 코드

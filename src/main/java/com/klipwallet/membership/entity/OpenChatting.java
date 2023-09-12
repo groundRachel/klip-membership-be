@@ -1,5 +1,7 @@
 package com.klipwallet.membership.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -38,6 +40,7 @@ public class OpenChatting extends BaseEntity<OpenChatting> {
     private KakaoOpenlinkSummary kakaoOpenlinkSummary;
     @Column(nullable = false)
     private String title;
+    private String description;
     /**
      * 채팅방 커버 이미지
      */
@@ -61,8 +64,10 @@ public class OpenChatting extends BaseEntity<OpenChatting> {
     /**
      * 채팅방 생성을 위한 기본 생성자.
      */
-    public OpenChatting(String title, String coverImage, KakaoOpenlinkSummary kakaoOpenlinkSummary, Address nftSca, MemberId creatorId) {
+    public OpenChatting(String title, String description, String coverImage, KakaoOpenlinkSummary kakaoOpenlinkSummary, Address nftSca,
+                        MemberId creatorId) {
         this.title = title;
+        this.description = description;
         this.coverImage = coverImage;
         this.kakaoOpenlinkSummary = kakaoOpenlinkSummary;
         this.status = Status.ACTIVATED;
@@ -79,6 +84,13 @@ public class OpenChatting extends BaseEntity<OpenChatting> {
 
     public boolean isDeleted() {
         return status == Status.DELETED;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        if (isDeleted()) {
+            return getUpdatedAt();
+        }
+        return null;
     }
 
     public void deleteBy(MemberId updater) {

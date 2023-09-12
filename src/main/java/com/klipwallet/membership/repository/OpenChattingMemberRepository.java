@@ -2,6 +2,8 @@ package com.klipwallet.membership.repository;
 
 import java.util.Optional;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.klipwallet.membership.entity.OpenChattingMember;
@@ -18,4 +20,6 @@ public interface OpenChattingMemberRepository extends JpaRepository<OpenChatting
      * @return OpenChattingMember
      */
     Optional<OpenChattingMember> findByOpenChattingIdAndKlipId(Long openChattingId, Long klipId);
+
+    List<OpenChattingMember> findByOpenChattingIdAndRole(Long openChattingId, Role role);
 }

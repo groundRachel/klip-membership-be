@@ -44,6 +44,6 @@ public record OpenChattingCreate(
 
     public OpenChatting toOpenChatting(@NonNull KakaoOpenlinkSummary kakaoOpenlinkSummary, Address nftSca,
                                        MemberId creatorId) {
-        return new OpenChatting(title, coverImageUrl, kakaoOpenlinkSummary, nftSca, creatorId);
+        return new OpenChatting(title, description, coverImageUrl, kakaoOpenlinkSummary, nftSca, creatorId);
     }
 }
