@@ -133,6 +133,11 @@ spring:
               - profile
               - account_email
               - talk_openchats
+      resourceserver:
+        opaquetoken:
+          introspection-uri: \${spring.security.oauth2.client.provider.kakao.user-info-uri}
+          client-id: \${spring.security.oauth2.client.registration.kakao.client-id}
+          client-secret: \${spring.security.oauth2.client.registration.kakao.client-id}
   servlet:
     multipart:
       max-file-size: 10MB

@@ -36,6 +36,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.klipwallet.membership.config.security.KakaoOAuth2AuthorizationRequestResolver;
 import com.klipwallet.membership.config.security.KakaoOAuth2UserService;
+import com.klipwallet.membership.config.security.KakaoOpaqueTokenIntrospector;
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2SuccessHandler;
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2UserService;
 import com.klipwallet.membership.config.security.ProblemDetailEntryPoint;
@@ -104,7 +105,8 @@ public class SecurityConfig {
                                                    OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService,
                                                    OAuth2AuthorizationRequestResolver customOAuth2AuthorizationRequestResolver,
                                                    AuthenticationSuccessHandler customOAuth2SuccessHandler,
-                                                   CorsConfigurationSource customCorsConfigurationSource) throws Exception {
+                                                   CorsConfigurationSource customCorsConfigurationSource,
+                                                   KakaoOpaqueTokenIntrospector kakaoOpaqueTokenIntrospector) throws Exception {
         http.csrf(c -> c.disable())
             .authorizeHttpRequests(
                     a -> a.requestMatchers(antMatcher("/tool/v1/faqs/**"),
@@ -115,6 +117,7 @@ public class SecurityConfig {
                           .requestMatchers(antMatcher("/admin/v1/admins/**")).hasRole(SUPER_ADMIN)
                           .requestMatchers(antMatcher("/admin/v1/**")).hasRole(ADMIN)
                           .requestMatchers(antMatcher("/external/v1/operators")).hasRole(KLIP_KAKAO)
+                          .requestMatchers(antMatcher("/external/v1/open-chattings/**")).hasRole(KLIP_KAKAO)
                           .requestMatchers(antMatcher("/external/v1/**")).permitAll()
                           .requestMatchers(antMatcher("/error/**")).permitAll()
                           .requestMatchers(antMatcher("/actuator/**")).permitAll()      // actuator
@@ -131,6 +134,9 @@ public class SecurityConfig {
                                   a -> a.authorizationRequestResolver(customOAuth2AuthorizationRequestResolver))
                           .userInfoEndpoint(
                                   u -> u.userService(oauth2UserService)))
+            .oauth2ResourceServer(
+                    o -> o.opaqueToken(
+                                  t -> t.introspector(kakaoOpaqueTokenIntrospector)))
             .cors(c -> c.configurationSource(customCorsConfigurationSource))
             .anonymous(a -> a.disable())
             .httpBasic(h -> h.disable())
@@ -197,6 +203,11 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", baseCorsConfiguration);
         return source;
+    }
+
+    @Bean
+    KakaoOpaqueTokenIntrospector kakaoOpaqueTokenIntrospector(ClientRegistrationRepository clientRegistrationRepository) {
+        return new KakaoOpaqueTokenIntrospector(clientRegistrationRepository);
     }
 
     /**
