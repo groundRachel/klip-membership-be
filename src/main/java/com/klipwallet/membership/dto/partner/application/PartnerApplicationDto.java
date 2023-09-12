@@ -71,18 +71,6 @@ public class PartnerApplicationDto {
             @Schema(description = "Klip Drops Partner ID", requiredMode = RequiredMode.REQUIRED) @NonNull KlipDropsDto.PartnerDetail klipDropsDetail,
             @Schema(description = "가입 거절 정보") RejectDetail rejectDetail
     ) {
-        public PartnerApplicationDetail withRejectDetail(RejectDetail rejectDetail) {
-            return new PartnerApplicationDetail(
-                    id(),
-                    businessName(),
-                    businessRegistrationNumber(),
-                    status(),
-                    email(),
-                    appliedAt(),
-                    klipDropsDetail(),
-                    rejectDetail
-            );
-        }
     }
 
     public record RejectDetail(
