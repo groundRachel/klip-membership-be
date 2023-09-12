@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationCount;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationDetail;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationRow;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.entity.AuthenticatedUser;
@@ -56,6 +57,17 @@ public class PartnerApplicationAdminController {
     @GetMapping("/count")
     public PartnerApplicationCount getPartnerApplicationNumber(@RequestParam Status status) {
         return partnerApplicationService.getPartnerApplicationNumber(status);
+    }
+
+    @Operation(summary = "파트너 가입 요청, 거절 상세 조회")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "404", description = "존재하지 않는 파트너 가입 요청 ID", content = @Content(schema = @Schema(ref = "Error404")))
+    })
+    @GetMapping("/{partnerApplicationId}")
+    public PartnerApplicationDetail getPartnerApplicationDetail(
+            @Parameter(description = "조회 할 파트너 가입 요청 ID", required = true, example = "3") @PathVariable Integer partnerApplicationId) {
+        return partnerApplicationService.getPartnerApplicationDetail(partnerApplicationId);
     }
 
     @Operation(summary = "가입 요청서의 Klip Drops 파트너 ID 변경")

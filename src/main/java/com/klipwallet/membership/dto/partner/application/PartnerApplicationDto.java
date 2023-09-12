@@ -12,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 
 import com.klipwallet.membership.dto.PhoneNumber;
+import com.klipwallet.membership.dto.klipdrops.KlipDropsDto;
 import com.klipwallet.membership.dto.member.MemberSummary;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.entity.PartnerApplication;
+import com.klipwallet.membership.entity.PartnerApplication.Status;
 import com.klipwallet.membership.entity.SignUpStatus;
 
 @RequiredArgsConstructor
@@ -56,6 +58,38 @@ public class PartnerApplicationDto {
             MemberSummary processor
     ) {
     }
+
+    @Schema(description = "[ADMIN] 파트너 신청, 거절 상세 조회를 위한 DTO", accessMode = AccessMode.READ_ONLY)
+    public record PartnerApplicationDetail(
+            @NonNull Integer id,
+            @NonNull String businessName,
+            @NonNull String businessRegistrationNumber,
+            Status status,
+            @NonNull String email,
+            @NonNull OffsetDateTime appliedAt,
+
+            KlipDropsDto.PartnerDetail klipDropsDetail,
+            RejectDetail rejectDetail
+    ) {
+        public PartnerApplicationDetail withRejectDetail(RejectDetail rejectDetail) {
+            return new PartnerApplicationDetail(
+                    id(),
+                    businessName(),
+                    businessRegistrationNumber(),
+                    status(),
+                    email(),
+                    appliedAt(),
+                    klipDropsDetail(),
+                    rejectDetail
+            );
+        }
+    }
+
+    public record RejectDetail(
+            OffsetDateTime rejectedAt,
+            MemberSummary rejectedBy,
+            String rejectReason
+    ) {}
 
     @Schema(description = "[ADMIN] 파트너 신청, 거절 수를 위한 DTO", accessMode = AccessMode.READ_ONLY)
     public record PartnerApplicationCount(

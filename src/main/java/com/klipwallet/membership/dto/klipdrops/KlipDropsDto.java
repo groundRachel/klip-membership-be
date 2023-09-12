@@ -13,4 +13,9 @@ public class KlipDropsDto {
                           String partnerName,
                           String businessRegistrationNumber) {
     }
+
+    @Schema(description = "파트너 상세 조회 > Klip Drops 파트너 조회", accessMode = AccessMode.READ_ONLY)
+    public record PartnerDetail(Integer partnerId,
+                                String partnerName) {
+    }
 }

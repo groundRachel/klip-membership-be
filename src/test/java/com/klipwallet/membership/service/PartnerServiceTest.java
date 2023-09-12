@@ -15,7 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.klipwallet.membership.config.security.WithAdminUser;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
-import com.klipwallet.membership.dto.partner.PartnerDto.Detail;
+import com.klipwallet.membership.dto.partner.PartnerDto.DetailByTool;
 import com.klipwallet.membership.dto.partner.PartnerDto.Update;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
@@ -108,17 +108,17 @@ public class PartnerServiceTest {
         List<partnerInfo> partnerInfos = createPartnerInfos(processorId);
 
         // when
-        List<Detail> details = partnerInfos.stream()
-                                           .map(info -> partnerRepository.findByEmail(info.email))
-                                           .flatMap(Optional::stream)
-                                           .map(partner -> service.getDetail(partner.getMemberId()))
-                                           .toList();
+        List<DetailByTool> details = partnerInfos.stream()
+                                                 .map(info -> partnerRepository.findByEmail(info.email))
+                                                 .flatMap(Optional::stream)
+                                                 .map(partner -> service.getDetail(partner.getMemberId()))
+                                                 .toList();
 
         // then
         assertThat(details.size()).isEqualTo(partnerInfos.size());
         for (int i = 0; i < partnerInfos.size(); i++) {
             partnerInfo partnerInfo = partnerInfos.get(i);
-            Detail detail = details.get(i);
+            DetailByTool detail = details.get(i);
 
             assertThat(detail.name()).isEqualTo(partnerInfo.name);
             assertThat(detail.businessRegistrationNumber()).isEqualTo(partnerInfo.businessRegistrationNumber);
@@ -137,7 +137,7 @@ public class PartnerServiceTest {
         String updatePhoneNumber = "010-0000-0000";
 
         // when
-        Detail updatedDetail = service.update(new Update(updateName, updatePhoneNumber), partner.getMemberId());
+        DetailByTool updatedDetail = service.update(new Update(updateName, updatePhoneNumber), partner.getMemberId());
 
         // then
         assertThat(updatedDetail.name()).isEqualTo(updateName);

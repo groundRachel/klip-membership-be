@@ -31,6 +31,14 @@ public class MemberAssembler {
                                .orElseGet(() -> MemberSummary.deactivated(memberId));
     }
 
+    public MemberSummary getMemberSummaryIfExist(Integer memberId) {
+        if (memberId == null) {
+            return null;
+        } else {
+            return getMemberSummary(new MemberId(memberId));
+        }
+    }
+
     public Map<MemberId, MemberSummary> getMemberSummaryMap(Collection<MemberId> memberIds) {
         Set<Integer> ids = toIdSet(memberIds);
         List<Member> members = memberRepository.findAllById(ids);

@@ -9,7 +9,7 @@ public class PartnerApplicationAlreadyProcessedException extends ConflictExcepti
         super(ErrorCode.PARTNER_APPLICATION_ALREADY_PROCESSED,
               partnerApplication.getId(),
               partnerApplication.getStatus().toDisplay(),
-              partnerApplication.getProcessorId().value(),
+              partnerApplication.getProcessorId(),
               partnerApplication.getProcessedAt()
         );
     }

@@ -54,7 +54,7 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
     private LocalDateTime processedAt;
-    private MemberId processorId;
+    private Integer processorId;
 
     public PartnerApplication(String businessName, String phoneNumber, String businessRegistrationNumber, String email, String oauthId) {
         this.businessName = businessName;
@@ -71,7 +71,7 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
     }
 
     private void processedBy(@NonNull MemberId processorId) {
-        this.processorId = processorId;
+        this.processorId = processorId.value();
         this.processedAt = LocalDateTime.now();
     }
 
@@ -123,8 +123,7 @@ public class PartnerApplication extends AbstractAggregateRoot<PartnerApplication
     }
 
     private boolean canSkipDuplicatedRequest(Status expectedStatus, MemberId expectedUpdatedId) {
-        // TODO WINNIE testcode
-        return getStatus() == expectedStatus && getProcessorId() == expectedUpdatedId;
+        return getStatus() == expectedStatus && getProcessorId().equals(expectedUpdatedId.value());
     }
 
     private void checkProcessable() {

@@ -17,6 +17,7 @@ import com.klipwallet.membership.adaptor.klipdrops.dto.KlipDropsPartner;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationAssembler;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.Application;
+import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.PartnerApplicationDetail;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.RejectRequest;
 import com.klipwallet.membership.dto.partner.application.PartnerApplicationDto.SignUpStatusResult;
 import com.klipwallet.membership.entity.AuthenticatedUser;
@@ -98,6 +99,12 @@ public class PartnerApplicationService implements PartnerApplicationGettable {
             return Sort.sort(PartnerApplication.class).by(PartnerApplication::getCreatedAt).descending();
         }
         return Sort.sort(PartnerApplication.class).by(PartnerApplication::getProcessedAt).descending();
+    }
+
+    @Transactional(readOnly = true)
+    public PartnerApplicationDetail getPartnerApplicationDetail(Integer partnerApplicationId) {
+        PartnerApplication partnerApplication = tryGetPartnerApplication(partnerApplicationId);
+        return partnerApplicationAssembler.toPartnerApplicationDetail(partnerApplication);
     }
 
     @Transactional

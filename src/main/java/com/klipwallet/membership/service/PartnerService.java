@@ -13,14 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.klipwallet.membership.dto.partner.PartnerAssembler;
 import com.klipwallet.membership.dto.partner.PartnerDto.ApprovedPartnerDto;
-import com.klipwallet.membership.dto.partner.PartnerDto.Detail;
+import com.klipwallet.membership.dto.partner.PartnerDto.DetailByAdmin;
+import com.klipwallet.membership.dto.partner.PartnerDto.DetailByTool;
 import com.klipwallet.membership.dto.partner.PartnerDto.Update;
 import com.klipwallet.membership.entity.Member;
 import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.Partner;
 import com.klipwallet.membership.entity.PartnerApplication.Status;
+import com.klipwallet.membership.entity.PartnerDetailView;
 import com.klipwallet.membership.entity.PartnerSummaryView;
 import com.klipwallet.membership.exception.MemberNotFoundException;
+import com.klipwallet.membership.exception.member.PartnerNotFoundException;
 import com.klipwallet.membership.repository.PartnerRepository;
 
 @Service
@@ -42,6 +45,12 @@ public class PartnerService {
         return Sort.sort(PartnerSummaryView.class).by(PartnerSummaryView::getProcessedAt).descending();
     }
 
+    public DetailByAdmin getPartnerDetail(Integer partnerId) {
+        PartnerDetailView detail = partnerRepository.findPartnerDetailById(partnerId)
+                                                    .orElseThrow(() -> new PartnerNotFoundException(new MemberId(partnerId)));
+        return partnerAssembler.toDetailByAdmin(detail);
+    }
+
     /**
      * 인증 후 파트너 반환
      *
@@ -61,18 +70,18 @@ public class PartnerService {
     }
 
     @Transactional(readOnly = true)
-    public Detail getDetail(MemberId partnerId) {
+    public DetailByTool getDetail(MemberId partnerId) {
         Partner partner = tryGetPartner(partnerId);
-        return partnerAssembler.toDetail(partner);
+        return partnerAssembler.toDetailByTool(partner);
     }
 
     @Transactional
-    public Detail update(Update command, MemberId partnerId) {
+    public DetailByTool update(Update command, MemberId partnerId) {
         Partner partner = tryGetPartner(partnerId);
 
         partner.update(command.name(), command.phoneNumber());
         Partner persistent = partnerRepository.save(partner);
 
-        return partnerAssembler.toDetail(persistent);
+        return partnerAssembler.toDetailByTool(persistent);
     }
 }

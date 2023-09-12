@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.klipwallet.membership.dto.partner.PartnerDto;
+import com.klipwallet.membership.dto.partner.PartnerDto.DetailByTool;
 import com.klipwallet.membership.entity.AuthenticatedUser;
 import com.klipwallet.membership.service.PartnerService;
 
@@ -33,7 +34,7 @@ public class PartnerToolController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @GetMapping
-    public PartnerDto.Detail detail(@AuthenticationPrincipal AuthenticatedUser user) {
+    public DetailByTool detail(@AuthenticationPrincipal AuthenticatedUser user) {
         return partnerService.getDetail(user.getMemberId());
     }
 
@@ -44,7 +45,7 @@ public class PartnerToolController {
             @ApiResponse(responseCode = "404", description = "존재 하지 않는 파트너", content = @Content(schema = @Schema(ref = "Error404")))
     })
     @PutMapping
-    public PartnerDto.Detail update(
+    public DetailByTool update(
             @Valid @RequestBody PartnerDto.Update command,
             @AuthenticationPrincipal AuthenticatedUser user) {
         return partnerService.update(command, user.getMemberId());
