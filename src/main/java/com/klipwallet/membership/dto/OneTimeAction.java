@@ -22,9 +22,9 @@ public enum OneTimeAction implements Statusable {
      */
     INVITE_OPERATOR(1),
     /**
-     * 오픈채팅 참여
+     * 오픈채팅 참여(사용 안 할 수도?)
      */
-    JOIN_OPENCHATTING(2);
+    JOIN_CHAT(2);
 
     private final byte code;
 

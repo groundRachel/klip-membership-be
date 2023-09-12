@@ -6,6 +6,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import static com.klipwallet.membership.config.SecurityConfig.*;
@@ -63,4 +64,8 @@ public interface AuthenticatedUser extends OAuth2User {
      */
     @Nullable
     String getKakaoPhoneNumber();
+
+    @SuppressWarnings("unused")
+    @Nullable
+    OAuth2Token getKakaoAccessToken();
 }

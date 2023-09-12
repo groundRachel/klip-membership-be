@@ -23,6 +23,8 @@ import com.klipwallet.membership.exception.NotFoundException;
 import com.klipwallet.membership.service.AdminService;
 import com.klipwallet.membership.service.PartnerService;
 
+import static com.klipwallet.membership.config.SecurityConfig.CLIENT_ID_GOOGLE;
+
 @RequiredArgsConstructor
 public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     /**
@@ -71,7 +73,7 @@ public class KlipMembershipOAuth2UserService implements OAuth2UserService<OAuth2
 
     private boolean isGoogle(OAuth2UserRequest userRequest) {
         // spring.security.oauth2.client.registration.google
-        return userRequest.getClientRegistration().getRegistrationId().equals("google");
+        return userRequest.getClientRegistration().getRegistrationId().equals(CLIENT_ID_GOOGLE);
     }
 
     @NonNull

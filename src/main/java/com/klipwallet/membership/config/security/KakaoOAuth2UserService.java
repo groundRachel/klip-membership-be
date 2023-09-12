@@ -7,6 +7,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import static com.klipwallet.membership.config.SecurityConfig.CLIENT_ID_KAKAO;
+
 @RequiredArgsConstructor
 public class KakaoOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     private final DefaultOAuth2UserService defaultImpl = new DefaultOAuth2UserService();
@@ -23,8 +25,6 @@ public class KakaoOAuth2UserService implements OAuth2UserService<OAuth2UserReque
 
     private boolean isKakao(OAuth2UserRequest userRequest) {
         // spring.security.oauth2.client.registration.kakao
-        return userRequest.getClientRegistration().getRegistrationId().equals("kakao");
+        return userRequest.getClientRegistration().getRegistrationId().equals(CLIENT_ID_KAKAO);
     }
-
-
 }

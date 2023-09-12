@@ -26,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.klipwallet.membership.dto.OneTimeAction;
 
+import static com.klipwallet.membership.config.SecurityConfig.CLIENT_ID_GOOGLE;
 import static org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
 
 @Slf4j
@@ -186,6 +187,6 @@ public class KakaoOAuth2AuthorizationRequestResolver implements OAuth2Authorizat
     }
 
     private boolean isGoogle(String clientRegistrationId) {
-        return clientRegistrationId.equals("google");
+        return clientRegistrationId.equals(CLIENT_ID_GOOGLE);
     }
 }
