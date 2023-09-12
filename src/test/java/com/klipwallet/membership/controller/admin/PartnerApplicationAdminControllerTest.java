@@ -72,9 +72,9 @@ class PartnerApplicationAdminControllerTest {
     }
 
     @WithAdminUser
-    @DisplayName("파트너 가입 승인: 이미 승인 처리한 ID > 400")
+    @DisplayName("파트너 가입 승인: 승인 후 승인 > 200")
     @Test
-    void approveResult_throwAlreadyProcessedToBadRequest(@Autowired MockMvc mvc) throws Exception {
+    void approveResult_approve_twice(@Autowired MockMvc mvc) throws Exception {
         // given
         PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00001", "exampl-admin-controller1@groundx.xyz",
                                                           "192085223831.apps.googleusercontent.com");
@@ -90,9 +90,81 @@ class PartnerApplicationAdminControllerTest {
         // when, then
         mvc.perform(post("/admin/v1/partner-applications/{0}/approve", id)
                             .contentType(APPLICATION_JSON))
+           .andExpect(status().isOk());
+    }
+
+    @WithAdminUser
+    @DisplayName("파트너 가입 승인: 거절 후 거절 > 200")
+    @Test
+    void approveResult_reject_twice(@Autowired MockMvc mvc) throws Exception {
+        // given
+        PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00001", "exampl-admin-controller1@groundx.xyz",
+                                                          "192085223831.apps.googleusercontent.com");
+        partnerApplicationRepository.save(apply);
+        partnerApplicationRepository.flush();
+
+        Integer id = partnerApplicationRepository.findByBusinessRegistrationNumber("100-00-00001").orElseThrow().getId();
+
+        mvc.perform(post("/admin/v1/partner-applications/{0}/reject", id)
+                            .contentType(APPLICATION_JSON)
+                            .content("{\"rejectReason\": \"정상적이지 않은 사업자번호입니다.\"}"))
+           .andExpect(status().isOk());
+
+        // when, then
+        mvc.perform(post("/admin/v1/partner-applications/{0}/reject", id)
+                            .contentType(APPLICATION_JSON)
+                            .content("{\"rejectReason\": \"정상적이지 않은 사업자번호입니다.\"}"))
+           .andExpect(status().isOk());
+    }
+
+    @WithAdminUser
+    @DisplayName("파트너 가입 승인: 승인 후 거절 > 400")
+    @Test
+    void approveResult_PARTNER_APPLICATION_ALREADY_PROCESSED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00001", "exampl-admin-controller1@groundx.xyz",
+                                                          "192085223831.apps.googleusercontent.com");
+        partnerApplicationRepository.save(apply);
+        partnerApplicationRepository.flush();
+
+        Integer id = partnerApplicationRepository.findByBusinessRegistrationNumber("100-00-00001").orElseThrow().getId();
+
+        mvc.perform(post("/admin/v1/partner-applications/{0}/approve", id)
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isOk());
+
+        // when, then
+        mvc.perform(post("/admin/v1/partner-applications/{0}/reject", id)
+                            .contentType(APPLICATION_JSON)
+                            .content("{\"rejectReason\": \"정상적이지 않은 사업자번호입니다.\"}"))
            .andExpect(status().isConflict())
            .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_ALREADY_PROCESSED.getCode()))
            .andExpect(jsonPath("$.err", startsWith("이미 처리된 파트너 가입 요청입니다. ID: %d, 처리상태: %s, 처리자: %d,".formatted(id, APPROVED.toDisplay(), 23))));
+    }
+
+    @WithAdminUser
+    @DisplayName("파트너 가입 승인: 거절 후 승인 > 400")
+    @Test
+    void approveResult_PARTNER_APPLICATION_ALREADY_PROCESSED2(@Autowired MockMvc mvc) throws Exception {
+        // given
+        PartnerApplication apply = new PartnerApplication("(주) 그라운드엑스", "010-1234-5678", "100-00-00001", "exampl-admin-controller1@groundx.xyz",
+                                                          "192085223831.apps.googleusercontent.com");
+        partnerApplicationRepository.save(apply);
+        partnerApplicationRepository.flush();
+
+        Integer id = partnerApplicationRepository.findByBusinessRegistrationNumber("100-00-00001").orElseThrow().getId();
+
+        mvc.perform(post("/admin/v1/partner-applications/{0}/reject", id)
+                            .contentType(APPLICATION_JSON)
+                            .content("{\"rejectReason\": \"정상적이지 않은 사업자번호입니다.\"}"))
+           .andExpect(status().isOk());
+
+        // when, then
+        mvc.perform(post("/admin/v1/partner-applications/{0}/approve", id)
+                            .contentType(APPLICATION_JSON))
+           .andExpect(status().isConflict())
+           .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_ALREADY_PROCESSED.getCode()))
+           .andExpect(jsonPath("$.err", startsWith("이미 처리된 파트너 가입 요청입니다. ID: %d, 처리상태: %s, 처리자: %d,".formatted(id, REJECTED.toDisplay(), 23))));
     }
 
     @WithAdminUser
@@ -119,7 +191,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getOauthId()).isEqualTo("292085223831.apps.googleusercontent.com");
         assertThat(partnerApplication.getStatus()).isEqualTo(APPROVED);
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
-        assertThat(partnerApplication.getProcessorId()).isEqualTo(new MemberId(23));
+        assertThat(partnerApplication.getProcessorId()).isEqualTo(23);
 
         Partner partner = partnerRepository.findByBusinessRegistrationNumber("100-00-00002").orElseThrow();
         assertThat(partner).isNotNull();
@@ -164,7 +236,7 @@ class PartnerApplicationAdminControllerTest {
         assertThat(partnerApplication.getStatus()).isEqualTo(Status.REJECTED);
         assertThat(partnerApplication.getRejectReason()).isEqualTo("정상적이지 않은 사업자번호입니다.");
         assertThat(partnerApplication.getProcessedAt()).isBefore(LocalDateTime.now());
-        assertThat(partnerApplication.getProcessorId()).isEqualTo(new MemberId(23));
+        assertThat(partnerApplication.getProcessorId()).isEqualTo(23);
 
         partnerRepository.findByBusinessRegistrationNumber("100-00-00003")
                          .ifPresent(p -> {throw new RuntimeException();});
@@ -194,7 +266,7 @@ class PartnerApplicationAdminControllerTest {
             application.approve(processorId);
         }
         for (PartnerApplication application : applications.subList(6, 9)) {
-            application.reject("", processorId);
+            application.reject("거절 사유", processorId);
         }
         partnerApplicationRepository.saveAll(applications);
 
@@ -332,6 +404,82 @@ class PartnerApplicationAdminControllerTest {
            .andExpect(jsonPath("$.count").value(3));
     }
 
+    @WithAdminUser(memberId = 2)
+    @DisplayName("파트너 가입 요청, 거절 상세 조회: 요청 상태인 가입 요청 조회 > 200")
+    @Test
+    void getPartnerApplicationDetail_APPLIED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        createApplications();
+
+        // when, then
+        PartnerApplication partnerApplicationRejected = partnerApplicationRepository.findAllByStatus(APPLIED, null)
+                                                                                    .get().findFirst()
+                                                                                    .orElseThrow();
+        mvc.perform(get("/admin/v1/partner-applications/{0}", partnerApplicationRejected.getId()).
+                            contentType(APPLICATION_JSON))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(partnerApplicationRejected.getId()))
+           .andExpect(jsonPath("$.businessName").value(partnerApplicationRejected.getBusinessName()))
+           .andExpect(jsonPath("$.businessRegistrationNumber").value(partnerApplicationRejected.getBusinessRegistrationNumber()))
+           .andExpect(jsonPath("$.status").value(APPLIED.toDisplay()))
+           .andExpect(jsonPath("$.email").value(partnerApplicationRejected.getEmail()))
+           .andExpect(jsonPath("$.appliedAt").isNotEmpty())
+
+           .andExpect(jsonPath("$.klipDropsDetail").isNotEmpty())
+           .andExpect(jsonPath("$.klipDropsDetail.partnerId").value(partnerApplicationRejected.getKlipDropsPartnerId()))
+           .andExpect(jsonPath("$.klipDropsDetail.partnerName").value(partnerApplicationRejected.getKlipDropsPartnerName()))
+
+           .andExpect(jsonPath("$.rejectDetail").isEmpty());
+    }
+
+    @WithAdminUser(memberId = 2)
+    @DisplayName("파트너 가입 요청, 거절 상세 조회: 거절 상태인 가입 요청 조회 > 200")
+    @Test
+    void getPartnerApplicationDetail_REJECTED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        createApplications();
+
+        // when, then
+        PartnerApplication partnerApplicationRejected = partnerApplicationRepository.findAllByStatus(REJECTED, null)
+                                                                                    .get().findFirst()
+                                                                                    .orElseThrow();
+        mvc.perform(get("/admin/v1/partner-applications/{0}", partnerApplicationRejected.getId()).
+                            contentType(APPLICATION_JSON))
+           .andExpect(status().isOk())
+           .andExpect(jsonPath("$.id").value(partnerApplicationRejected.getId()))
+           .andExpect(jsonPath("$.businessName").value(partnerApplicationRejected.getBusinessName()))
+           .andExpect(jsonPath("$.businessRegistrationNumber").value(partnerApplicationRejected.getBusinessRegistrationNumber()))
+           .andExpect(jsonPath("$.status").value(REJECTED.toDisplay()))
+           .andExpect(jsonPath("$.email").value(partnerApplicationRejected.getEmail()))
+           .andExpect(jsonPath("$.appliedAt").isNotEmpty())
+
+           .andExpect(jsonPath("$.klipDropsDetail").isNotEmpty())
+           .andExpect(jsonPath("$.klipDropsDetail.partnerId").value(partnerApplicationRejected.getKlipDropsPartnerId()))
+           .andExpect(jsonPath("$.klipDropsDetail.partnerName").value(partnerApplicationRejected.getKlipDropsPartnerName()))
+
+           .andExpect(jsonPath("$.rejectDetail").isNotEmpty())
+           .andExpect(jsonPath("$.rejectDetail.rejectedAt").isNotEmpty())
+           .andExpect(jsonPath("$.rejectDetail.rejectedBy").isNotEmpty())
+           .andExpect(jsonPath("$.rejectDetail.rejectedBy.id").value(partnerApplicationRejected.getProcessorId()))
+           .andExpect(jsonPath("$.rejectDetail.rejectedBy.name").isNotEmpty())
+           .andExpect(jsonPath("$.rejectDetail.rejectReason").value(partnerApplicationRejected.getRejectReason()));
+    }
+
+    @WithAdminUser(memberId = 2)
+    @DisplayName("파트너 가입 요청, 거절 상세 조회: 존재하지 않는 가입 요청 조회 > 404")
+    @Test
+    void getPartnerApplicationDetail_UNDEFINED(@Autowired MockMvc mvc) throws Exception {
+        // given
+        createApplications();
+
+        // when, then
+        Integer partnerApplicationIdNotExist = 99999;
+        mvc.perform(get("/admin/v1/partner-applications/{0}", partnerApplicationIdNotExist).
+                            contentType(APPLICATION_JSON))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.code").value(PARTNER_APPLICATION_NOT_FOUND.getCode()))
+           .andExpect(jsonPath("$.err").value("파트너 신청 정보를 조회할 수 없습니다. ID: %d".formatted(partnerApplicationIdNotExist)));
+    }
 
     @WithAdminUser(memberId = 2)
     @DisplayName("가입 요청서의 Klip Drops 파트너 ID 변경: 존재하지 않는 가입 요청 ID > 404")

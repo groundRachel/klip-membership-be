@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,14 @@ public class MemberAssembler {
         return memberRepository.findById(memberId.value())
                                .map(MemberSummary::new)
                                .orElseGet(() -> MemberSummary.deactivated(memberId));
+    }
+
+    public MemberSummary getMemberSummary(@Nullable Integer memberId) {
+        if (memberId == null) {
+            return null;
+        } else {
+            return getMemberSummary(new MemberId(memberId));
+        }
     }
 
     public Map<MemberId, MemberSummary> getMemberSummaryMap(Collection<MemberId> memberIds) {

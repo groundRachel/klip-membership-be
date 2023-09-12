@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.klipwallet.membership.config.security.WithAuthenticatedUser;
-import com.klipwallet.membership.entity.MemberId;
 import com.klipwallet.membership.entity.PartnerApplication;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +41,7 @@ class PartnerApplicationRepositoryTest {
         assertThat(findUser.getId()).isNotNull();
         assertThat(findUser.getCreatedAt()).isBefore(LocalDateTime.now());
         assertThat(findUser.getProcessedAt()).isBefore(LocalDateTime.now());
-        assertThat(findUser.getProcessorId()).isEqualTo(new MemberId(2));
+        assertThat(findUser.getProcessorId()).isEqualTo(2);
         assertThat(saved).isEqualTo(findUser);
     }
 
