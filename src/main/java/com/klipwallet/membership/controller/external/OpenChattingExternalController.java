@@ -15,15 +15,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,8 +37,8 @@ import com.klipwallet.membership.entity.TokenId;
 @Slf4j
 public class OpenChattingExternalController {
     private final KlipMembershipProperties properties;
-    private final SecurityContextRepository securityContextRepository;
 
+    @SuppressWarnings("unused")
     @Operation(summary = "모바일앱 오픈 채팅 참여 준비",
                description = """
                              `Authorization: Kakao {AccessToken}` 요구됨. 상단 [Authorize] 버튼으로 설정 요망
@@ -69,11 +66,10 @@ public class OpenChattingExternalController {
     })
     @PostMapping(value = "/prepare-join", params = "otAction=joinChat")
     public String prepareJoin(@AuthenticationPrincipal AuthenticatedUser user,
-                              @Parameter(hidden = true) @SuppressWarnings("unused")
-                              @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
+                              @Parameter(hidden = true)
                               HttpServletRequest request, HttpServletResponse response) {
         String frontUrl = properties.getToolFrontUrl();
-//        saveAuthentication(request, response);
+        //        saveAuthentication(request, response);
         return "redirect:%s/openchat/join".formatted(frontUrl);
     }
 
@@ -83,6 +79,7 @@ public class OpenChattingExternalController {
         securityContextRepository.saveContext(context, request, response);
     }
 
+    @SuppressWarnings("unused")
     @Operation(summary = "External 오픈 채팅 참여")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "오픈 채팅 참여 성공"),
@@ -110,7 +107,6 @@ public class OpenChattingExternalController {
                                @AuthenticationPrincipal AuthenticatedUser user,
                                HttpSession session) {
         log.info("Join user: {}", user);
-
         clearAuthentication(session);
         return null;
     }
