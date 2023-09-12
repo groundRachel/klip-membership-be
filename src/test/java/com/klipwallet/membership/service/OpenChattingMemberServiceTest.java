@@ -52,9 +52,9 @@ public class OpenChattingMemberServiceTest {
         Address contractAddress = new Address("0x60ad57f39b235640df83e434caab2dfa6a62838b");
         KlipUser klipUser = new KlipAccount(1L, "123-1234", "test@gmail.com", "010-1111-1111");
         KakaoOpenlinkSummary kakaoOpenlinkSummary = new KakaoOpenlinkSummary(1L, "url");
-        OpenChatting openChatting = new OpenChatting("title", "image", kakaoOpenlinkSummary, contractAddress, new MemberId(1));
+        OpenChatting openChatting = new OpenChatting("title", "image", "", kakaoOpenlinkSummary, contractAddress, new MemberId(1));
         openChattingRepository.save(openChatting);
-        OpenChattingMemberCreate openChattingMemberCreate = new OpenChattingMemberCreate("", "nick", "imageUrl");
+        OpenChattingMemberCreate openChattingMemberCreate = new OpenChattingMemberCreate("nick", "imageUrl");
         OpenChattingMember openChattingMember =
                 new OpenChattingMember(openChatting.getId(), klipUser.getKlipAccountId(), klipUser.getKakaoUserId(), 0L, "test-nick", "imageUrl",
                                        NFT_HOLDER);
@@ -72,8 +72,8 @@ public class OpenChattingMemberServiceTest {
         Address contractAddress = new Address("0x60ad57f39b235640df83e434caab2dfa6a62838b");
         KlipUser klipUser = new KlipAccount(1L, "123-1234", "test@gmail.com", "010-1111-1111");
         KakaoOpenlinkSummary kakaoOpenlinkSummary = new KakaoOpenlinkSummary(1L, "url");
-        OpenChatting openChatting = new OpenChatting("title", "image", kakaoOpenlinkSummary, contractAddress, new MemberId(1));
-        OpenChattingMemberCreate openChattingMemberCreate = new OpenChattingMemberCreate("", "", "");
+        OpenChatting openChatting = new OpenChatting("title", "image", "", kakaoOpenlinkSummary, contractAddress, new MemberId(1));
+        OpenChattingMemberCreate openChattingMemberCreate = new OpenChattingMemberCreate("", "");
         OpenChattingMember openChattingMember =
                 new OpenChattingMember(openChatting.getId(), klipUser.getKlipAccountId(), klipUser.getKakaoUserId(), 0L, "test-nick", "imageUrl",
                                        NFT_HOLDER);

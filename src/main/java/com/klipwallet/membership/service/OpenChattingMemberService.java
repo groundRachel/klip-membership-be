@@ -38,12 +38,7 @@ public class OpenChattingMemberService {
         try {
             member = getOpenChattingMemberByOpenChattingIdAndKlipId(openChatting.getId(), klipUser.getKlipAccountId());
         } catch (MemberNotFoundException e) {
-            // 최초로 채팅방에 참여하는 경우 DB 저장하기
-            if (!StringUtils.hasText(command.nickname()) || !StringUtils.hasText(command.profileImageUrl())) {
-                throw new InvalidRequestException("nickname, profile required");
-            }
-            OpenChattingMember entity = command.toOpenChattingMember(openChatting.getId(), klipUser.getKlipAccountId(), klipUser.getKakaoUserId());
-            member = openChattingMemberRepository.save(entity);
+            member = saveOpenChattingMemberProfile(openChatting.getId(), command, klipUser);
         }
 
         // 오픈채팅 참여하기
@@ -53,6 +48,14 @@ public class OpenChattingMemberService {
             throw new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED);
         }
         return member;
+    }
+
+    private OpenChattingMember saveOpenChattingMemberProfile(Long openChattingId, OpenChattingMemberCreate command, KlipUser klipUser) {
+        if (!StringUtils.hasText(command.nickname()) || !StringUtils.hasText(command.profileImageUrl())) {
+            throw new InvalidRequestException("nickname, profile required");
+        }
+        OpenChattingMember entity = command.toOpenChattingMember(openChattingId, klipUser.getKlipAccountId(), klipUser.getKakaoUserId());
+        return openChattingMemberRepository.save(entity);
     }
 
     public OpenChattingMember createHost(OpenChatting openChatting, OpenChattingOperatorCreate command, AuthenticatedUser user) {

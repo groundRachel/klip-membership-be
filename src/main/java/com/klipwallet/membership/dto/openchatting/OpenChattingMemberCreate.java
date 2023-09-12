@@ -1,6 +1,5 @@
 package com.klipwallet.membership.dto.openchatting;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,9 +12,6 @@ import static com.klipwallet.membership.entity.OpenChattingMember.Role.NFT_HOLDE
 
 @Schema(description = "채팅방 멤버 생성 DTO", accessMode = AccessMode.WRITE_ONLY)
 public record OpenChattingMemberCreate(
-        @Schema(description = "requestKey")
-        @NotBlank
-        String klipRequestKey,
         @Schema(description = "오픈채팅방 멤버 닉네임")
         @Size(max = 20)
         String nickname,
