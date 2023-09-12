@@ -5,6 +5,7 @@ import java.util.Collection;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -42,18 +43,22 @@ public interface AuthenticatedUser extends OAuth2User {
 
     Collection<? extends GrantedAuthority> getAuthorities();
 
+    @JsonIgnore
     default boolean isKakao() {
         return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_KLIP_KAKAO));
     }
 
+    @JsonIgnore
     default boolean isGoogle() {
         return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(OAUTH2_USER));
     }
 
+    @JsonIgnore
     default boolean isAdmin() {
         return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_ADMIN));
     }
 
+    @JsonIgnore
     default boolean isPartner() {
         return getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(ROLE_PARTNER));
     }

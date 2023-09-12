@@ -38,6 +38,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     private final Collection<? extends GrantedAuthority> authorities;
     private final String name;
     private final String email;
+    private final String kakaoPhoneNumber;
     @Nullable
     @Getter
     private final OAuth2AccessToken kakaoAccessToken;
@@ -45,20 +46,20 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     public KlipMembershipOAuth2User(@Nullable MemberId memberId,
                                     Collection<? extends GrantedAuthority> authorities,
                                     String name, String email) {
-        this(memberId, emptyMap(), authorities, name, email, null);
+        this(memberId, emptyMap(), authorities, name, email, null, null);
     }
 
     public KlipMembershipOAuth2User(@Nullable MemberId memberId,
                                     Map<String, Object> attributes,
                                     Collection<? extends GrantedAuthority> authorities,
                                     String name, String email) {
-        this(memberId, attributes, authorities, name, email, null);
+        this(memberId, attributes, authorities, name, email, null, null);
     }
 
     @SuppressWarnings("unused")
     static KlipMembershipOAuth2User notMemberOnGoogle(OAuth2User googleUser, OAuth2UserRequest userRequest) {
         return new KlipMembershipOAuth2User(null, googleUser.getAttributes(), googleUser.getAuthorities(), googleUser.getName(),
-                                            getGoogleEmail(googleUser), null);
+                                            getGoogleEmail(googleUser), null, null);
     }
 
     private static String getGoogleEmail(Map<String, Object> attributes) {
@@ -77,6 +78,10 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
         @SuppressWarnings("unchecked")
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.getOrDefault("kakao_account", emptyMap());
         return (String) kakaoAccount.get("email");
+    }
+
+    private static String getKakaoPhoneNumber(OAuth2User kakaoUser) {
+        return getKakaoPhoneNumber(kakaoUser.getAttributes());
     }
 
     private static String getKakaoPhoneNumber(Map<String, Object> attributes) {
@@ -100,7 +105,8 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     static KlipMembershipOAuth2User kakao(OAuth2User kakaoUser, OAuth2AccessToken accessToken) {
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(ROLE_KLIP_KAKAO);
         return new KlipMembershipOAuth2User(null, emptyMap(), authorities,
-                                            kakaoUser.getName(), getKakaoEmail(kakaoUser), accessToken);
+                                            kakaoUser.getName(), getKakaoPhoneNumber(kakaoUser), getKakaoEmail(kakaoUser),
+                                            accessToken);
     }
 
     @NonNull
@@ -143,6 +149,6 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     @Nullable
     @Override
     public String getKakaoPhoneNumber() {
-        return getKakaoPhoneNumber(this.attributes);
+        return this.kakaoPhoneNumber;
     }
 }
