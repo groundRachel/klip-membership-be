@@ -9,6 +9,8 @@ import java.util.Map;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,23 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     @Nullable
     @Getter
     private final OAuth2AccessToken kakaoAccessToken;
+
+    @JsonCreator
+    public KlipMembershipOAuth2User(@JsonProperty("memberId") @Nullable MemberId memberId,
+                                    @JsonProperty("attributes") Map<String, Object> attributes,
+                                    @JsonProperty("authorities")Collection<? extends GrantedAuthority> authorities,
+                                    @JsonProperty("name") String name,
+                                    @JsonProperty("email") String email,
+                                    @JsonProperty("kakaoPhoneNumber") String kakaoPhoneNumber,
+                                    @JsonProperty("kakaoAccessToken") @Nullable OAuth2AccessToken kakaoAccessToken) {
+        this.memberId = memberId;
+        this.attributes = attributes;
+        this.authorities = authorities;
+        this.name = name;
+        this.email = email;
+        this.kakaoPhoneNumber = kakaoPhoneNumber;
+        this.kakaoAccessToken = kakaoAccessToken;
+    }
 
     public KlipMembershipOAuth2User(@Nullable MemberId memberId,
                                     Collection<? extends GrantedAuthority> authorities,
