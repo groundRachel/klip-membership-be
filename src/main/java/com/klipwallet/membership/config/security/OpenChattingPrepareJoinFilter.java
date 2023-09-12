@@ -32,8 +32,14 @@ import org.springframework.security.web.util.UrlUtils;
 import org.springframework.util.Assert;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static com.klipwallet.membership.config.SecurityConfig.CLIENT_ID_KAKAO;
 import static java.time.temporal.ChronoUnit.HOURS;
 
+/**
+ * @deprecated 현재 해당 필터를 이용하지 않고 OAuth2ResourceServer 과 OpaqueTokenInstrospector를 커스터마이징해서 구현했음.
+ * 해당 필터는 이력 상 우선 Commit이 필요해서 남겨둠
+ */
+@Deprecated
 public class OpenChattingPrepareJoinFilter extends AbstractAuthenticationProcessingFilter {
     private static final String DEFAULT_FILTER_PROCESSES_URI = "/login/oauth2/code/*";
 
@@ -90,7 +96,7 @@ public class OpenChattingPrepareJoinFilter extends AbstractAuthenticationProcess
             throw new AuthenticationCredentialsNotFoundException("Not found Kakao AccessToken");
         }
 
-        String registrationId = "kakao";
+        String registrationId = CLIENT_ID_KAKAO;
         ClientRegistration clientRegistration =
                 this.clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration == null) {

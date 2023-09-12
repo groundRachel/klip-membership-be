@@ -44,6 +44,7 @@ logging:
     sql: debug
     openfeign: debug
     org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor: debug
+    org.springframework.security: debug
 
 management:
   newrelic:

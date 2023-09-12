@@ -6,8 +6,6 @@ import java.util.regex.Pattern;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.server.resource.BearerTokenError;
 import org.springframework.security.oauth2.server.resource.BearerTokenErrors;
@@ -15,19 +13,12 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenResolv
 import org.springframework.util.StringUtils;
 
 /**
+ * 카카오 AccessToken 전용으로 사용할 것이라서 Bearer이 아닌 아래와 같은 {@code Authorization}을 파싱하게 한다.
  * <pre>Authorization: Kakao {AccessToken}</pre>
  */
 public class KakaoBearerTokenResolver implements BearerTokenResolver {
     private static final Pattern authorizationPattern = Pattern.compile("^Kakao (?<token>[a-zA-Z0-9-._~+/]+=*)$",
                                                                         Pattern.CASE_INSENSITIVE);
-
-    private static boolean isGetRequest(HttpServletRequest request) {
-        return HttpMethod.GET.name().equals(request.getMethod());
-    }
-
-    private static boolean isFormEncodedRequest(HttpServletRequest request) {
-        return MediaType.APPLICATION_FORM_URLENCODED_VALUE.equals(request.getContentType());
-    }
 
     @Override
     public String resolve(final HttpServletRequest request) {
@@ -47,7 +38,4 @@ public class KakaoBearerTokenResolver implements BearerTokenResolver {
         return matcher.group("token");
     }
 
-    private boolean isParameterTokenSupportedForRequest(final HttpServletRequest request) {
-        return isFormEncodedRequest(request) || isGetRequest(request);
-    }
 }

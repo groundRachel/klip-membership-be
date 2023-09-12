@@ -40,7 +40,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     private final String email;
     @Nullable
     @Getter
-    private final OAuth2AccessToken accessToken;
+    private final OAuth2AccessToken kakaoAccessToken;
 
     public KlipMembershipOAuth2User(@Nullable MemberId memberId,
                                     Collection<? extends GrantedAuthority> authorities,
@@ -99,7 +99,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
 
     static KlipMembershipOAuth2User kakao(OAuth2User kakaoUser, OAuth2AccessToken accessToken) {
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(ROLE_KLIP_KAKAO);
-        return new KlipMembershipOAuth2User(null, kakaoUser.getAttributes(), authorities,
+        return new KlipMembershipOAuth2User(null, emptyMap(), authorities,
                                             kakaoUser.getName(), getKakaoEmail(kakaoUser), accessToken);
     }
 
@@ -118,7 +118,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
         return this.name;
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public String getEmail() {
         return this.email;

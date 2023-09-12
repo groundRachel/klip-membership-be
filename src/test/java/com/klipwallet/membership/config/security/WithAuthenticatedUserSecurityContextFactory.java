@@ -12,7 +12,7 @@ import org.springframework.security.test.context.support.WithSecurityContextFact
 
 import com.klipwallet.membership.entity.MemberId;
 
-import static com.klipwallet.membership.config.SecurityConfig.ROLE_KLIP_KAKAO;
+import static com.klipwallet.membership.config.SecurityConfig.*;
 
 public class WithAuthenticatedUserSecurityContextFactory implements WithSecurityContextFactory<WithAuthenticatedUser> {
 
@@ -28,11 +28,11 @@ public class WithAuthenticatedUserSecurityContextFactory implements WithSecurity
             Map<String, Object> attributes = Map.of("kakao_account", Map.of("phone_number", user.kakaoPhoneNumber()));
             KlipMembershipOAuth2User principal = new KlipMembershipOAuth2User(
                     new MemberId(user.memberId()), attributes, AuthorityUtils.createAuthorityList(user.authorities()), user.name(), user.email());
-            return new OAuth2AuthenticationToken(principal, principal.getAuthorities(), "kakao");
+            return new OAuth2AuthenticationToken(principal, principal.getAuthorities(), CLIENT_ID_KAKAO);
         }
         KlipMembershipOAuth2User principal = new KlipMembershipOAuth2User(
                 new MemberId(user.memberId()), AuthorityUtils.createAuthorityList(user.authorities()), user.name(), user.email());
-        return new OAuth2AuthenticationToken(principal, principal.getAuthorities(), "google");
+        return new OAuth2AuthenticationToken(principal, principal.getAuthorities(), CLIENT_ID_GOOGLE);
     }
 
     private boolean isKakao(WithAuthenticatedUser user) {

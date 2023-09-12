@@ -8,6 +8,9 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
+import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -17,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -79,14 +83,24 @@ public class SpringDocConfig {
                        .info(new Info().title("Klip Membership Tool API")
                                        .description("Klip Membership Tool Management & Internal API")
                                        .version(version))
-                       .components(new Components().addSchemas("Error400", problemDetail400Schema())
-                                                   .addSchemas("Error400Fields", problemDetail400FieldsSchema())
-                                                   .addSchemas("Error400File", problemDetail400FileSchema())
-                                                   .addSchemas("Error401", problemDetail401Schema())
-                                                   .addSchemas("Error403", problemDetail403Schema())
-                                                   .addSchemas("Error404", problemDetail404Schema())
-                                                   .addSchemas("Error409", problemDetail409Schema())
-                                                   .addSchemas("Error500", problemDetail500Schema()));
+                       .components(new Components()
+                                           .addSecuritySchemes("km-session",
+                                                               new SecurityScheme().type(Type.APIKEY)
+                                                                                   .in(In.COOKIE)
+                                                                                   .name("KMSESSION"))
+                                           .addSecuritySchemes("kakao-token",
+                                                               new SecurityScheme().type(Type.APIKEY)
+                                                                                   .in(In.HEADER)
+                                                                                   .name(HttpHeaders.AUTHORIZATION)
+                                                                                   .description("Kakao {AccessToken}"))
+                                           .addSchemas("Error400", problemDetail400Schema())
+                                           .addSchemas("Error400Fields", problemDetail400FieldsSchema())
+                                           .addSchemas("Error400File", problemDetail400FileSchema())
+                                           .addSchemas("Error401", problemDetail401Schema())
+                                           .addSchemas("Error403", problemDetail403Schema())
+                                           .addSchemas("Error404", problemDetail404Schema())
+                                           .addSchemas("Error409", problemDetail409Schema())
+                                           .addSchemas("Error500", problemDetail500Schema()));
     }
 
     @SuppressWarnings("rawtypes")

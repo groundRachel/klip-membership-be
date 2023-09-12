@@ -34,8 +34,16 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownContentTypeException;
 
+import static com.klipwallet.membership.config.SecurityConfig.CLIENT_ID_KAKAO;
 import static java.time.temporal.ChronoUnit.HOURS;
 
+/**
+ * 원래 OAuth2 Introspection 스팩은 AccessToken 을 Token Introspection Endpoint 를 통해서 조회한 후 해당 리소스 정보로 인증 되어야함.
+ * 하지만 Kakao 로그인에서는 OAuth2 Introspection Endpoint를 공개하지 않아서 내부적으로 {@code user-info-uri}를 통해서 직접 조회한 후 해당 리소스를 반환하게 커스터마이징함.
+ * 그래서 표준에 맞지 않는 스펙이기 때문에 추후 변경 시 주의가 필요함.
+ *
+ * @see <a href="https://www.oauth.com/oauth2-servers/token-introspection-endpoint/">Token Introspection Endpoint</a>
+ */
 public class KakaoOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
     private static final String INVALID_USER_INFO_RESPONSE_ERROR_CODE = "invalid_user_info_response";
@@ -123,12 +131,13 @@ public class KakaoOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
         authorities.add(new OAuth2UserAuthority(userAttributes));
         OAuth2AccessToken accessToken = new OAuth2AccessToken(TokenType.BEARER, token, Instant.now(), Instant.now().plus(1, HOURS));
         String nameAttributeKey =
-                clientRegistrationRepository.findByRegistrationId("kakao").getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+                clientRegistrationRepository.findByRegistrationId(CLIENT_ID_KAKAO).getProviderDetails().getUserInfoEndpoint()
+                                            .getUserNameAttributeName();
         DefaultOAuth2User oauth2User = new DefaultOAuth2User(authorities, Objects.requireNonNull(userAttributes), nameAttributeKey);
         return KlipMembershipOAuth2User.kakao(oauth2User, accessToken);
     }
 
     private ClientRegistration getClientRegistration() {
-        return clientRegistrationRepository.findByRegistrationId("kakao");
+        return clientRegistrationRepository.findByRegistrationId(CLIENT_ID_KAKAO);
     }
 }
