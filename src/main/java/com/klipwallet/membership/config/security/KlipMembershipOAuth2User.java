@@ -11,6 +11,7 @@ import jakarta.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
@@ -29,6 +30,7 @@ import static com.klipwallet.membership.config.SecurityConfig.*;
 import static java.util.Collections.emptyMap;
 
 @ToString
+@EqualsAndHashCode
 public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable {
     @Serial
     private static final long serialVersionUID = 9102776982135701748L;
@@ -46,7 +48,7 @@ public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable
     @JsonCreator
     public KlipMembershipOAuth2User(@JsonProperty("memberId") @Nullable MemberId memberId,
                                     @JsonProperty("attributes") Map<String, Object> attributes,
-                                    @JsonProperty("authorities")Collection<? extends GrantedAuthority> authorities,
+                                    @JsonProperty("authorities") Collection<? extends GrantedAuthority> authorities,
                                     @JsonProperty("name") String name,
                                     @JsonProperty("email") String email,
                                     @JsonProperty("kakaoPhoneNumber") String kakaoPhoneNumber,

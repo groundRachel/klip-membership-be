@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
+import jakarta.annotation.PostConstruct;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.context.MessageSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -104,6 +108,19 @@ public class MessageSourceConfig {
 
         private boolean notExistCode(String code, String message) {
             return code.equals(message);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @RequiredArgsConstructor
+    @Slf4j
+    public static class MessageVerifyConfig {
+        private final MessageSource messageSource;
+
+        @PostConstruct
+        public void verifyErrorCodes() {
+            ErrorCodeVerifier.verify(messageSource);
+            log.info("verifyErrorCode");
         }
     }
 }

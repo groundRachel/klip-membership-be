@@ -94,7 +94,7 @@ public class OperatorInvitationFlowIntegrationTest {
     }
 
     @SuppressWarnings("DefaultAnnotationParam")
-    @WithKakaoUser(name = KAKAO_ID)
+    @WithKakaoUser(name = KAKAO_ID, kakaoPhoneNumber = "+82 10-2638-3987")
     @Test
     @Order(2)
     void joinOperator(@Autowired MockMvc mvc, @Autowired InvitationRegistry invitationRegistry) throws Exception {

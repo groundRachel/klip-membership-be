@@ -1,7 +1,7 @@
 package com.klipwallet.membership.config.security;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Collections;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -25,9 +25,9 @@ public class WithAuthenticatedUserSecurityContextFactory implements WithSecurity
 
     private Authentication createAuthentication(WithAuthenticatedUser user) {
         if (isKakao(user)) {
-            Map<String, Object> attributes = Map.of("kakao_account", Map.of("phone_number", user.kakaoPhoneNumber()));
             KlipMembershipOAuth2User principal = new KlipMembershipOAuth2User(
-                    new MemberId(user.memberId()), attributes, AuthorityUtils.createAuthorityList(user.authorities()), user.name(), user.email());
+                    new MemberId(user.memberId()), Collections.emptyMap(), AuthorityUtils.createAuthorityList(user.authorities()), user.name(),
+                    user.email(), user.kakaoPhoneNumber(), null);
             return new OAuth2AuthenticationToken(principal, principal.getAuthorities(), CLIENT_ID_KAKAO);
         }
         KlipMembershipOAuth2User principal = new KlipMembershipOAuth2User(
