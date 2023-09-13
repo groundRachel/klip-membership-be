@@ -149,11 +149,11 @@ public class SecurityConfig {
                           .requestMatchers(antMatcher("/external/v1/operators")).hasRole(KLIP_KAKAO)
                           .requestMatchers(antMatcher("/external/v1/open-chattings/**")).hasRole(KLIP_KAKAO)
                           .requestMatchers(antMatcher("/external/v1/**")).permitAll()
+                          .requestMatchers(antMatcher("/internal/v1/**")).permitAll()
                           .requestMatchers(antMatcher("/error/**")).permitAll()
                           .requestMatchers(antMatcher("/actuator/**")).permitAll()      // actuator
                           .requestMatchers(antMatcher("/swagger-ui/**"),
                                            antMatcher("/v3/api-docs/**")).permitAll()   // for swagger
-                          .requestMatchers(antMatcher("/internal/v1/user")).permitAll()
                           .requestMatchers(antMatcher("/")).permitAll()
                           .anyRequest().authenticated())
             .oauth2Login(

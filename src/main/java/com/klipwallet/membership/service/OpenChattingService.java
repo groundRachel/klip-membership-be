@@ -40,6 +40,7 @@ import com.klipwallet.membership.entity.kakao.OpenChattingHost;
 import com.klipwallet.membership.entity.kas.NftToken;
 import com.klipwallet.membership.exception.ForbiddenException;
 import com.klipwallet.membership.exception.InvalidRequestException;
+import com.klipwallet.membership.exception.MemberNotFoundException;
 import com.klipwallet.membership.exception.NotFoundException;
 import com.klipwallet.membership.exception.kakao.OperatorAlreadyExistsException;
 import com.klipwallet.membership.exception.kas.KasBadRequestInternalApiException;
@@ -163,7 +164,7 @@ public class OpenChattingService {
 
         // 오픈채팅 참여하기
         openChattingMemberService.createMember(openChatting, command, klipUser);
-        return new OpenChattingStatus(true, openChatting.getKakaoOpenlinkSummary().getUrl());
+        return new OpenChattingStatus(true, true);
     }
 
     private OpenChatting getOpenChatting(Long id) {
@@ -186,13 +187,34 @@ public class OpenChattingService {
         return openChatting;
     }
 
-    public OpenChattingStatus getOpenChattingStatus(Address sca, TokenId tokenId) {
+    @Transactional(readOnly = true)
+    public OpenChattingStatus getOpenChattingStatusByRequestKey(Address sca, TokenId tokenId, String requestKey) {
+        // TODO klip A2A으로 requestKey로 klaytnAddress 알아내기
+        Address klaytnAddress = new Address("");
+        KlipUser klipUser = klipAccountService.getKlipUser(klaytnAddress);
+
+        return getOpenChattingStatus(sca, tokenId, klaytnAddress, klipUser);
+    }
+
+    @Transactional(readOnly = true)
+    public OpenChattingStatus getOpenChattingStatusByKlaytnAddress(Address sca, TokenId tokenId, Address klaytnAddress) {
+        KlipUser klipUser = klipAccountService.getKlipUser(klaytnAddress);
+
+        return getOpenChattingStatus(sca, tokenId, klaytnAddress, klipUser);
+    }
+
+    public OpenChattingStatus getOpenChattingStatus(Address sca, TokenId tokenId, Address klaytnAddress, KlipUser klipUser) {
+        verifyTokenOwnerToJoinOpenChatting(sca, tokenId, klaytnAddress);
+
         OpenChatting openChatting = getOpenChattingByTokenId(sca, tokenId);
         if (openChatting == null) {
-            return new OpenChattingStatus(false, "");
+            return new OpenChattingStatus(false, false);
         }
-        String openChattingUrl = openChatting.getKakaoOpenlinkSummary().getUrl();
-        return new OpenChattingStatus(true, openChattingUrl);
+
+        if (!isFirstEntryToOpenChatting(openChatting.getId(), klipUser.getKlipAccountId())) {
+            return new OpenChattingStatus(true, false);
+        }
+        return new OpenChattingStatus(true, true);
     }
 
     private void verifyTokenOwnerToJoinOpenChatting(Address sca, TokenId tokenId, Address klaytnAddress) {
@@ -205,5 +227,14 @@ public class OpenChattingService {
         if (!token.isOwner(klaytnAddress)) {
             throw new ForbiddenException(OPEN_CHATTING_ACCESS_DENIED);
         }
+    }
+
+    private boolean isFirstEntryToOpenChatting(Long openChattingId, Long klipAccountId) {
+        try {
+            openChattingMemberService.getOpenChattingMemberByOpenChattingIdAndKlipId(openChattingId, klipAccountId);
+        } catch (MemberNotFoundException e) {
+            return false;
+        }
+        return true;
     }
 }
