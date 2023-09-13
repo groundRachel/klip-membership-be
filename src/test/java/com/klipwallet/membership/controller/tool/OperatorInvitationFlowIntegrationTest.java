@@ -22,7 +22,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.klipwallet.membership.adaptor.klip.KlipAccount;
 import com.klipwallet.membership.config.security.WithKakaoUser;
 import com.klipwallet.membership.config.security.WithPartnerUser;
-import com.klipwallet.membership.controller.LocalController.InviteResult;
+import com.klipwallet.membership.controller.local.LocalController.InviteResult;
 import com.klipwallet.membership.entity.KlipUser;
 import com.klipwallet.membership.entity.OperatorInvitation;
 import com.klipwallet.membership.entity.kakao.KakaoId;

@@ -1,4 +1,4 @@
-package com.klipwallet.membership.controller;
+package com.klipwallet.membership.controller.local;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.Operation;

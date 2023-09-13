@@ -1,4 +1,4 @@
-package com.klipwallet.membership.controller;
+package com.klipwallet.membership.controller.local;
 
 import java.nio.charset.StandardCharsets;
 

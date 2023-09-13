@@ -6,9 +6,9 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.OAuth2Token;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import static com.klipwallet.membership.config.SecurityConfig.*;
 
@@ -22,7 +22,7 @@ import static com.klipwallet.membership.config.SecurityConfig.*;
  * @see org.springframework.security.core.annotation.AuthenticationPrincipal
  * @see com.klipwallet.membership.config.security.KlipMembershipOAuth2User
  */
-public interface AuthenticatedUser extends OAuth2User {
+public interface AuthenticatedUser extends AuthenticatedPrincipal {
     @Nullable
     MemberId getMemberId();
 

@@ -18,11 +18,18 @@ import org.springframework.security.jackson2.SecurityJackson2Modules;
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2User;
 import com.klipwallet.membership.config.security.KlipMembershipOAuth2UserMixin;
 
+/**
+ * @see <a href="https://docs.spring.io/spring-session/reference/configuration/redis.html">Spring Session Redis Configurations</a>
+ */
 @Configuration(proxyBeanMethods = false)
 public class SessionConfig implements BeanClassLoaderAware {
     private ClassLoader loader;
 
-    @Bean
+    /**
+     * {@link org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration#setDefaultRedisSerializer(org.springframework.data.redis.serializer.RedisSerializer)}
+     * 를 보면 {@code @Qualifier("springSessionDefaultRedisSerializer")} 로 설정된 Bean을 이름 기반 주입 받는 것을 알 수 있음. 고로 해당 이름과 똑같이 만들어 줘야함.
+     */
+    @Bean("springSessionDefaultRedisSerializer")
     public RedisSerializer<Object> springSessionDefaultRedisSerializer() {
         return new GenericJackson2JsonRedisSerializer(objectMapper());
     }

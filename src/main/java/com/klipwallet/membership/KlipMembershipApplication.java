@@ -13,7 +13,6 @@ import com.klipwallet.membership.config.KlipMembershipProperties;
 @RequiredArgsConstructor
 @EnableConfigurationProperties(KlipMembershipProperties.class)
 public class KlipMembershipApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(KlipMembershipApplication.class, args);
     }

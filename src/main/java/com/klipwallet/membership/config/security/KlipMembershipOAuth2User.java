@@ -31,7 +31,7 @@ import static java.util.Collections.emptyMap;
 
 @ToString
 @EqualsAndHashCode
-public class KlipMembershipOAuth2User implements AuthenticatedUser, Serializable {
+public class KlipMembershipOAuth2User implements AuthenticatedUser, OAuth2User, Serializable {
     @Serial
     private static final long serialVersionUID = 9102776982135701748L;
     @Nullable

@@ -153,10 +153,8 @@ public class SecurityConfig {
                           .requestMatchers(antMatcher("/actuator/**")).permitAll()      // actuator
                           .requestMatchers(antMatcher("/swagger-ui/**"),
                                            antMatcher("/v3/api-docs/**")).permitAll()   // for swagger
-                          .requestMatchers(antMatcher("/oauth")).hasAuthority(OAUTH2_USER)
-                          .requestMatchers(antMatcher("/user"),
-                                           antMatcher("/usera"),
-                                           antMatcher("/usero")).permitAll()
+                          .requestMatchers(antMatcher("/internal/v1/user")).permitAll()
+                          .requestMatchers(antMatcher("/")).permitAll()
                           .anyRequest().authenticated())
             .oauth2Login(
                     o -> o.successHandler(customOAuth2SuccessHandler)
@@ -172,6 +170,7 @@ public class SecurityConfig {
                           .addObjectPostProcessor(bearerTokenAuthenticationFilterPostProcessor(defaultSecurityContextRepository)))
             .cors(c -> c.configurationSource(customCorsConfigurationSource))
             .csrf(c -> c.disable())
+            .requestCache(c -> c.disable())
             .anonymous(a -> a.disable())
             .httpBasic(h -> h.disable())
             .formLogin(f -> f.disable())
