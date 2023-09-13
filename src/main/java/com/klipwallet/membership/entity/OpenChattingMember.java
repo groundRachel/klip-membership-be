@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -18,7 +20,7 @@ import com.klipwallet.membership.adaptor.jpa.ForJpa;
 import com.klipwallet.membership.entity.OpenChatting.Source;
 
 @Entity
-// FIXME @Ian unique(openChattingId, kakaoUserId)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"openChattingId", "kakaoUserId"}))
 @Getter
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString

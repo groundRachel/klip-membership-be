@@ -171,7 +171,7 @@ public class OpenChattingService {
     }
 
     private OpenChattingNft getOpenChattingNft(Address sca, Long dropId) {
-        return openChattingNftRepository.findByKlipDropsScaAndDropId(sca.getValue(), dropId).orElseThrow(OpenChattingNftNotFoundException::new);
+        return openChattingNftRepository.findByScaAndDropId(sca, dropId).orElseThrow(OpenChattingNftNotFoundException::new);
     }
 
     private OpenChatting getOpenChattingByTokenId(Address sca, TokenId tokenId) {

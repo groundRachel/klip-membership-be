@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `open_chatting_member` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
 
-CREATE UNIQUE INDEX `udx_open_chatting_member_operator_id` ON `open_chatting_member` (`open_chatting_id` DESC, `operator_id` DESC) VISIBLE;
+CREATE UNIQUE INDEX `udx_open_chatting_member_kakao_user_id` ON `open_chatting_member` (`open_chatting_id` DESC, `kakao_user_id` DESC) VISIBLE;
 
 CREATE INDEX `fk_open_chatting_member_operator_idx` ON `open_chatting_member` (`operator_id` DESC) VISIBLE;
 

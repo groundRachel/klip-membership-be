@@ -36,7 +36,7 @@ class OpenChattingNftRepositoryTest {
         OpenChattingNft entity = new OpenChattingNft(openChattingId, dropId, contractAddress, memberId);
 
         OpenChattingNft saved = openChattingNftRepository.save(entity);
-        OpenChattingNft findEntity = openChattingNftRepository.findByKlipDropsScaAndDropId(contractAddress.getValue(), dropId)
+        OpenChattingNft findEntity = openChattingNftRepository.findByScaAndDropId(contractAddress, dropId)
                                                 .orElse(null);
 
         assertThat(findEntity).isNotNull().isEqualTo(saved);
